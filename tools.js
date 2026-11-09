@@ -920,4 +920,5 @@ document.addEventListener("DOMContentLoaded", function(){
   initBijli(); initArea(); initTax(); initMdcat(); initZakat();
   initCompress(); initPassport(); initConvert();
   initMerge(); initSplit(); initJpgPdf(); initAge();
+  if (window.initWedding) initWedding();
 });
