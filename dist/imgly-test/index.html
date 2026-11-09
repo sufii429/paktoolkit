@@ -1,0 +1,37 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>imgly engine test</title><meta name="robots" content="noindex"></head>
+<body>
+<pre id="log">starting…</pre>
+<script type="module">
+const el = document.getElementById('log');
+const log = (...a) => { el.textContent += '\n' + a.join(' '); };
+window.addEventListener('error', e => log('WINDOW ERROR:', e.message));
+window.addEventListener('unhandledrejection', e => log('UNHANDLED:', e.reason && (e.reason.stack || e.reason.message || String(e.reason))));
+try {
+  log('importing module…');
+  const m = await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/+esm');
+  log('imported. keys:', Object.keys(m).join(','));
+  const fn = m.default || m.removeBackground;
+  log('fn type:', typeof fn);
+  const c = document.createElement('canvas'); c.width = c.height = 240;
+  const x = c.getContext('2d');
+  x.fillStyle = '#e8dcc0'; x.fillRect(0, 0, 240, 240);
+  x.fillStyle = '#5a3a28'; x.beginPath(); x.ellipse(120, 110, 55, 70, 0, 0, 7); x.fill();
+  x.fillStyle = '#222222'; x.beginPath(); x.ellipse(120, 60, 35, 30, 0, 0, 7); x.fill();
+  const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+  log('test blob:', blob.size, 'bytes — calling removeBackground (isnet_fp16)…');
+  const t0 = Date.now();
+  const out = await fn(blob, { model: 'isnet_fp16', output: { format: 'image/png', quality: 1 },
+    progress: (k, cur, tot) => log('progress', k, cur, '/', tot) });
+  log('DONE in', ((Date.now() - t0) / 1000).toFixed(1) + 's', '| out blob:', out.size, out.type);
+  const bmp = await createImageBitmap(out);
+  const cc = document.createElement('canvas'); cc.width = bmp.width; cc.height = bmp.height;
+  const cx = cc.getContext('2d'); cx.drawImage(bmp, 0, 0);
+  const d = cx.getImageData(0, 0, cc.width, cc.height).data;
+  log('corner alpha:', d[3], '| centre alpha:', d[(120 * cc.width + 120) * 4 + 3], '| out size:', cc.width + 'x' + cc.height);
+  log('TEST-COMPLETE');
+} catch (e) {
+  log('FAILED:', e && (e.stack || e.message || String(e)));
+}
+</script>
+</body></html>

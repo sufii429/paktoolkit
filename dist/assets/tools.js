@@ -338,7 +338,7 @@ function initPassport(){
       var sx = (img.naturalWidth - cropW) / 2, sy = (img.naturalHeight - cropH) / 3;
       var cv = document.createElement("canvas"); cv.width = 413; cv.height = 531;
       var ctx = cv.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, 413, 531);
-      var bgMode = $("p-bg") ? $("p-bg").value : "keep";
+      var bgMode = $("p-bg") ? $("p-bg").value : "keep", failMsg = "";
       if (bgMode === "keep"){
         ctx.drawImage(img, sx, sy, cropW, cropH, 0, 0, 413, 531);
       } else {
@@ -355,15 +355,15 @@ function initPassport(){
           status.textContent = "";
         } catch(e){
           ctx.drawImage(img, sx, sy, cropW, cropH, 0, 0, 413, 531);
-          status.textContent = "Background removal could not run (it needs internet once, for the model download). Here is the photo with its original background:";
+          failMsg = "Background removal could not run (it needs internet once, for the model download). Here is the photo with its original background:";
         }
       }
       passportCanvas = cv;
       cv.className = "preview"; out.appendChild(cv);
       var b = await canvasBlob(cv, "image/jpeg", 0.95);
-      out.appendChild(el("p", "Passport size: 35 × 45 mm (413 × 531 px at 300 DPI)" + (bgMode !== "keep" ? " — background replaced by the AI matting model: clean hair edges, works on busy backgrounds too." : "")));
+      out.appendChild(el("p", "Passport size: 35 × 45 mm (413 × 531 px at 300 DPI)" + (bgMode !== "keep" && !failMsg ? " — background replaced by the AI matting model: clean hair edges, works on busy backgrounds too." : "")));
       out.appendChild(download(URL.createObjectURL(b), "passport-photo.jpg"));
-      status.textContent = "";
+      status.textContent = failMsg; /* keep a removal-failure note visible instead of wiping it */
     } catch(e){ status.textContent = "That file could not be read as an image."; }
   });
   if ($("p-sheet")) $("p-sheet").addEventListener("click", async function(){
