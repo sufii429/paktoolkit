@@ -23,6 +23,8 @@
 <div id="info">No photo yet.</div>
 <button id="btnA">Run A2: BiRefNet-lite 1024 direct (onnx-community)</button>
 <button id="btnB">Run B2: BiRefNet-lite 512 direct (studioludens)</button>
+<button id="btnBW">Run B2-W: BiRefNet-lite 512 — WASM + fp32 file only</button>
+<button id="btnBG">Run B2-G: BiRefNet-lite 512 — WebGPU + fp32 file</button>
 <button id="btnD">Run A3: BiRefNet-lite 1024 WebGPU-patched (jiabins)</button>
 <div id="summary">SUMMARY: nothing run yet.</div>
 <div id="results"></div>
@@ -185,10 +187,12 @@ async function runDirect(cfg, key, label) {
   try {
     const ort = await import('https://esm.sh/onnxruntime-web@1.21.0');
     try { ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.21.0/dist/'; } catch (e) {}
-    const paths = [
+    let paths = [
       { url: cfg.fp16, ep: 'webgpu', f16: true },
       { url: cfg.fp32, ep: 'wasm', f16: false },
     ].filter(p => p.url);
+    if (cfg.force === 'wasm-fp32') paths = [{ url: cfg.fp32, ep: 'wasm', f16: false }];
+    if (cfg.force === 'webgpu-fp32') paths = [{ url: cfg.fp32, ep: 'webgpu', f16: false }];
     let lastErr = null;
     for (const p of paths) {
       try {
@@ -229,6 +233,10 @@ async function runDirect(cfg, key, label) {
         }
         log(key + ': mask range ' + mn.toFixed(3) + '..' + mx.toFixed(3));
         const needSigmoid = mn < -0.01 || mx > 1.01;
+        let fg = 0;
+        for (let i = 0; i < n; i++) { let v = vals[i]; if (needSigmoid) v = 1 / (1 + Math.exp(-v)); if (v > 0.5) fg++; }
+        const coverage = Math.round(fg / n * 100);
+        log(key + ': foreground coverage ~' + coverage + '% of frame');
         const alpha = document.createElement('canvas'); alpha.width = cfg.size; alpha.height = cfg.size;
         const actx = alpha.getContext('2d');
         const imgData = actx.createImageData(cfg.size, cfg.size);
@@ -244,7 +252,7 @@ async function runDirect(cfg, key, label) {
         const totalSec = ((performance.now() - t0) / 1000).toFixed(1);
         const usedStr = p.ep + '/' + (p.f16 ? 'fp16' : 'fp32');
         showResult(label + ' (' + usedStr + ', ' + totalSec + 's)', cutoutFromAlpha(alpha));
-        setSummary(key, 'OK ' + usedStr + ', total ' + totalSec + 's, inference ' + inferSec + 's');
+        setSummary(key, 'OK ' + usedStr + ', total ' + totalSec + 's, inference ' + inferSec + 's, fg ~' + coverage + '%');
         log(key + ': DONE total ' + totalSec + 's');
         return;
       } catch (e) {
@@ -282,6 +290,22 @@ document.getElementById('btnB').addEventListener('click', () => {
     fp32: 'https://huggingface.co/studioludens/birefnet-lite-512/resolve/main/onnx/model.onnx',
     size: 512,
   }, 'B2', 'B2 BiRefNet-lite 512 direct');
+});
+document.getElementById('btnBW').addEventListener('click', () => {
+  if (!photoFile) { log('Pick a photo first.'); return; }
+  runDirect({
+    fp16: 'https://huggingface.co/studioludens/birefnet-lite-512/resolve/main/onnx/model_fp16.onnx',
+    fp32: 'https://huggingface.co/studioludens/birefnet-lite-512/resolve/main/onnx/model.onnx',
+    size: 512, force: 'wasm-fp32',
+  }, 'B2W', 'B2-W BiRefNet-lite 512 (WASM fp32)');
+});
+document.getElementById('btnBG').addEventListener('click', () => {
+  if (!photoFile) { log('Pick a photo first.'); return; }
+  runDirect({
+    fp16: 'https://huggingface.co/studioludens/birefnet-lite-512/resolve/main/onnx/model_fp16.onnx',
+    fp32: 'https://huggingface.co/studioludens/birefnet-lite-512/resolve/main/onnx/model.onnx',
+    size: 512, force: 'webgpu-fp32',
+  }, 'B2G', 'B2-G BiRefNet-lite 512 (WebGPU fp32)');
 });
 log('Page v2 ready. WebGPU available: ' + (!!navigator.gpu));
 </script>
