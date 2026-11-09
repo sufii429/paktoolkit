@@ -43,6 +43,36 @@ async function wDecodePayload(s){
   }
   return JSON.parse(new TextDecoder().decode(bytes));
 }
+/* Compact v2 payload: positional array + coded enums + day-numbers, so the
+   share link stays as short as possible (long links scare guests off).
+   v1 object payloads still decode — old links keep working. */
+var W_STYLES = ["curtain", "doors", "arch", "doors2", "tieback"];
+var W_PALS_LIST = ["maroon", "green", "royal"];
+var W_TUNES_LIST = ["strings", "bells", "drone", "none"];
+var W_SHOTS_LIST = ["maroon", "green", "royal"];
+function wDayNum(ds){
+  var p = (ds || "").split("-"); if (p.length < 3) return 0;
+  return Math.round((Date.UTC(+p[0], +p[1] - 1, +p[2]) - Date.UTC(2025, 0, 1)) / 86400000);
+}
+function wDayStr(n){
+  var dt = new Date(Date.UTC(2025, 0, 1) + n * 86400000);
+  function p2(x){ return ("0" + x).slice(-2); }
+  return dt.getUTCFullYear() + "-" + p2(dt.getUTCMonth() + 1) + "-" + p2(dt.getUTCDate());
+}
+function wToCompact(d){
+  return [2, d.g, d.b, d.gu, d.bu, d.host, d.gf, d.bf,
+    W_STYLES.indexOf(d.style), W_PALS_LIST.indexOf(d.pal), W_TUNES_LIST.indexOf(d.tune),
+    (d.ev || []).map(function(e){ return [e.n, wDayNum(e.d), e.t, e.vn]; }),
+    d.main, d.venue, d.addr, d.dress, d.rsvp,
+    d.shot ? W_SHOTS_LIST.indexOf(d.shot) + 1 : 0];
+}
+function wFromCompact(a){
+  return { v: 2, g: a[1], b: a[2], gu: a[3], bu: a[4], host: a[5], gf: a[6], bf: a[7],
+    style: W_STYLES[a[8]] || "doors2", pal: W_PALS_LIST[a[9]] || "maroon", tune: W_TUNES_LIST[a[10]] || "strings",
+    ev: (a[11] || []).map(function(e){ return { n: e[0], d: wDayStr(e[1]), t: e[2], vn: e[3] }; }),
+    main: a[12] || 0, venue: a[13], addr: a[14], dress: a[15], rsvp: a[16],
+    shot: a[17] ? W_SHOTS_LIST[a[17] - 1] : "" };
+}
 function wEventDate(ev){
   var d = (ev.d || "").split("-"), y = +d[0] || 2026, mo = (+d[1] || 1) - 1, da = +d[2] || 1;
   var h = 19, mi = 0, m = /(\d{1,2})(?::(\d{2}))?\s*(am|pm)?/i.exec(ev.t || "");
@@ -883,7 +913,7 @@ function initWedding(){
   var hasMaker = !!$("w-makelink");
   var dParam = new URLSearchParams(location.search).get("d");
   if (dParam){
-    wDecodePayload(dParam).then(function(d){ wRenderGuest(d, {}); }).catch(function(){ /* bad link — fall through to the maker */ });
+    wDecodePayload(dParam).then(function(d){ if (Array.isArray(d)) d = wFromCompact(d); wRenderGuest(d, {}); }).catch(function(){ /* bad link — fall through to the maker */ });
     if (!hasMaker) return;
   }
   if (!hasMaker) return;
@@ -893,7 +923,7 @@ function initWedding(){
     var status = el("p", "Link ban raha hai…"); out.appendChild(status);
     try {
       var built = wBuildGuest();
-      var enc = await wEncodePayload(built.d);
+      var enc = await wEncodePayload(wToCompact(built.d));
       var link = location.origin + location.pathname + "?d=" + enc + (built.photo ? "#p=" + built.photo : "");
       status.textContent = "Aap ka invitation link tayyar hai — copy karke WhatsApp par bhejein:";
       var inp = document.createElement("input");
@@ -907,7 +937,7 @@ function initWedding(){
       });
       out.appendChild(cp);
       var share = el("a", "💬 WhatsApp par bhejein"); share.className = "btn";
-      share.href = "https://wa.me/?text=" + encodeURIComponent("Assalam-o-Alaikum! Aap ko hamari shadi ki dawwat hai 💌 Invitation kholne ke liye ye link dabayein: " + link);
+      share.href = "https://wa.me/?text=" + encodeURIComponent("Assalam-o-Alaikum! " + built.d.g + " & " + built.d.b + " ki shadi ki dawwat hai 💌 Ye mera apna banaya hua digital invitation hai (PakToolkit par) — is link ko khol kar dekhein: " + link);
       share.target = "_blank"; share.rel = "noopener";
       share.style.marginLeft = "8px"; out.appendChild(share);
       var pv = el("button", "👀 Preview — mehman ki nazar se"); pv.className = "btn"; pv.type = "button";
@@ -949,11 +979,12 @@ function initWedding(){
       x.drawImage(cut, (W - dw) / 2, H - dh, dw, dh);
       wPhotoCanvas = cv;
       try {
-        var tiny = document.createElement("canvas"); tiny.width = 264; tiny.height = 338;
-        tiny.getContext("2d").drawImage(cv, 0, 0, 264, 338);
+        var tiny = document.createElement("canvas"); tiny.width = 208; tiny.height = 266;
+        tiny.getContext("2d").drawImage(cv, 0, 0, 208, 266);
         /* JPEG on purpose: every browser decodes it. (A WebP copy failed to
-           decode in one test browser — not worth the risk for a cover.) */
-        var tb = await canvasBlob(tiny, "image/jpeg", 0.66);
+           decode in one test browser — not worth the risk for a cover.)
+           Kept small so the photo link stays as short as possible. */
+        var tb = await canvasBlob(tiny, "image/jpeg", 0.6);
         var tbuf = new Uint8Array(await tb.arrayBuffer());
         wPhotoB64 = "j." + wB64UrlEncode(tbuf);
       } catch (e2) { wPhotoB64 = null; }
