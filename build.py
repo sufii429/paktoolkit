@@ -285,6 +285,10 @@ def main():
     if os.path.exists(wn):  # noindex test page — copied, not a generated page
         os.makedirs(os.path.join(DIST, "wedding-namuna"), exist_ok=True)
         shutil.copy(wn, os.path.join(DIST, "wedding-namuna", "index.html"))
+    rn = os.path.join(HERE, "ramadan-namuna.html")
+    if os.path.exists(rn):  # noindex sample page — copied, not a generated page
+        os.makedirs(os.path.join(DIST, "ramadan-namuna"), exist_ok=True)
+        shutil.copy(rn, os.path.join(DIST, "ramadan-namuna", "index.html"))
     # engine-test.html and imgly-test.html stay in the repo as dormant diagnostics (not copied to dist).
     # Engine comparison concluded 2026-11-09: BiRefNet-lite 512 (WASM + fp32) won and is integrated in tools.js.
     with open(os.path.join(DIST, "sitemap.xml"), "w", encoding="utf-8") as f:
