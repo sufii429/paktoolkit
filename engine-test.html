@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Engine Test (internal)</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 16px; background:#111; color:#eee; }
+  button { display:block; margin:8px 0; padding:12px 16px; font-size:16px; border-radius:8px; border:0; background:#2d9cdb; color:#fff; cursor:pointer; }
+  button:disabled { background:#555; }
+  #log { background:#000; color:#8f8; padding:10px; white-space:pre-wrap; font-size:12px; max-height:300px; overflow:auto; border-radius:8px; }
+  #summary { background:#222; padding:10px; border-radius:8px; margin:10px 0; font-size:14px; }
+  figure { display:inline-block; margin:10px; vertical-align:top; }
+  figure img, figure canvas { max-width:400px; height:auto; display:block; border:1px solid #444; }
+  figcaption { font-size:13px; margin-top:4px; max-width:400px; }
+  a { color:#7cf; }
+</style>
+</head>
+<body>
+<h1>Background engine test (internal)</h1>
+<p>Pick a photo, then run each engine. Results appear below, composited on blue. Log at the bottom.</p>
+<input type="file" id="file" accept="image/*">
+<div id="info">No photo yet.</div>
+<button id="btnA">Run A: BiRefNet-lite 1024 (onnx-community)</button>
+<button id="btnB">Run B: BiRefNet-lite 512 (studioludens)</button>
+<button id="btnC">Run C: imgly LARGE fp32 (v1.7.0)</button>
+<div id="summary">SUMMARY: nothing run yet.</div>
+<div id="results"></div>
+<pre id="log"></pre>
+
+<script type="module">
+const logEl = document.getElementById('log');
+const summaryEl = document.getElementById('summary');
+const resultsEl = document.getElementById('results');
+const summaries = {};
+function log(msg) {
+  const line = '[' + new Date().toLocaleTimeString() + '] ' + msg;
+  logEl.textContent += line + '\n';
+  logEl.scrollTop = logEl.scrollHeight;
+  console.log(line);
+}
+function setSummary(key, text) {
+  summaries[key] = text;
+  summaryEl.textContent = 'SUMMARY: ' + Object.entries(summaries).map(([k, v]) => k + ' = ' + v).join(' | ');
+}
+let photoFile = null, photoURL = null, photoImg = null;
+document.getElementById('file').addEventListener('change', async (e) => {
+  photoFile = e.target.files[0];
+  if (!photoFile) return;
+  photoURL = URL.createObjectURL(photoFile);
+  photoImg = new Image();
+  await new Promise((res, rej) => { photoImg.onload = res; photoImg.onerror = rej; photoImg.src = photoURL; });
+  document.getElementById('info').textContent = 'Photo: ' + photoFile.name + ' — ' + photoImg.naturalWidth + 'x' + photoImg.naturalHeight + ', ' + Math.round(photoFile.size / 1024) + ' KB. WebGPU available: ' + (!!navigator.gpu);
+  log('Photo loaded: ' + photoImg.naturalWidth + 'x' + photoImg.naturalHeight + '. navigator.gpu = ' + (!!navigator.gpu));
+});
+
+function showResult(label, cutoutCanvas) {
+  // Composite the RGBA cutout onto passport blue and show + offer downloads.
+  const blue = document.createElement('canvas');
+  blue.width = cutoutCanvas.width; blue.height = cutoutCanvas.height;
+  const bctx = blue.getContext('2d');
+  bctx.fillStyle = '#2f7fe0'; bctx.fillRect(0, 0, blue.width, blue.height);
+  bctx.drawImage(cutoutCanvas, 0, 0);
+  const fig = document.createElement('figure');
+  const view = document.createElement('canvas');
+  view.width = blue.width; view.height = blue.height;
+  view.getContext('2d').drawImage(blue, 0, 0);
+  const cap = document.createElement('figcaption');
+  cap.textContent = label;
+  const dlPng = document.createElement('a');
+  dlPng.textContent = 'Download cutout PNG';
+  dlPng.download = label.replace(/[^a-z0-9]+/gi, '_') + '_cutout.png';
+  dlPng.href = cutoutCanvas.toDataURL('image/png');
+  const dlJpg = document.createElement('a');
+  dlJpg.textContent = ' Download blue JPG';
+  dlJpg.download = label.replace(/[^a-z0-9]+/gi, '_') + '_blue.jpg';
+  dlJpg.href = blue.toDataURL('image/jpeg', 0.92);
+  cap.appendChild(document.createElement('br'));
+  cap.appendChild(dlPng); cap.appendChild(dlJpg);
+  fig.appendChild(view); fig.appendChild(cap);
+  resultsEl.appendChild(fig);
+}
+
+function cutoutFromAlpha(alphaCanvas) {
+  // alphaCanvas: grayscale mask (white = foreground). Build RGBA cutout at photo size.
+  const w = photoImg.naturalWidth, h = photoImg.naturalHeight;
+  const out = document.createElement('canvas'); out.width = w; out.height = h;
+  const ctx = out.getContext('2d');
+  ctx.drawImage(photoImg, 0, 0);
+  const mask = document.createElement('canvas'); mask.width = w; mask.height = h;
+  mask.getContext('2d').drawImage(alphaCanvas, 0, 0, w, h);
+  ctx.globalCompositeOperation = 'destination-in';
+  ctx.drawImage(mask, 0, 0);
+  ctx.globalCompositeOperation = 'source-over';
+  return out;
+}
+
+async function runBiRefNet(id, key, label) {
+  setSummary(key, 'loading…');
+  const t0 = performance.now();
+  try {
+    const T = await import('https://esm.sh/@huggingface/transformers@3.7.5');
+    const { AutoModel, AutoProcessor, RawImage, env } = T;
+    env.allowLocalModels = false;
+    let model = null, used = '';
+    const attempts = [
+      { device: 'webgpu', dtype: 'fp16' },
+      { device: 'wasm', dtype: 'fp32' },
+      { device: 'wasm', dtype: 'fp16' },
+    ];
+    for (const cfg of attempts) {
+      try {
+        log(key + ': loading ' + id + ' with ' + cfg.device + '/' + cfg.dtype + ' …');
+        model = await AutoModel.from_pretrained(id, cfg);
+        used = cfg.device + '/' + cfg.dtype;
+        log(key + ': model loaded (' + used + ') in ' + Math.round((performance.now() - t0) / 1000) + 's');
+        break;
+      } catch (e) {
+        log(key + ': attempt ' + cfg.device + '/' + cfg.dtype + ' FAILED: ' + (e && e.message ? e.message.slice(0, 300) : e));
+      }
+    }
+    if (!model) { setSummary(key, 'MODEL LOAD FAILED'); return; }
+    const processor = await AutoProcessor.from_pretrained(id);
+    const image = await RawImage.fromURL(photoURL);
+    const inputs = await processor(image);
+    log(key + ': input tensor ready: ' + (inputs.input_image ? inputs.input_image.dims.join('x') : JSON.stringify(Object.keys(inputs))));
+    const t1 = performance.now();
+    const out = await model(inputs);
+    const inferSec = ((performance.now() - t1) / 1000).toFixed(1);
+    log(key + ': inference done in ' + inferSec + 's (' + used + ')');
+    // Find the mask tensor among outputs.
+    const tensors = [];
+    const collect = (o) => {
+      if (!o) return;
+      if (o.data && o.dims) { tensors.push(o); return; }
+      if (typeof o === 'object') Object.values(o).forEach(collect);
+    };
+    collect(out);
+    log(key + ': output tensors: ' + tensors.map(t => t.dims.join('x') + ' ' + t.type).join(', '));
+    const mask = tensors.find(t => t.dims.length === 4) || tensors[0];
+    if (!mask) { setSummary(key, 'NO MASK TENSOR'); return; }
+    const mh = mask.dims[mask.dims.length - 2], mw = mask.dims[mask.dims.length - 1];
+    const data = mask.data;
+    let mn = Infinity, mx = -Infinity;
+    for (let i = 0; i < data.length; i++) { if (data[i] < mn) mn = data[i]; if (data[i] > mx) mx = data[i]; }
+    log(key + ': mask ' + mw + 'x' + mh + ', raw range ' + mn.toFixed(3) + '..' + mx.toFixed(3));
+    const needSigmoid = mn < -0.01 || mx > 1.01;
+    const alpha = document.createElement('canvas'); alpha.width = mw; alpha.height = mh;
+    const actx = alpha.getContext('2d');
+    const imgData = actx.createImageData(mw, mh);
+    for (let i = 0; i < mw * mh; i++) {
+      let v = data[i];
+      if (needSigmoid) v = 1 / (1 + Math.exp(-v));
+      const g = Math.max(0, Math.min(255, Math.round(v * 255)));
+      imgData.data[i * 4] = g; imgData.data[i * 4 + 1] = g; imgData.data[i * 4 + 2] = g; imgData.data[i * 4 + 3] = 255;
+    }
+    actx.putImageData(imgData, 0, 0);
+    const totalSec = ((performance.now() - t0) / 1000).toFixed(1);
+    showResult(label + ' (' + used + ', ' + totalSec + 's)', cutoutFromAlpha(alpha));
+    setSummary(key, 'OK ' + used + ', total ' + totalSec + 's, inference ' + inferSec + 's');
+    log(key + ': DONE total ' + totalSec + 's');
+  } catch (e) {
+    setSummary(key, 'ERROR: ' + (e && e.message ? e.message.slice(0, 160) : e));
+    log(key + ': ERROR ' + (e && e.stack ? e.stack.slice(0, 400) : e));
+  }
+}
+
+async function runImglyLarge(key) {
+  setSummary(key, 'loading…');
+  const t0 = performance.now();
+  try {
+    const { removeBackground } = await import('https://esm.sh/@imgly/background-removal@1.7.0');
+    let lastPct = -1;
+    const mkCfg = (device) => ({
+      model: 'large',
+      device,
+      output: { format: 'image/png', quality: 1 },
+      progress: (k, cur, tot) => {
+        if (!tot) return;
+        const pct = Math.floor((cur / tot) * 100);
+        if (pct >= lastPct + 25) { lastPct = pct; log(key + ': download ' + k + ' ' + pct + '%'); }
+      },
+    });
+    let blob = null, used = '';
+    for (const device of ['gpu', 'cpu']) {
+      try {
+        log(key + ': imgly large, device=' + device + ' …');
+        blob = await removeBackground(photoFile, mkCfg(device));
+        used = device;
+        break;
+      } catch (e) {
+        log(key + ': device ' + device + ' FAILED: ' + (e && e.message ? e.message.slice(0, 300) : e));
+      }
+    }
+    if (!blob) { setSummary(key, 'FAILED on gpu and cpu'); return; }
+    const url = URL.createObjectURL(blob);
+    const img = new Image();
+    await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = url; });
+    const cut = document.createElement('canvas');
+    cut.width = img.naturalWidth; cut.height = img.naturalHeight;
+    cut.getContext('2d').drawImage(img, 0, 0);
+    const totalSec = ((performance.now() - t0) / 1000).toFixed(1);
+    showResult('C imgly LARGE (' + used + ', ' + totalSec + 's)', cut);
+    setSummary(key, 'OK device=' + used + ', total ' + totalSec + 's');
+    log(key + ': DONE total ' + totalSec + 's');
+  } catch (e) {
+    setSummary(key, 'ERROR: ' + (e && e.message ? e.message.slice(0, 160) : e));
+    log(key + ': ERROR ' + (e && e.stack ? e.stack.slice(0, 400) : e));
+  }
+}
+
+document.getElementById('btnA').addEventListener('click', () => {
+  if (!photoFile) { log('Pick a photo first.'); return; }
+  runBiRefNet('onnx-community/BiRefNet_lite-ONNX', 'A', 'A BiRefNet-lite 1024');
+});
+document.getElementById('btnB').addEventListener('click', () => {
+  if (!photoFile) { log('Pick a photo first.'); return; }
+  runBiRefNet('studioludens/birefnet-lite-512', 'B', 'B BiRefNet-lite 512');
+});
+document.getElementById('btnC').addEventListener('click', () => {
+  if (!photoFile) { log('Pick a photo first.'); return; }
+  runImglyLarge('C');
+});
+log('Page ready. WebGPU available: ' + (!!navigator.gpu));
+</script>
+</body>
+</html>

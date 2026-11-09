@@ -278,6 +278,10 @@ def main():
     if os.path.exists(wn):  # noindex test page — copied, not a generated page
         os.makedirs(os.path.join(DIST, "wedding-namuna"), exist_ok=True)
         shutil.copy(wn, os.path.join(DIST, "wedding-namuna", "index.html"))
+    et = os.path.join(HERE, "engine-test.html")
+    if os.path.exists(et):  # TEMP diagnostic for the background-engine comparison — remove after the test
+        os.makedirs(os.path.join(DIST, "engine-test"), exist_ok=True)
+        shutil.copy(et, os.path.join(DIST, "engine-test", "index.html"))
     # imgly-test.html stays in the repo as a dormant diagnostic (not copied to dist)
     with open(os.path.join(DIST, "sitemap.xml"), "w", encoding="utf-8") as f:
         f.write(sitemap(built))
