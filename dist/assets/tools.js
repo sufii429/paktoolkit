@@ -346,6 +346,40 @@ function imglyRemove(img, fileKey, statusEl){
             if (a2 > 24 && dist[qq] >= 10) dd[qq * 4 + 3] = 255;
             else if (a2 > 18 && a2 < 255) dd[qq * 4 + 3] = Math.min(255, Math.round((a2 - 18) * 1.8) + 18);
           }
+          /* Enclosed-pocket fill: tiny zero-alpha pockets fully surrounded by
+             person (an armpit shadow the model zeroed) would otherwise print
+             as blue holes inside the body. Fill ONLY small pockets whose own
+             photo colour is unlike the corner background colour — a genuine
+             see-through gap shows the wall's colour and is left alone. */
+          var cR = 0, cG = 0, cB = 0, cN = 0, bx, by2;
+          var corners = [[0, 0], [W2 - 12, 0], [0, H2 - 12], [W2 - 12, H2 - 12]];
+          for (var ci = 0; ci < 4; ci++) for (by2 = 0; by2 < 12; by2++) for (bx = 0; bx < 12; bx++){
+            var cp = ((corners[ci][1] + by2) * W2 + corners[ci][0] + bx) * 4;
+            cR += dd[cp]; cG += dd[cp + 1]; cB += dd[cp + 2]; cN++;
+          }
+          cR /= cN; cG /= cN; cB /= cN;
+          var seen = new Uint8Array(W2 * H2), stack = [];
+          for (var s0 = 0; s0 < W2 * H2; s0++){
+            if (seen[s0] || dd[s0 * 4 + 3] > 24) continue;
+            var comp = [], touches = false, mR = 0, mG = 0, mB = 0;
+            stack.length = 0; stack.push(s0); seen[s0] = 1;
+            while (stack.length){
+              var cur = stack.pop(); comp.push(cur);
+              var cx2 = cur % W2, cy2 = (cur - cx2) / W2;
+              if (cx2 === 0 || cy2 === 0 || cx2 === W2 - 1 || cy2 === H2 - 1) touches = true;
+              mR += dd[cur * 4]; mG += dd[cur * 4 + 1]; mB += dd[cur * 4 + 2];
+              if (cx2 > 0 && !seen[cur - 1] && dd[(cur - 1) * 4 + 3] <= 24){ seen[cur - 1] = 1; stack.push(cur - 1); }
+              if (cx2 < W2 - 1 && !seen[cur + 1] && dd[(cur + 1) * 4 + 3] <= 24){ seen[cur + 1] = 1; stack.push(cur + 1); }
+              if (cy2 > 0 && !seen[cur - W2] && dd[(cur - W2) * 4 + 3] <= 24){ seen[cur - W2] = 1; stack.push(cur - W2); }
+              if (cy2 < H2 - 1 && !seen[cur + W2] && dd[(cur + W2) * 4 + 3] <= 24){ seen[cur + W2] = 1; stack.push(cur + W2); }
+            }
+            if (!touches && comp.length <= 1500){
+              var n2 = comp.length;
+              var dR = mR / n2 - cR, dG = mG / n2 - cG, dB = mB / n2 - cB;
+              if (Math.sqrt(dR * dR + dG * dG + dB * dB) > 45)
+                for (var fi = 0; fi < n2; fi++) dd[comp[fi] * 4 + 3] = 255;
+            }
+          }
           cctx2.putImageData(id, 0, 0);
           imglyCutout = cc; imglyCutoutKey = fileKey;
           resolve(cc);
