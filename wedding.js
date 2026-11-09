@@ -15,6 +15,10 @@ function wB64UrlEncode(bytes){
   for (i = 0; i < bytes.length; i += chunk) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
   return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
+function wB64UrlToStd(s){
+  s = s.replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "=";
+  return s;
+}
 function wB64UrlDecode(s){
   s = s.replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "=";
   var bin = atob(s), bytes = new Uint8Array(bin.length);
@@ -88,6 +92,8 @@ var W_CSS = `
 #wguest .mono{width:118px;height:118px;border-radius:50%;border:2px solid var(--gold);outline:6px double rgba(201,162,39,.45);outline-offset:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle,var(--deep2),var(--dark));margin:6px auto 12px}
 #wguest .mono .ini{font-size:1.75rem;letter-spacing:.06em;color:var(--gold2)}
 #wguest .mono .sm{font-size:.6rem;letter-spacing:.32em;color:#f3e2ac;margin-top:3px}
+#wguest .coverphoto{display:block;width:min(232px,62vw);aspect-ratio:264/338;object-fit:cover;border-radius:148px 148px 14px 14px;border:3px solid var(--gold);outline:5px double rgba(201,162,39,.4);outline-offset:4px;margin:2px auto 10px;box-shadow:0 14px 34px rgba(0,0,0,.45)}
+#wguest .doors.withphoto .bismillah{font-size:1.22rem;margin-bottom:2px}
 #wguest .doorcenter h1{font-size:1.22rem;font-weight:normal;margin:4px 0;color:#fff}
 #wguest .dcnames{font-size:1.02rem;color:var(--gold2);letter-spacing:.12em}
 #wguest .dcunames{font-size:1.28rem;color:#fff;margin-top:4px}
@@ -184,9 +190,23 @@ function wRenderGuest(d, opts){
   var dc = el("div"); dc.className = "doorcenter";
   var dcIn = el("div"); if (d.style === "arch") dcIn.className = "archframe";
   var bis = el("div"); bis.className = "bismillah arabic"; bis.textContent = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"; dcIn.appendChild(bis);
-  var mono = el("div"); mono.className = "mono";
-  var ini = el("div"); ini.className = "ini"; ini.textContent = (d.g || "G").charAt(0).toUpperCase() + " ♥ " + (d.b || "B").charAt(0).toUpperCase(); mono.appendChild(ini);
-  var sm = el("div"); sm.className = "sm"; sm.textContent = "WEDDING"; mono.appendChild(sm); dcIn.appendChild(mono);
+  var coverSrc = null;
+  if (opts.photo) coverSrc = opts.photo;
+  else if (location.hash && location.hash.indexOf("#p=") === 0){
+    var hp = location.hash.slice(3);
+    coverSrc = "data:image/" + (hp.charAt(0) === "j" ? "jpeg" : "webp") + ";base64," + wB64UrlToStd(hp.slice(2));
+  }
+  else if (d.shot && window.W_SHOTS && W_SHOTS[d.shot]) coverSrc = W_SHOTS[d.shot];
+  if (coverSrc){
+    doors.classList.add("withphoto");
+    var cimg = document.createElement("img");
+    cimg.className = "coverphoto"; cimg.src = coverSrc; cimg.alt = "Couple photo";
+    dcIn.appendChild(cimg);
+  } else {
+    var mono = el("div"); mono.className = "mono";
+    var ini = el("div"); ini.className = "ini"; ini.textContent = (d.g || "G").charAt(0).toUpperCase() + " ♥ " + (d.b || "B").charAt(0).toUpperCase(); mono.appendChild(ini);
+    var sm = el("div"); sm.className = "sm"; sm.textContent = "WEDDING"; mono.appendChild(sm); dcIn.appendChild(mono);
+  }
   var h1 = el("h1"); h1.textContent = "Assalam-o-Alaikum"; dcIn.appendChild(h1);
   var dcn = el("div"); dcn.className = "dcnames"; dcn.textContent = (d.g || "").toUpperCase() + "  ·  " + (d.b || "").toUpperCase(); dcIn.appendChild(dcn);
   if (d.gu || d.bu){ var dcu = el("div"); dcu.className = "dcunames urdu"; dcu.textContent = (d.gu || d.g) + " ♥ " + (d.bu || d.b); dcIn.appendChild(dcu); }
@@ -772,6 +792,17 @@ function wTuneStart(kind, extraDest){
 /* Maker-side MP3 (preview + video only — a guest link cannot carry a file) */
 var wMp3 = null; /* {url, name} */
 var wPhotoCanvas = null;
+var wPhotoB64 = null; /* "w."/"j." + base64url of the tiny cover copy that rides in the link fragment */
+function wCurrentShot(){
+  var r = document.querySelector('input[name="w-shot"]:checked');
+  return r ? r.value : "";
+}
+function wBuildGuest(){
+  var d = wReadPayloadFromForm();
+  var shot = wCurrentShot();
+  d.shot = shot;
+  return { d: d, photo: (!shot && wPhotoB64) ? wPhotoB64 : null };
+}
 function wReadPayloadFromForm(){
   function evRow(n){
     return { n: $("w-ev" + n + "-n").value.trim(), d: $("w-ev" + n + "-d").value, t: $("w-ev" + n + "-t").value.trim(), vn: $("w-ev" + n + "-v").value.trim() };
@@ -804,9 +835,9 @@ function initWedding(){
     var out = $("w-linkresult"); out.className = "result show"; out.textContent = "";
     var status = el("p", "Link ban raha hai…"); out.appendChild(status);
     try {
-      var d = wReadPayloadFromForm();
-      var enc = await wEncodePayload(d);
-      var link = location.origin + location.pathname + "?d=" + enc;
+      var built = wBuildGuest();
+      var enc = await wEncodePayload(built.d);
+      var link = location.origin + location.pathname + "?d=" + enc + (built.photo ? "#p=" + built.photo : "");
       status.textContent = "Aap ka invitation link tayyar hai — copy karke WhatsApp par bhejein:";
       var inp = document.createElement("input");
       inp.type = "text"; inp.readOnly = true; inp.value = link; inp.style.width = "100%";
@@ -824,7 +855,10 @@ function initWedding(){
       share.style.marginLeft = "8px"; out.appendChild(share);
       var pv = el("button", "👀 Preview — mehman ki nazar se"); pv.className = "btn"; pv.type = "button";
       pv.style.marginLeft = "8px";
-      pv.addEventListener("click", function(){ wRenderGuest(wReadPayloadFromForm(), { preview: true }); });
+      pv.addEventListener("click", function(){
+        var b2 = wBuildGuest();
+        wRenderGuest(b2.d, { preview: true, photo: b2.photo ? ("data:image/" + (b2.photo.charAt(0) === "j" ? "jpeg" : "webp") + ";base64," + wB64UrlToStd(b2.photo.slice(2))) : null });
+      });
       out.appendChild(pv);
     } catch (e) { status.textContent = "Link nahi ban saka — dobara koshish karein."; }
   });
@@ -833,7 +867,7 @@ function initWedding(){
     var f = this.files[0]; if (!f) return;
     if (wMp3) URL.revokeObjectURL(wMp3.url);
     wMp3 = { url: URL.createObjectURL(f), name: f.name };
-    $("w-mp3name").textContent = "🎵 Chosen: " + f.name + " — ye dhun aap ke preview aur video mein chalegi.";
+    $("w-mp3name").textContent = "🎵 Chosen: " + f.name + " — ye dhun aap ke preview mein chalegi.";
   });
   $("w-photogo").addEventListener("click", async function(){
     var status = $("w-photostatus"), out = $("w-photoresult");
@@ -857,7 +891,15 @@ function initWedding(){
       var dw = cut.width * sc2, dh = cut.height * sc2;
       x.drawImage(cut, (W - dw) / 2, H - dh, dw, dh);
       wPhotoCanvas = cv;
-      status.textContent = "Photo tayyar hai ✓ — video aur poster mein yehi photo aayegi.";
+      try {
+        var tiny = document.createElement("canvas"); tiny.width = 264; tiny.height = 338;
+        tiny.getContext("2d").drawImage(cv, 0, 0, 264, 338);
+        var tb = await canvasBlob(tiny, "image/webp", 0.62);
+        if (tb.type !== "image/webp") tb = await canvasBlob(tiny, "image/jpeg", 0.62);
+        var tbuf = new Uint8Array(await tb.arrayBuffer());
+        wPhotoB64 = (tb.type === "image/jpeg" ? "j." : "w.") + wB64UrlEncode(tbuf);
+      } catch (e2) { wPhotoB64 = null; }
+      status.textContent = "Photo tayyar hai ✓ — yehi photo cover par lagegi aur link ke saath mehman tak jayegi.";
       out.className = "result show";
       var b = await canvasBlob(cv, "image/jpeg", 0.9);
       var im = document.createElement("img"); im.className = "preview"; im.alt = "Couple photo with new background";
@@ -865,7 +907,38 @@ function initWedding(){
       out.appendChild(download(URL.createObjectURL(b), "couple-photo.jpg"));
     } catch (e) { status.textContent = "Background remove nahi ho saka (model ke liye pehli dafa internet chahiye). Dobara koshish karein."; }
   });
-  $("w-videogo").addEventListener("click", function(){ wMakeVideo(); });
-  $("w-postergo").addEventListener("click", function(){ wMakePoster(); });
+  (function buildShots(){
+    var box = $("w-shots"); if (!box) return;
+    box.style.cssText = "display:flex;gap:12px;flex-wrap:wrap;margin:6px 0 4px";
+    var opts = [["", "Apni photo / koi nahi", null],
+                ["maroon", "Maroon shot", window.W_SHOTS && W_SHOTS.maroon],
+                ["green", "Sabz shot", window.W_SHOTS && W_SHOTS.green],
+                ["royal", "Shahi neela shot", window.W_SHOTS && W_SHOTS.royal]];
+    opts.forEach(function(o, ix){
+      var lab = document.createElement("label");
+      lab.style.cssText = "text-align:center;font-size:.8rem;cursor:pointer;width:76px";
+      var inp = document.createElement("input");
+      inp.type = "radio"; inp.name = "w-shot"; inp.value = o[0]; if (ix === 0) inp.checked = true;
+      lab.appendChild(inp);
+      if (o[2]){
+        var im = document.createElement("img");
+        im.src = o[2]; im.alt = o[1];
+        im.style.cssText = "width:64px;height:82px;object-fit:cover;border-radius:10px;border:3px solid #d8cfc0;display:block;margin:4px auto 2px";
+        lab.appendChild(im);
+      }
+      lab.appendChild(document.createTextNode(o[1]));
+      box.appendChild(lab);
+    });
+    box.addEventListener("change", function(){
+      box.querySelectorAll("img").forEach(function(im){ im.style.borderColor = "#d8cfc0"; });
+      var chk = box.querySelector('input[name="w-shot"]:checked');
+      if (chk && chk.value){
+        var im2 = chk.parentNode.querySelector("img");
+        if (im2) im2.style.borderColor = "#c9a227";
+      }
+    });
+  })();
+  /* v1 is link-only (Mazeen's call): the video/poster buttons are not in the
+     maker UI; wMakeVideo / wMakePoster stay dormant in this file for later. */
 }
 
