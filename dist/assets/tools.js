@@ -309,8 +309,20 @@ function imglyRemove(img, fileKey, statusEl){
         cut.onload = function(){
           var cc = document.createElement("canvas");
           cc.width = cut.naturalWidth; cc.height = cut.naturalHeight;
-          cc.getContext("2d").drawImage(cut, 0, 0);
+          var cctx2 = cc.getContext("2d");
+          cctx2.drawImage(cut, 0, 0);
           URL.revokeObjectURL(u);
+          /* Solidify the matte: the model sometimes leaves broad skin areas
+             (a bare shoulder at the frame edge) semi-transparent — composited
+             they look like a blue ghost. Lift mid alphas hard toward solid;
+             near-zero alphas (gaps between hair curls, faint halo) stay low,
+             and hair strands, being dark and thin, only get slightly bolder. */
+          var id = cctx2.getImageData(0, 0, cc.width, cc.height), dd = id.data;
+          for (var i = 3; i < dd.length; i += 4){
+            var a = dd[i];
+            if (a > 18 && a < 255) dd[i] = Math.min(255, Math.round((a - 18) * 1.8) + 18);
+          }
+          cctx2.putImageData(id, 0, 0);
           imglyCutout = cc; imglyCutoutKey = fileKey;
           resolve(cc);
         };

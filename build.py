@@ -278,10 +278,7 @@ def main():
     if os.path.exists(wn):  # noindex test page — copied, not a generated page
         os.makedirs(os.path.join(DIST, "wedding-namuna"), exist_ok=True)
         shutil.copy(wn, os.path.join(DIST, "wedding-namuna", "index.html"))
-    it = os.path.join(HERE, "imgly-test.html")
-    if os.path.exists(it):  # TEMP diagnostic page for the imgly engine — remove after the fix is verified
-        os.makedirs(os.path.join(DIST, "imgly-test"), exist_ok=True)
-        shutil.copy(it, os.path.join(DIST, "imgly-test", "index.html"))
+    # imgly-test.html stays in the repo as a dormant diagnostic (not copied to dist)
     with open(os.path.join(DIST, "sitemap.xml"), "w", encoding="utf-8") as f:
         f.write(sitemap(built))
     print(f"Built {len(built)} pages into dist/")

@@ -204,7 +204,7 @@ TOOLS["passport-size-photo-maker"] = _tool(
     "Turn any photo into a correct 35 × 45 mm passport-size photo, ready to print or upload.",
     "This passport size photo maker online tool crops your picture to the official 35 × 45 mm ratio and exports it at 413 × 531 pixels (300 DPI) — the size used for Pakistani passports, CNIC-related forms and most visa applications. It can also remove the background of your photo and replace it with plain white or blue, and make a 4-copy print sheet for the studio.",
     """
-<p class="note">📸 For the best result, choose a clear, front-facing photo in good light. The tool uses a photo-grade AI model to remove the background — even a busy background — and replace it with white or blue (pick below), keeping hair edges clean. The first time you use it, the AI model downloads once (about 40 MB, so use Wi-Fi if you can); after that it stays cached, runs right on your device, and your photo is never uploaded.</p>
+<p class="note">📸 For the best result, choose a clear, front-facing photo in good light. The tool uses a photo-grade AI model to remove the background — even a busy background — and replace it with white or blue (pick below), keeping hair edges clean. The first time you use it, the AI model downloads once (about 90 MB, so use Wi-Fi if you can); after that it stays cached, runs right on your device, and your photo is never uploaded.</p>
 <label for="p-file">Choose your photo</label><input id="p-file" type="file" accept="image/*">
 <label for="p-zoom">Zoom (1 = whole photo, higher = closer face crop)</label>
 <input id="p-zoom" type="range" min="1" max="2.5" step="0.05" value="1">
@@ -226,7 +226,7 @@ TOOLS["passport-size-photo-maker"] = _tool(
     "Example: a normal selfie cropped with zoom 1.4 usually frames the head and shoulders correctly for a 35 × 45 mm print.",
     [("What is the passport photo size in Pakistan?", "35 × 45 mm, which is 413 × 531 pixels at 300 DPI. This is the size this tool produces."),
      ("Can I use this photo for online forms?", "Yes — the JPG is sized for both printing and uploading. If a form also has a KB limit, run the result through our Image Compressor to KB tool."),
-     ("What background should a passport photo have?", "A plain white background is the standard requirement (some forms ask for blue). This tool removes your photo's background with a photo-grade AI matting model — it works on busy backgrounds too, not just plain walls, and keeps hair edges clean — and replaces it with white or blue. The AI model downloads once (about 40 MB) and then runs entirely on your device; your photo is never uploaded."),
+     ("What background should a passport photo have?", "A plain white background is the standard requirement (some forms ask for blue). This tool removes your photo's background with a photo-grade AI matting model — it works on busy backgrounds too, not just plain walls, and keeps hair edges clean — and replaces it with white or blue. The AI model downloads once (about 90 MB) and then runs entirely on your device; your photo is never uploaded."),
      ("Is my photo uploaded anywhere?", "No. The crop is made in your browser; your files never leave your device.")],
     False)
 
