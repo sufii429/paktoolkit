@@ -42,7 +42,8 @@ function fmt(n){ return "Rs " + Math.round(n).toLocaleString("en-PK"); }
 function fmtN(n, d){ return n.toLocaleString("en-PK",{maximumFractionDigits:(d==null?2:d)}); }
 function el(tag, text){ var e = document.createElement(tag); if(text != null) e.textContent = text; return e; }
 function makeTable(container, headers, rows){
-  container.textContent = "";
+  /* NOTE: does NOT clear the container — callers clear first, so a headline
+     appended before the table (e.g. exact age) survives. */
   var t = el("table"), thead = el("thead"), tr = el("tr");
   headers.forEach(function(h){ tr.appendChild(el("th", h)); });
   thead.appendChild(tr); t.appendChild(thead);
@@ -159,7 +160,7 @@ function initArea(){
   if (!$("a-calc")) return;
   $("a-calc").addEventListener("click", function(){
     var r = convertArea(num("a-value"), $("a-from").value);
-    var out = $("a-result"); out.className = "result show";
+    var out = $("a-result"); out.className = "result show"; out.textContent = "";
     makeTable(out, ["Unit","Value"], [
       ["Marla", fmtN(r.marla)],["Kanal", fmtN(r.kanal)],["Square Feet", fmtN(r.sqft)],
       ["Square Yard (Gaj)", fmtN(r.sqyard)],["Square Metre", fmtN(r.sqm)],["Acre", fmtN(r.acre, 4)] ]);
