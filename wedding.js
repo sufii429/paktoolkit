@@ -135,9 +135,10 @@ var W_CSS = `
 #wguest .tieband.l{left:20%}#wguest .tieband.r{right:20%}
 #wguest .doors.open .tieband{opacity:1}
 #wguest .doors.settled .panel{transition-duration:.9s}
-#wguest .doors.settled .panel.left{transform:scaleX(.22) translateX(-2%);clip-path:polygon(0 0,100% 0,58% 46%,42% 100%,0 100%)}
-#wguest .doors.settled .panel.right{transform:scaleX(.22) translateX(2%);clip-path:polygon(0 0,100% 0,100% 100%,58% 100%,42% 46%)}
-#wguest .doors.settled .tieband.l{left:8%}#wguest .doors.settled .tieband.r{right:8%}
+#wguest .doors.settled .panel.left{transform:scaleX(.13) translateX(-2%);clip-path:polygon(0 0,100% 0,88% 46%,76% 100%,0 100%)}
+#wguest .doors.settled .panel.right{transform:scaleX(.13) translateX(2%);clip-path:polygon(0 0,100% 0,100% 100%,24% 100%,12% 46%)}
+#wguest .doors.settled .tieband{width:30px;height:14px}
+#wguest .doors.settled .tieband.l{left:4px}#wguest .doors.settled .tieband.r{right:4px}
 #wguest .inv{transition:padding .9s ease}
 #wguest.has-drapes .inv{padding-left:42px;padding-right:42px}
 #wguest.has-drapes .minicurtain{margin-left:-42px;margin-right:-42px}
