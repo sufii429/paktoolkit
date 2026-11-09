@@ -214,6 +214,7 @@ TOOLS["passport-size-photo-maker"] = _tool(
 <option value="blue">Blue — remove my background</option>
 <option value="keep">Keep the original background</option>
 </select>
+<p id="p-preload" class="note" style="display:none"></p>
 <button class="btn" id="p-go" type="button">Make passport photo</button>
 <button class="btn secondary" id="p-sheet" type="button">Make print sheet (4 copies, 4 × 6 inch)</button>
 <p id="p-status"></p>

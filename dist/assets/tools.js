@@ -276,12 +276,31 @@ function initCompress(){
    only. The finished cut-out is cached per photo, so zoom changes and the
    print sheet stay instant. */
 var IMGLY_URL = "https://esm.sh/@imgly/background-removal@1.4.5"; /* jsDelivr's +esm bundle of this package is broken (lodash named-export failure, diagnosed 2026-11-09); esm.sh serves a working build */
-var imglyFnPromise = null, imglyCutout = null, imglyCutoutKey = null;
+var imglyModPromise = null, imglyWarmPromise = null, imglyCutout = null, imglyCutoutKey = null;
+function loadImglyModule(){
+  if (!imglyModPromise) imglyModPromise = import(IMGLY_URL);
+  return imglyModPromise;
+}
 function loadImgly(){
-  if (!imglyFnPromise){
-    imglyFnPromise = import(IMGLY_URL).then(function(m){ return m.default || m.removeBackground; });
-  }
-  return imglyFnPromise;
+  return loadImglyModule().then(function(m){ return m.default || m.removeBackground; });
+}
+function imglyConfig(onProgress){
+  return {
+    model: "medium", /* 1.4.5 schema: "small" (44 MB) | "medium" (88 MB). Head-to-head on Mazeen's selfie, 2026-11-09: medium's hair edges are smooth and natural; small's are ragged with a pale fringe — medium stays live on his "whichever works better" instruction. */
+    output: { format: "image/png", quality: 1 },
+    progress: onProgress
+  };
+}
+/* Intent preload (Mazeen's agreed jugaad, 2026-11-09): as soon as the visitor
+   picks a photo or chooses a White/Blue background, warm the model in the
+   background with a slim % line, so "Make" feels instant — without forcing
+   an 88 MB download on every casual page view. */
+function warmImgly(onProgress){
+  if (imglyWarmPromise) return imglyWarmPromise;
+  imglyWarmPromise = loadImglyModule().then(function(m){
+    if (m && m.preload) return m.preload(imglyConfig(onProgress));
+  }).catch(function(){ /* warm-up is best-effort; Make retries and reports normally */ });
+  return imglyWarmPromise;
 }
 function imglyRemove(img, fileKey, statusEl){
   if (imglyCutout && imglyCutoutKey === fileKey) return Promise.resolve(imglyCutout);
@@ -294,15 +313,11 @@ function imglyRemove(img, fileKey, statusEl){
     return new Promise(function(resolve, reject){
       ic.toBlob(function(blob){ if (blob) resolve(blob); else reject(new Error("input encode failed")); }, "image/png");
     }).then(function(blob){
-      return removeBackground(blob, {
-        model: "small", /* 1.4.5 schema: "small" (44 MB) | "medium" (88 MB) — TESTING small on Mazeen's instruction 2026-11-09; winner stays live */
-        output: { format: "image/png", quality: 1 },
-        progress: function(key, current, total){
-          if (!statusEl) return;
-          if (key.indexOf("fetch") === 0 && total > 0) statusEl.textContent = "Downloading the AI model: " + Math.round(100 * current / total) + "% (first time only — then it stays cached)";
-          else statusEl.textContent = "Removing the background…";
-        }
-      });
+      return removeBackground(blob, imglyConfig(function(key, current, total){
+        if (!statusEl) return;
+        if (key.indexOf("fetch") === 0 && total > 0) statusEl.textContent = "Downloading the AI model: " + Math.round(100 * current / total) + "% (first time only — then it stays cached)";
+        else statusEl.textContent = "Removing the background…";
+      }));
     }).then(function(outBlob){
       return new Promise(function(resolve, reject){
         var u = URL.createObjectURL(outBlob), cut = new Image();
@@ -424,6 +439,23 @@ var PASSPORT_BLUE = "#4f9fe0";
 var passportCanvas = null;
 function initPassport(){
   if (!$("p-go")) return;
+  /* Intent preload: warm the AI as soon as a photo is chosen or a removal
+     background is selected; the slim line shows progress, page stays usable. */
+  var preEl = $("p-preload");
+  function warm(){
+    if (!preEl || imglyCutout) return;
+    var hasFile = $("p-file") && $("p-file").files && $("p-file").files.length > 0;
+    var wantsBg = !$("p-bg") || $("p-bg").value !== "keep";
+    if (!hasFile && !wantsBg) return;
+    preEl.style.display = "";
+    if (!imglyWarmPromise) preEl.textContent = "AI tayyar ho raha hai — model is downloading in the background; set your photo and zoom meanwhile…";
+    warmImgly(function(key, current, total){
+      if (key.indexOf("fetch") === 0 && total > 0 && !imglyCutout) preEl.textContent = "AI tayyar ho raha hai — model download: " + Math.round(100 * current / total) + "% (first time only)";
+    });
+    imglyWarmPromise.then(function(){ if (!imglyCutout) preEl.textContent = "AI is ready ✓ — your photo will now process right away."; });
+  }
+  if ($("p-file")) $("p-file").addEventListener("change", warm);
+  if ($("p-bg")) $("p-bg").addEventListener("change", warm);
   $("p-go").addEventListener("click", async function(){
     var f = $("p-file").files[0], status = $("p-status"), out = $("p-result");
     out.textContent = ""; status.textContent = "";
