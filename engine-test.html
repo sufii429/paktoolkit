@@ -23,6 +23,7 @@
 <div id="info">No photo yet.</div>
 <button id="btnA">Run A2: BiRefNet-lite 1024 direct (onnx-community)</button>
 <button id="btnB">Run B2: BiRefNet-lite 512 direct (studioludens)</button>
+<button id="btnD">Run A3: BiRefNet-lite 1024 WebGPU-patched (jiabins)</button>
 <div id="summary">SUMMARY: nothing run yet.</div>
 <div id="results"></div>
 <pre id="log"></pre>
@@ -187,7 +188,7 @@ async function runDirect(cfg, key, label) {
     const paths = [
       { url: cfg.fp16, ep: 'webgpu', f16: true },
       { url: cfg.fp32, ep: 'wasm', f16: false },
-    ];
+    ].filter(p => p.url);
     let lastErr = null;
     for (const p of paths) {
       try {
@@ -250,6 +251,14 @@ document.getElementById('btnA').addEventListener('click', () => {
     fp32: 'https://huggingface.co/onnx-community/BiRefNet_lite-ONNX/resolve/main/onnx/model.onnx',
     size: 1024,
   }, 'A2', 'A2 BiRefNet-lite 1024 direct');
+});
+document.getElementById('btnD').addEventListener('click', () => {
+  if (!photoFile) { log('Pick a photo first.'); return; }
+  runDirect({
+    fp16: 'https://huggingface.co/jiabins0303/birefnet-lite-1024-webgpu/resolve/main/onnx/model_fp16.onnx',
+    fp32: null,
+    size: 1024,
+  }, 'A3', 'A3 BiRefNet-lite 1024 webgpu-patched');
 });
 document.getElementById('btnB').addEventListener('click', () => {
   if (!photoFile) { log('Pick a photo first.'); return; }
