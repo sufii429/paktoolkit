@@ -275,7 +275,7 @@ function initCompress(){
    is cached by the browser. Lazy-loaded via dynamic import on first removal
    only. The finished cut-out is cached per photo, so zoom changes and the
    print sheet stay instant. */
-var IMGLY_URL = "https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/+esm";
+var IMGLY_URL = "https://esm.sh/@imgly/background-removal@1.4.5"; /* jsDelivr's +esm bundle of this package is broken (lodash named-export failure, diagnosed 2026-11-09); esm.sh serves a working build */
 var imglyFnPromise = null, imglyCutout = null, imglyCutoutKey = null;
 function loadImgly(){
   if (!imglyFnPromise){
@@ -295,7 +295,7 @@ function imglyRemove(img, fileKey, statusEl){
       ic.toBlob(function(blob){ if (blob) resolve(blob); else reject(new Error("input encode failed")); }, "image/png");
     }).then(function(blob){
       return removeBackground(blob, {
-        model: "isnet_fp16",
+        model: "medium", /* 1.4.5 schema: "small" | "medium" — medium is the full-quality matting model */
         output: { format: "image/png", quality: 1 },
         progress: function(key, current, total){
           if (!statusEl) return;

@@ -34,9 +34,9 @@ try {
   x.fillStyle = '#5a3a28'; x.beginPath(); x.ellipse(120, 110, 55, 70, 0, 0, 7); x.fill();
   x.fillStyle = '#222222'; x.beginPath(); x.ellipse(120, 60, 35, 30, 0, 0, 7); x.fill();
   const blob = await new Promise(r => c.toBlob(r, 'image/png'));
-  log('test blob:', blob.size, 'bytes — calling removeBackground (isnet_fp16)…');
+  log('test blob:', blob.size, 'bytes — calling removeBackground (model: medium)…');
   const t0 = Date.now();
-  const out = await fn(blob, { model: 'isnet_fp16', output: { format: 'image/png', quality: 1 },
+  const out = await fn(blob, { model: 'medium', output: { format: 'image/png', quality: 1 },
     progress: (k, cur, tot) => log('progress', k, cur, '/', tot) });
   log('DONE in', ((Date.now() - t0) / 1000).toFixed(1) + 's', '| out blob:', out.size, out.type);
   const bmp = await createImageBitmap(out);
@@ -47,6 +47,7 @@ try {
   log('TEST-COMPLETE');
 } catch (e) {
   log('FAILED:', e && (e.stack || e.message || String(e)));
+  if (e && e.issues) log('issues:', JSON.stringify(e.issues));
 }
 </script>
 </body></html>
