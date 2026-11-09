@@ -204,7 +204,7 @@ TOOLS["passport-size-photo-maker"] = _tool(
     "Turn any photo into a correct 35 × 45 mm passport-size photo, ready to print or upload.",
     "This passport size photo maker online tool crops your picture to the official 35 × 45 mm ratio and exports it at 413 × 531 pixels (300 DPI) — the size used for Pakistani passports, CNIC-related forms and most visa applications. It can also remove the background of your photo and replace it with plain white or blue, and make a 4-copy print sheet for the studio.",
     """
-<p class="note">📸 For the best result, choose a clear, front-facing photo in good light. The tool uses a photo-grade AI model to remove the background — even a busy background — and replace it with white or blue (pick below), keeping hair edges clean. The first time you use it, the AI model downloads once (about 90 MB, so use Wi-Fi if you can); after that it stays cached, runs right on your device, and your photo is never uploaded.</p>
+<p class="note">📸 For the best result, choose a clear, front-facing photo in good light. The tool uses a photo-grade AI model to remove the background — even a busy background — and replace it with white or blue (pick below), keeping hair edges clean. The first time you use it, the AI model downloads once (about 90 MB, so use Wi-Fi if you can); after that it stays cached, runs right on your device, and your photo is never uploaded. Tip: take earphones and loose wires off before the photo — thin wires can confuse the AI.</p>
 <label for="p-file">Choose your photo</label><input id="p-file" type="file" accept="image/*">
 <label for="p-zoom">Zoom (1 = whole photo, higher = closer face crop)</label>
 <input id="p-zoom" type="range" min="1" max="2.5" step="0.05" value="1">

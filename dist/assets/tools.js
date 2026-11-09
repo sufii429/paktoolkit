@@ -321,6 +321,36 @@ function imglyRemove(img, fileKey, statusEl){
              gaps (between curls, arm-to-torso) sit at ~0 alpha and stay open. */
           var W2 = cc.width, H2 = cc.height;
           var id = cctx2.getImageData(0, 0, W2, H2), dd = id.data;
+          /* Morphological closing (dilate x2, then erode x2): seals thin
+             zero-alpha channels the model cuts along wires/cords crossing
+             the body, and thin edge slivers — anything narrower than ~4px.
+             Wide genuine gaps (between hair curls) and the silhouette's
+             large shapes pass through unchanged. */
+          var aIn = new Float32Array(W2 * H2), aTmp = new Float32Array(W2 * H2), aPass, pi, pj, pk;
+          for (pi = 0; pi < W2 * H2; pi++) aIn[pi] = dd[pi * 4 + 3];
+          for (pk = 0; pk < 2; pk++){
+            for (pj = 0; pj < W2 * H2; pj++){
+              var ax = pj % W2, ay = (pj - ax) / W2, mx = 0;
+              for (var ddy = -1; ddy <= 1; ddy++) for (var ddx = -1; ddx <= 1; ddx++){
+                var nx = ax + ddx, ny = ay + ddy;
+                if (nx >= 0 && nx < W2 && ny >= 0 && ny < H2) mx = Math.max(mx, aIn[ny * W2 + nx]);
+              }
+              aTmp[pj] = mx;
+            }
+            aPass = aIn; aIn = aTmp; aTmp = aPass;
+          }
+          for (pk = 0; pk < 2; pk++){
+            for (pj = 0; pj < W2 * H2; pj++){
+              var ax2 = pj % W2, ay2 = (pj - ax2) / W2, mn2 = 255;
+              for (var edy = -1; edy <= 1; edy++) for (var edx = -1; edx <= 1; edx++){
+                var ex = ax2 + edx, ey = ay2 + edy;
+                if (ex >= 0 && ex < W2 && ey >= 0 && ey < H2) mn2 = Math.min(mn2, aIn[ey * W2 + ex]);
+              }
+              aTmp[pj] = mn2;
+            }
+            aPass = aIn; aIn = aTmp; aTmp = aPass;
+          }
+          for (pi = 0; pi < W2 * H2; pi++) dd[pi * 4 + 3] = Math.round(aIn[pi]);
           var dist = new Float32Array(W2 * H2), INF = 1e6, xx, yy, qq;
           for (qq = 0; qq < W2 * H2; qq++) dist[qq] = dd[qq * 4 + 3] <= 24 ? 0 : INF;
           for (yy = 0; yy < H2; yy++) for (xx = 0; xx < W2; xx++){
