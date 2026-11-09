@@ -266,210 +266,57 @@ function initCompress(){
 }
 
 /* ============ 7. Passport Photo ============ */
-/* Background removal: real person segmentation — MediaPipe Selfie
-   Segmentation (Google's on-device model), lazy-loaded on first use, the
-   same lazy pattern as the PDF libraries. Replaced the earlier colour-based
-   flood fill, which failed on busy real-world backgrounds (Mazeen's test
-   photo, 2026-11-09: background untouched, highlights bleached). The mask's
-   red channel becomes the person's alpha, with a firmer edge curve and one
-   light blur pass so hair/shoulder edges feather instead of biting. */
-var SEG_URL = "https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js";
-var segInstance = null;
-function loadSegmenter(){
-  if (segInstance) return Promise.resolve(segInstance);
-  return loadScript(SEG_URL).then(function(){
-    var seg = new window.SelfieSegmentation({ locateFile: function(f){ return "https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/" + f; } });
-    seg.setOptions({ modelSelection: 1 });
-    segInstance = seg;
-    return seg;
-  });
-}
-function blurAlphaPass(src, w, h, r){
-  r = r || 1;
-  var dst = new Float32Array(w * h), x, y, dx, dy;
-  for (y = 0; y < h; y++) for (x = 0; x < w; x++){
-    var sum = 0, n = 0;
-    for (dy = -r; dy <= r; dy++) for (dx = -r; dx <= r; dx++){
-      var xx = x + dx, yy = y + dy;
-      if (xx >= 0 && xx < w && yy >= 0 && yy < h){ sum += src[yy * w + xx]; n++; }
-    }
-    dst[y * w + x] = sum / n;
+/* Background removal: the IMG.LY matting engine (@imgly/background-removal)
+   — a photo-grade segmentation model that keeps hair edges clean, which the
+   lighter MediaPipe selfie model (built for video calls) could not (Mazeen's
+   tests, 2026-11-09). The same engine as the Gemini-built maker he reviewed
+   and approved adopting. Runs 100% in the visitor's browser — the photo
+   never leaves the device; the model downloads once from CDN (~40 MB) and
+   is cached by the browser. Lazy-loaded via dynamic import on first removal
+   only. The finished cut-out is cached per photo, so zoom changes and the
+   print sheet stay instant. */
+var IMGLY_URL = "https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/+esm";
+var imglyFnPromise = null, imglyCutout = null, imglyCutoutKey = null;
+function loadImgly(){
+  if (!imglyFnPromise){
+    imglyFnPromise = import(IMGLY_URL).then(function(m){ return m.default || m.removeBackground; });
   }
-  return dst;
+  return imglyFnPromise;
 }
-function labelBlobs(bin, w, h){
-  var label = new Int32Array(w * h), sizes = [0], q, cur = 0;
-  for (q = 0; q < w * h; q++){
-    if (!bin[q] || label[q]) continue;
-    cur++; var size = 0, stack = [q]; label[q] = cur;
-    while (stack.length){
-      var p = stack.pop(); size++;
-      var px = p % w, py = (p / w) | 0;
-      if (px > 0 && bin[p - 1] && !label[p - 1]){ label[p - 1] = cur; stack.push(p - 1); }
-      if (px < w - 1 && bin[p + 1] && !label[p + 1]){ label[p + 1] = cur; stack.push(p + 1); }
-      if (py > 0 && bin[p - w] && !label[p - w]){ label[p - w] = cur; stack.push(p - w); }
-      if (py < h - 1 && bin[p + w] && !label[p + w]){ label[p + w] = cur; stack.push(p + w); }
-    }
-    sizes[cur] = size;
-  }
-  return { label: label, sizes: sizes, count: cur };
-}
-function outsideMask(bin, w, h){
-  var outside = new Uint8Array(w * h), st = [], x, y;
-  function oseed(pxx, pyy){ var pp = pyy * w + pxx; if (!bin[pp] && !outside[pp]){ outside[pp] = 1; st.push(pp); } }
-  for (x = 0; x < w; x++){ oseed(x, 0); oseed(x, h - 1); }
-  for (y = 0; y < h; y++){ oseed(0, y); oseed(w - 1, y); }
-  while (st.length){
-    var p2 = st.pop(), qx = p2 % w, qy = (p2 / w) | 0;
-    if (qx > 0) oseed(qx - 1, qy);
-    if (qx < w - 1) oseed(qx + 1, qy);
-    if (qy > 0) oseed(qx, qy - 1);
-    if (qy < h - 1) oseed(qx, qy + 1);
-  }
-  return outside;
-}
-function morphErode(bin, w, h){
-  var out = new Uint8Array(w * h), x, y, dx, dy;
-  for (y = 0; y < h; y++) for (x = 0; x < w; x++){
-    var ok = 1;
-    for (dy = -1; dy <= 1 && ok; dy++) for (dx = -1; dx <= 1; dx++){
-      var xx = x + dx, yy = y + dy;
-      if (xx < 0 || xx >= w || yy < 0 || yy >= h || !bin[yy * w + xx]){ ok = 0; break; }
-    }
-    out[y * w + x] = ok;
-  }
-  return out;
-}
-function morphDilate(bin, w, h){
-  var out = new Uint8Array(w * h), x, y, dx, dy;
-  for (y = 0; y < h; y++) for (x = 0; x < w; x++){
-    var any = 0;
-    for (dy = -1; dy <= 1 && !any; dy++) for (dx = -1; dx <= 1; dx++){
-      var xx = x + dx, yy = y + dy;
-      if (xx >= 0 && xx < w && yy >= 0 && yy < h && bin[yy * w + xx]){ any = 1; break; }
-    }
-    out[y * w + x] = any;
-  }
-  return out;
-}
-/* Keep-set for the person: morphological opening first (snaps the thin
-   bridges that joined background fragments to the person), then only the
-   largest blob survives. Enclosed background pockets (neck/shoulder hollow,
-   arm gaps) stay background — v3 wrongly filled ALL holes; only tiny mask
-   dropouts (<= 64 px) inside the person are filled. */
-function personKeep(bin, w, h){
-  var opened = morphDilate(morphErode(bin, w, h), w, h);
-  var blobs = labelBlobs(opened, w, h), largest = 0, q;
-  for (var i = 1; i <= blobs.count; i++) if (blobs.sizes[i] > blobs.sizes[largest]) largest = i;
-  var keep = new Uint8Array(w * h);
-  for (q = 0; q < w * h; q++) keep[q] = blobs.label[q] === largest ? 1 : 0;
-  var outside = outsideMask(keep, w, h);
-  var inv = new Uint8Array(w * h);
-  for (q = 0; q < w * h; q++) inv[q] = (!keep[q] && !outside[q]) ? 1 : 0;
-  var holes = labelBlobs(inv, w, h);
-  var filled = new Uint8Array(w * h);
-  for (q = 0; q < w * h; q++) if (inv[q] && holes.sizes[holes.label[q]] <= 64){ keep[q] = 1; filled[q] = 1; }
-  return { keep: keep, filled: filled };
-}
-function cornerBgRef(imgData, w, h){
-  function patch(cx, cy){
-    var r = 0, g = 0, b = 0, n = 0;
-    for (var y = Math.max(0, cy - 2); y <= Math.min(h - 1, cy + 2); y++)
-      for (var x = Math.max(0, cx - 2); x <= Math.min(w - 1, cx + 2); x++){
-        var i = (y * w + x) * 4; r += imgData[i]; g += imgData[i + 1]; b += imgData[i + 2]; n++;
-      }
-    return [r / n, g / n, b / n];
-  }
-  var cs = [patch(2, 2), patch(w - 3, 2), patch(2, h - 3), patch(w - 3, h - 3)], out = [0, 0, 0];
-  for (var k = 0; k < 4; k++) for (var c = 0; c < 3; c++) out[c] += cs[k][c] / 4;
-  return out;
-}
-function maskToAlpha(maskData, imgData, w, h){
-  var q, x, y, dx, dy;
-  /* 1) soft alpha from the mask's red channel (wide ramp = soft steps) */
-  var raw = new Float32Array(w * h);
-  for (q = 0; q < w * h; q++){
-    var v = maskData[q * 4]; /* 255 = person, 0 = background */
-    var a = (v - 30) * 255 / 195;
-    raw[q] = a <= 0 ? 0 : a >= 255 ? 255 : a;
-  }
-  /* 2) two WIDE blur passes (5x5) — the model's mask is only ~256px across,
-        so at working size its edges are 3px+ steps; narrow blurs left the
-        staircase visible in the silhouette (Mazeen's selfie test, 2026-11-09) */
-  raw = blurAlphaPass(raw, w, h, 2);
-  raw = blurAlphaPass(raw, w, h, 2);
-  /* 3) keep-set: largest blob after bridge-snapping opening, tiny holes filled */
-  var bin = new Uint8Array(w * h);
-  for (q = 0; q < w * h; q++) bin[q] = raw[q] > 127 ? 1 : 0;
-  var pk = personKeep(bin, w, h);
-  var keep = pk.keep, filled = pk.filled;
-  for (q = 0; q < w * h; q++) if (keep[q] && !bin[q]) raw[q] = 255; /* filled tiny holes count as solid person before the edge erosion below */
-  /* 4) erode the alpha edge in TWO passes (each pass: min over the 3x3
-        neighbourhood of kept alpha) — the contaminated rim around hair is
-        wider than 1px, especially when the source photo is small */
-  var pass;
-  for (pass = 0; pass < 2; pass++){
-    var next = new Float32Array(w * h);
-    for (y = 0; y < h; y++) for (x = 0; x < w; x++){
-      q = y * w + x;
-      if (!keep[q]){ next[q] = 0; continue; }
-      var mn2 = 255;
-      for (dy = -1; dy <= 1; dy++) for (dx = -1; dx <= 1; dx++){
-        var xx2 = x + dx, yy2 = y + dy;
-        var val2 = (xx2 < 0 || xx2 >= w || yy2 < 0 || yy2 >= h || !keep[yy2 * w + xx2]) ? 0 : raw[yy2 * w + xx2];
-        if (val2 < mn2) mn2 = val2;
-      }
-      next[q] = mn2;
-    }
-    raw = next;
-  }
-  for (q = 0; q < w * h; q++) if (filled[q]) raw[q] = 255; /* filled dropouts are interior person — restore them fully; the erosion above only borrowed their neighbours' dipped values */
-  var bgRef = cornerBgRef(imgData, w, h);
-  for (y = 0; y < h; y++) for (x = 0; x < w; x++){
-    q = y * w + x;
-    if (!keep[q]){ imgData[q * 4 + 3] = 0; continue; }
-    var mn = raw[q];
-    imgData[q * 4 + 3] = Math.round(mn);
-    /* 5) decontaminate edge colours: edge pixels are part person, part old
-          background; un-blend the background share so no halo survives */
-    if (mn > 12 && mn < 250){
-      var t = mn / 255;
-      for (var c = 0; c < 3; c++){
-        var F = (imgData[q * 4 + c] - (1 - t) * bgRef[c]) / t;
-        imgData[q * 4 + c] = F < 0 ? 0 : F > 255 ? 255 : Math.round(F);
-      }
-    }
-  }
-  /* 6) final anti-alias: one light smoothing pass over the finished alpha
-        only (colours untouched), so the silhouette meets the new background
-        as a gradient instead of a hard stair-step */
-  var alphas = new Float32Array(w * h);
-  for (q = 0; q < w * h; q++) alphas[q] = imgData[q * 4 + 3];
-  var sm = blurAlphaPass(alphas, w, h, 1);
-  for (q = 0; q < w * h; q++) imgData[q * 4 + 3] = Math.round(sm[q]);
-}
-function segmentPerson(srcCanvas){
-  return loadSegmenter().then(function(seg){
+function imglyRemove(img, fileKey, statusEl){
+  if (imglyCutout && imglyCutoutKey === fileKey) return Promise.resolve(imglyCutout);
+  return loadImgly().then(function(removeBackground){
+    var iw = img.naturalWidth, ih = img.naturalHeight;
+    var scale = Math.min(1, 1536 / Math.max(iw, ih));
+    var ic = document.createElement("canvas");
+    ic.width = Math.max(1, Math.round(iw * scale)); ic.height = Math.max(1, Math.round(ih * scale));
+    ic.getContext("2d").drawImage(img, 0, 0, ic.width, ic.height);
     return new Promise(function(resolve, reject){
-      var timer = setTimeout(function(){ reject(new Error("segmentation timed out")); }, 90000);
-      seg.onResults(function(results){
-        clearTimeout(timer);
-        try {
-          var w = srcCanvas.width, h = srcCanvas.height;
-          var mc = document.createElement("canvas"); mc.width = w; mc.height = h;
-          var mctx = mc.getContext("2d");
-          mctx.drawImage(results.segmentationMask, 0, 0, w, h);
-          var maskData = mctx.getImageData(0, 0, w, h).data;
-          var pc = document.createElement("canvas"); pc.width = w; pc.height = h;
-          var pctx = pc.getContext("2d");
-          pctx.drawImage(srcCanvas, 0, 0);
-          var idata = pctx.getImageData(0, 0, w, h);
-          maskToAlpha(maskData, idata.data, w, h);
-          pctx.putImageData(idata, 0, 0);
-          resolve(pc);
-        } catch(e){ reject(e); }
+      ic.toBlob(function(blob){ if (blob) resolve(blob); else reject(new Error("input encode failed")); }, "image/png");
+    }).then(function(blob){
+      return removeBackground(blob, {
+        model: "isnet_fp16",
+        output: { format: "image/png", quality: 1 },
+        progress: function(key, current, total){
+          if (!statusEl) return;
+          if (key.indexOf("fetch") === 0 && total > 0) statusEl.textContent = "Downloading the AI model: " + Math.round(100 * current / total) + "% (first time only — then it stays cached)";
+          else statusEl.textContent = "Removing the background…";
+        }
       });
-      seg.send({ image: srcCanvas }).catch(function(e){ clearTimeout(timer); reject(e); });
+    }).then(function(outBlob){
+      return new Promise(function(resolve, reject){
+        var u = URL.createObjectURL(outBlob), cut = new Image();
+        cut.onload = function(){
+          var cc = document.createElement("canvas");
+          cc.width = cut.naturalWidth; cc.height = cut.naturalHeight;
+          cc.getContext("2d").drawImage(cut, 0, 0);
+          URL.revokeObjectURL(u);
+          imglyCutout = cc; imglyCutoutKey = fileKey;
+          resolve(cc);
+        };
+        cut.onerror = function(){ reject(new Error("cutout decode failed")); };
+        cut.src = u;
+      });
     });
   });
 }
@@ -495,19 +342,16 @@ function initPassport(){
       if (bgMode === "keep"){
         ctx.drawImage(img, sx, sy, cropW, cropH, 0, 0, 413, 531);
       } else {
-        status.textContent = "Removing the background with AI — the first time, a small model downloads (a few seconds)…";
+        status.textContent = "Removing the background with AI — the first time, the model downloads once (some data), then every photo is instant…";
         try {
-          /* Work at 2x and downscale at the end: the extra pixels make the
-             mask edges land more smoothly than working at final size. */
-          var ss = document.createElement("canvas"); ss.width = 826; ss.height = 1062;
-          ss.getContext("2d").drawImage(img, sx, sy, cropW, cropH, 0, 0, 826, 1062);
-          var person = await segmentPerson(ss);
-          var comp = document.createElement("canvas"); comp.width = 826; comp.height = 1062;
-          var cctx = comp.getContext("2d");
-          cctx.fillStyle = bgMode === "blue" ? PASSPORT_BLUE : "#ffffff";
-          cctx.fillRect(0, 0, 826, 1062);
-          cctx.drawImage(person, 0, 0);
-          ctx.drawImage(comp, 0, 0, 413, 531);
+          var cutout = await imglyRemove(img, f.name + ":" + f.size + ":" + f.lastModified, status);
+          var cw2 = cutout.width / zoom, ch2 = cw2 / ratio;
+          if (ch2 > cutout.height / zoom) { ch2 = cutout.height / zoom; cw2 = ch2 * ratio; }
+          cw2 = Math.min(cw2, cutout.width); ch2 = Math.min(ch2, cutout.height);
+          var csx = (cutout.width - cw2) / 2, csy = (cutout.height - ch2) / 3;
+          ctx.fillStyle = bgMode === "blue" ? PASSPORT_BLUE : "#ffffff";
+          ctx.fillRect(0, 0, 413, 531);
+          ctx.drawImage(cutout, csx, csy, cw2, ch2, 0, 0, 413, 531);
           status.textContent = "";
         } catch(e){
           ctx.drawImage(img, sx, sy, cropW, cropH, 0, 0, 413, 531);
@@ -517,7 +361,7 @@ function initPassport(){
       passportCanvas = cv;
       cv.className = "preview"; out.appendChild(cv);
       var b = await canvasBlob(cv, "image/jpeg", 0.95);
-      out.appendChild(el("p", "Passport size: 35 × 45 mm (413 × 531 px at 300 DPI)" + (bgMode !== "keep" ? " — background replaced by AI person detection, which also works on busy backgrounds." : "")));
+      out.appendChild(el("p", "Passport size: 35 × 45 mm (413 × 531 px at 300 DPI)" + (bgMode !== "keep" ? " — background replaced by the AI matting model: clean hair edges, works on busy backgrounds too." : "")));
       out.appendChild(download(URL.createObjectURL(b), "passport-photo.jpg"));
       status.textContent = "";
     } catch(e){ status.textContent = "That file could not be read as an image."; }
