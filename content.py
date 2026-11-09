@@ -204,7 +204,7 @@ TOOLS["passport-size-photo-maker"] = _tool(
     "Turn any photo into a correct 35 × 45 mm passport-size photo, ready to print or upload.",
     "This passport size photo maker online tool crops your picture to the official 35 × 45 mm ratio and exports it at 413 × 531 pixels (300 DPI) — the size used for Pakistani passports, CNIC-related forms and most visa applications. It can also remove the background of your photo and replace it with plain white or blue, and make a 4-copy print sheet for the studio.",
     """
-<p class="note">📸 For the best result, choose a clear, front-facing photo in good light. If you are standing against a plain wall, the tool can remove that background automatically and replace it with white or blue — pick the background below.</p>
+<p class="note">📸 For the best result, choose a clear, front-facing photo in good light. The tool uses AI person detection to remove the background — even a busy background — and replace it with white or blue (pick below). The first time you use it, a small AI model downloads; after that it runs right on your device and your photo is never uploaded.</p>
 <label for="p-file">Choose your photo</label><input id="p-file" type="file" accept="image/*">
 <label for="p-zoom">Zoom (1 = whole photo, higher = closer face crop)</label>
 <input id="p-zoom" type="range" min="1" max="2.5" step="0.05" value="1">
@@ -214,8 +214,6 @@ TOOLS["passport-size-photo-maker"] = _tool(
 <option value="blue">Blue — remove my background</option>
 <option value="keep">Keep the original background</option>
 </select>
-<label for="p-str">Background removal strength (raise it if parts of the wall are left, lower it if parts of you are cut)</label>
-<input id="p-str" type="range" min="10" max="80" step="1" value="38">
 <button class="btn" id="p-go" type="button">Make passport photo</button>
 <button class="btn secondary" id="p-sheet" type="button">Make print sheet (4 copies, 4 × 6 inch)</button>
 <p id="p-status"></p>
@@ -228,7 +226,7 @@ TOOLS["passport-size-photo-maker"] = _tool(
     "Example: a normal selfie cropped with zoom 1.4 usually frames the head and shoulders correctly for a 35 × 45 mm print.",
     [("What is the passport photo size in Pakistan?", "35 × 45 mm, which is 413 × 531 pixels at 300 DPI. This is the size this tool produces."),
      ("Can I use this photo for online forms?", "Yes — the JPG is sized for both printing and uploading. If a form also has a KB limit, run the result through our Image Compressor to KB tool."),
-     ("What background should a passport photo have?", "A plain white background is the standard requirement (some forms ask for blue). This tool can remove your photo's background and replace it with white or blue automatically — it works best when the original photo was taken against a plain wall. Note: if your shirt is the same colour as the wall behind you, parts of it may be removed too; lower the removal strength, or choose Keep original."),
+     ("What background should a passport photo have?", "A plain white background is the standard requirement (some forms ask for blue). This tool removes your photo's background with AI person detection — it works on busy backgrounds too, not just plain walls — and replaces it with white or blue. The AI model downloads once (a few MB) and then runs entirely on your device; your photo is never uploaded."),
      ("Is my photo uploaded anywhere?", "No. The crop is made in your browser; your files never leave your device.")],
     False)
 

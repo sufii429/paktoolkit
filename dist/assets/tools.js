@@ -266,55 +266,64 @@ function initCompress(){
 }
 
 /* ============ 7. Passport Photo ============ */
-/* Background removal: flood-fill from the borders through pixels whose colour
-   is close to the corner-sampled background colour, with a distance-ramped
-   alpha on the region edge so hair/shoulder edges feather instead of biting.
-   Pure function over the RGBA array so it can be unit-tested outside the DOM. */
-function computeBgAlpha(data, w, h, T){
-  function refAt(cx, cy){
-    var r = 0, g = 0, b = 0, n = 0;
-    for (var y = Math.max(0, cy - 2); y <= Math.min(h - 1, cy + 2); y++)
-      for (var x = Math.max(0, cx - 2); x <= Math.min(w - 1, cx + 2); x++){
-        var i = (y * w + x) * 4; r += data[i]; g += data[i + 1]; b += data[i + 2]; n++;
-      }
-    return [r / n, g / n, b / n];
+/* Background removal: real person segmentation — MediaPipe Selfie
+   Segmentation (Google's on-device model), lazy-loaded on first use, the
+   same lazy pattern as the PDF libraries. Replaced the earlier colour-based
+   flood fill, which failed on busy real-world backgrounds (Mazeen's test
+   photo, 2026-11-09: background untouched, highlights bleached). The mask's
+   red channel becomes the person's alpha, with a firmer edge curve and one
+   light blur pass so hair/shoulder edges feather instead of biting. */
+var SEG_URL = "https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js";
+var segInstance = null;
+function loadSegmenter(){
+  if (segInstance) return Promise.resolve(segInstance);
+  return loadScript(SEG_URL).then(function(){
+    var seg = new window.SelfieSegmentation({ locateFile: function(f){ return "https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/" + f; } });
+    seg.setOptions({ modelSelection: 1 });
+    segInstance = seg;
+    return seg;
+  });
+}
+function maskToAlpha(maskData, imgData, w, h){
+  var raw = new Uint8Array(w * h), q, x, y, dx, dy;
+  for (q = 0; q < w * h; q++){
+    var v = maskData[q * 4]; /* red channel: 255 = person, 0 = background */
+    var a = (v - 40) * 255 / 175;
+    raw[q] = a <= 0 ? 0 : a >= 255 ? 255 : Math.round(a);
   }
-  /* Single averaged reference: taking the nearest of four corner colours let a
-     bright corner (window light) match skin tones and eat the face. */
-  var c1 = refAt(2, 2), c2 = refAt(w - 3, 2), c3 = refAt(2, h - 3), c4 = refAt(w - 3, h - 3);
-  var ref = [(c1[0] + c2[0] + c3[0] + c4[0]) / 4, (c1[1] + c2[1] + c3[1] + c4[1]) / 4, (c1[2] + c2[2] + c3[2] + c4[2]) / 4];
-  function dist(i){
-    var dr = data[i] - ref[0], dg = data[i + 1] - ref[1], db = data[i + 2] - ref[2];
-    return Math.sqrt(dr * dr + dg * dg + db * db);
-  }
-  var inBg = new Uint8Array(w * h), alpha = new Uint8Array(w * h), stack = [];
-  function seed(x, y, fromP){
-    var p = y * w + x;
-    if (inBg[p]) return;
-    var ok = dist(p * 4) < T;
-    if (!ok && fromP >= 0){ /* gradient walls: accept a small step from an accepted neighbour */
-      var i = p * 4, j = fromP * 4;
-      var dr = data[i] - data[j], dg = data[i + 1] - data[j + 1], db = data[i + 2] - data[j + 2];
-      ok = Math.sqrt(dr * dr + dg * dg + db * db) < 26 && dist(p * 4) < T * 2.1;
+  for (y = 0; y < h; y++) for (x = 0; x < w; x++){
+    var sum = 0, n = 0;
+    for (dy = -1; dy <= 1; dy++) for (dx = -1; dx <= 1; dx++){
+      var xx = x + dx, yy = y + dy;
+      if (xx >= 0 && xx < w && yy >= 0 && yy < h){ sum += raw[yy * w + xx]; n++; }
     }
-    if (ok){ inBg[p] = 1; stack.push(p); }
+    imgData[(y * w + x) * 4 + 3] = Math.round(sum / n);
   }
-  for (var bx = 0; bx < w; bx++){ seed(bx, 0, -1); seed(bx, h - 1, -1); }
-  for (var by = 0; by < h; by++){ seed(0, by, -1); seed(w - 1, by, -1); }
-  while (stack.length){
-    var p = stack.pop(), px = p % w, py = (p / w) | 0;
-    if (px > 0) seed(px - 1, py, p);
-    if (px < w - 1) seed(px + 1, py, p);
-    if (py > 0) seed(px, py - 1, p);
-    if (py < h - 1) seed(px, py + 1, p);
-  }
-  var t0 = T * 0.55, t1 = T * 1.45;
-  for (var q = 0; q < w * h; q++){
-    if (!inBg[q]){ alpha[q] = 255; continue; }
-    var dd2 = dist(q * 4);
-    alpha[q] = dd2 <= t0 ? 0 : dd2 >= t1 ? 235 : Math.round(235 * (dd2 - t0) / (t1 - t0));
-  }
-  return alpha;
+}
+function segmentPerson(srcCanvas){
+  return loadSegmenter().then(function(seg){
+    return new Promise(function(resolve, reject){
+      var timer = setTimeout(function(){ reject(new Error("segmentation timed out")); }, 90000);
+      seg.onResults(function(results){
+        clearTimeout(timer);
+        try {
+          var w = srcCanvas.width, h = srcCanvas.height;
+          var mc = document.createElement("canvas"); mc.width = w; mc.height = h;
+          var mctx = mc.getContext("2d");
+          mctx.drawImage(results.segmentationMask, 0, 0, w, h);
+          var maskData = mctx.getImageData(0, 0, w, h).data;
+          var pc = document.createElement("canvas"); pc.width = w; pc.height = h;
+          var pctx = pc.getContext("2d");
+          pctx.drawImage(srcCanvas, 0, 0);
+          var idata = pctx.getImageData(0, 0, w, h);
+          maskToAlpha(maskData, idata.data, w, h);
+          pctx.putImageData(idata, 0, 0);
+          resolve(pc);
+        } catch(e){ reject(e); }
+      });
+      seg.send({ image: srcCanvas }).catch(function(e){ clearTimeout(timer); reject(e); });
+    });
+  });
 }
 var PASSPORT_BLUE = "#4f9fe0";
 var passportCanvas = null;
@@ -337,21 +346,21 @@ function initPassport(){
       ctx.drawImage(img, sx, sy, cropW, cropH, 0, 0, 413, 531);
       var bgMode = $("p-bg") ? $("p-bg").value : "keep";
       if (bgMode !== "keep"){
-        status.textContent = "Removing the background…";
-        var idata = ctx.getImageData(0, 0, 413, 531);
-        var strength = $("p-str") ? parseFloat($("p-str").value) || 38 : 38;
-        var alpha = computeBgAlpha(idata.data, 413, 531, strength * 1.8);
-        for (var q = 0; q < alpha.length; q++) idata.data[q * 4 + 3] = alpha[q];
-        var tmp = document.createElement("canvas"); tmp.width = 413; tmp.height = 531;
-        tmp.getContext("2d").putImageData(idata, 0, 0);
-        ctx.fillStyle = bgMode === "blue" ? PASSPORT_BLUE : "#ffffff";
-        ctx.fillRect(0, 0, 413, 531);
-        ctx.drawImage(tmp, 0, 0);
+        status.textContent = "Removing the background with AI — the first time, a small model downloads (a few seconds)…";
+        try {
+          var person = await segmentPerson(cv);
+          ctx.fillStyle = bgMode === "blue" ? PASSPORT_BLUE : "#ffffff";
+          ctx.fillRect(0, 0, 413, 531);
+          ctx.drawImage(person, 0, 0);
+          status.textContent = "";
+        } catch(e){
+          status.textContent = "Background removal could not run (it needs internet once, for the model download). Here is the photo with its original background:";
+        }
       }
       passportCanvas = cv;
       cv.className = "preview"; out.appendChild(cv);
       var b = await canvasBlob(cv, "image/jpeg", 0.95);
-      out.appendChild(el("p", "Passport size: 35 × 45 mm (413 × 531 px at 300 DPI)" + (bgMode !== "keep" ? " — background replaced. If the edges look wrong, adjust the removal strength and make the photo again." : "")));
+      out.appendChild(el("p", "Passport size: 35 × 45 mm (413 × 531 px at 300 DPI)" + (bgMode !== "keep" ? " — background replaced by AI person detection, which also works on busy backgrounds." : "")));
       out.appendChild(download(URL.createObjectURL(b), "passport-photo.jpg"));
       status.textContent = "";
     } catch(e){ status.textContent = "That file could not be read as an image."; }

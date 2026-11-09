@@ -86,7 +86,7 @@
       "name": "What background should a passport photo have?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A plain white background is the standard requirement (some forms ask for blue). This tool can remove your photo's background and replace it with white or blue automatically — it works best when the original photo was taken against a plain wall. Note: if your shirt is the same colour as the wall behind you, parts of it may be removed too; lower the removal strength, or choose Keep original."
+        "text": "A plain white background is the standard requirement (some forms ask for blue). This tool removes your photo's background with AI person detection — it works on busy backgrounds too, not just plain walls — and replaces it with white or blue. The AI model downloads once (a few MB) and then runs entirely on your device; your photo is never uploaded."
       }
     },
     {
@@ -118,7 +118,7 @@
 <section class="toolbox">
 <p class="privacy">🔒 Your files never leave your device.</p>
 
-<p class="note">📸 For the best result, choose a clear, front-facing photo in good light. If you are standing against a plain wall, the tool can remove that background automatically and replace it with white or blue — pick the background below.</p>
+<p class="note">📸 For the best result, choose a clear, front-facing photo in good light. The tool uses AI person detection to remove the background — even a busy background — and replace it with white or blue (pick below). The first time you use it, a small AI model downloads; after that it runs right on your device and your photo is never uploaded.</p>
 <label for="p-file">Choose your photo</label><input id="p-file" type="file" accept="image/*">
 <label for="p-zoom">Zoom (1 = whole photo, higher = closer face crop)</label>
 <input id="p-zoom" type="range" min="1" max="2.5" step="0.05" value="1">
@@ -128,8 +128,6 @@
 <option value="blue">Blue — remove my background</option>
 <option value="keep">Keep the original background</option>
 </select>
-<label for="p-str">Background removal strength (raise it if parts of the wall are left, lower it if parts of you are cut)</label>
-<input id="p-str" type="range" min="10" max="80" step="1" value="38">
 <button class="btn" id="p-go" type="button">Make passport photo</button>
 <button class="btn secondary" id="p-sheet" type="button">Make print sheet (4 copies, 4 × 6 inch)</button>
 <p id="p-status"></p>
@@ -147,7 +145,7 @@
 <h2>Frequently asked questions</h2>
 <details><summary>What is the passport photo size in Pakistan?</summary><p>35 × 45 mm, which is 413 × 531 pixels at 300 DPI. This is the size this tool produces.</p></details>
 <details><summary>Can I use this photo for online forms?</summary><p>Yes — the JPG is sized for both printing and uploading. If a form also has a KB limit, run the result through our Image Compressor to KB tool.</p></details>
-<details><summary>What background should a passport photo have?</summary><p>A plain white background is the standard requirement (some forms ask for blue). This tool can remove your photo&#x27;s background and replace it with white or blue automatically — it works best when the original photo was taken against a plain wall. Note: if your shirt is the same colour as the wall behind you, parts of it may be removed too; lower the removal strength, or choose Keep original.</p></details>
+<details><summary>What background should a passport photo have?</summary><p>A plain white background is the standard requirement (some forms ask for blue). This tool removes your photo&#x27;s background with AI person detection — it works on busy backgrounds too, not just plain walls — and replaces it with white or blue. The AI model downloads once (a few MB) and then runs entirely on your device; your photo is never uploaded.</p></details>
 <details><summary>Is my photo uploaded anywhere?</summary><p>No. The crop is made in your browser; your files never leave your device.</p></details>
 <h2>Related tools</h2>
 <div class="grid"><a class="card tool-card" data-search="Image Compressor to KB Shrink a JPG or PNG to an exact KB size for online forms — without uploading it." href="/image-compressor-to-kb/"><div class="icon">🗜️</div><h3>Image Compressor to KB</h3><p>Shrink a JPG or PNG to an exact KB size for online forms — without uploading it.</p></a>
