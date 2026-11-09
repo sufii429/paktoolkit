@@ -152,6 +152,7 @@ def tool_page(path, row):
     steps = "\n".join(f"<li>{esc(s)}</li>" for s in t["steps"])
     rel_cards = "\n".join(card(s) for s in related(slug))
     disclaimer = '<p class="note">Disclaimer: figures from this calculator are estimates based on published rates. The official figure — from your DISCO bill, FBR or the relevant authority — is always final. See our <a href="/disclaimer/">Disclaimer</a>.</p>' if t["disclaimer"] else ""
+    privacy = '<p class="privacy">🔒 Your files never leave your device.</p>' if t["cat"] in ("image-tools", "pdf-tools") else '<p class="privacy">🔒 Your numbers never leave your device — everything is calculated in your browser.</p>'
     body = f"""{head(row, path)}
 <body>
 {HEADER}
@@ -160,7 +161,7 @@ def tool_page(path, row):
 <h1>{esc(row['h1'])}</h1>
 <p>{esc(t['intro'])}</p>
 <section class="toolbox">
-<p class="privacy">🔒 Your files never leave your device.</p>
+{privacy}
 {t['ui']}
 </section>
 <h2>How to use</h2>
@@ -278,11 +279,8 @@ def main():
     if os.path.exists(wn):  # noindex test page — copied, not a generated page
         os.makedirs(os.path.join(DIST, "wedding-namuna"), exist_ok=True)
         shutil.copy(wn, os.path.join(DIST, "wedding-namuna", "index.html"))
-    et = os.path.join(HERE, "engine-test.html")
-    if os.path.exists(et):  # TEMP diagnostic for the background-engine comparison — remove after the test
-        os.makedirs(os.path.join(DIST, "engine-test"), exist_ok=True)
-        shutil.copy(et, os.path.join(DIST, "engine-test", "index.html"))
-    # imgly-test.html stays in the repo as a dormant diagnostic (not copied to dist)
+    # engine-test.html and imgly-test.html stay in the repo as dormant diagnostics (not copied to dist).
+    # Engine comparison concluded 2026-11-09: BiRefNet-lite 512 (WASM + fp32) won and is integrated in tools.js.
     with open(os.path.join(DIST, "sitemap.xml"), "w", encoding="utf-8") as f:
         f.write(sitemap(built))
     print(f"Built {len(built)} pages into dist/")

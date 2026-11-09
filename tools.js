@@ -38,7 +38,7 @@ var MARLA_SQFT = 272.25; /* 1 Marla = 272.25 sq ft; 1 Kanal = 20 Marla; 1 Acre =
 /* ============ helpers (no HTML-string injection anywhere — textContent only) ============ */
 function $(id){ return document.getElementById(id); }
 function num(id){ var v = parseFloat($(id).value); return isNaN(v) ? 0 : v; }
-function fmt(n){ return "Rs " + Math.round(n).toLocaleString("en-PK"); }
+function fmt(n){ var r = Math.round(n); if (r === 0) r = 0; /* avoid "Rs -0" */ return "Rs " + r.toLocaleString("en-PK"); }
 function fmtN(n, d){ return n.toLocaleString("en-PK",{maximumFractionDigits:(d==null?2:d)}); }
 function el(tag, text){ var e = document.createElement(tag); if(text != null) e.textContent = text; return e; }
 function makeTable(container, headers, rows){
@@ -137,6 +137,11 @@ function initBijli(){
   $("b-cat").addEventListener("change", renderBijliRates);
   $("b-calc").addEventListener("click", function(){
     var units = num("b-units"), cat = $("b-cat").value;
+    if (!units || units <= 0){
+      var out0 = $("b-result"); out0.className = "result show"; out0.textContent = "";
+      out0.appendChild(el("p", "Please enter the units consumed — a number above 0 (read it from your meter or your last bill)."));
+      return;
+    }
     var overrides = BIJLI_CONFIG.categories[cat].slabs.map(function(s, i){ var f = $("b-rate-" + i); return f ? parseFloat(f.value) : s.rate; });
     var r = computeBijli(units, cat, num("b-gst") || 0, num("b-extra") || 0, overrides);
     var out = $("b-result"); out.className = "result show"; out.textContent = "";
@@ -187,7 +192,7 @@ function initTax(){
     var big = el("div", "Tax per month: " + fmt(r.totalTax / 12)); big.className = "big"; out.appendChild(big);
     makeTable(out, ["Item","Amount"], [
       ["Annual salary", fmt(annual)],["Annual tax (base)", fmt(r.baseTax)],
-      ["Surcharge — Section 4AB (9%, income above Rs 10,000,000)", fmt(r.surcharge)],
+      ["Surcharge — Section 4AB (9% of the tax; applies when income exceeds Rs 10 million)", fmt(r.surcharge)],
       ["Total annual tax", fmt(r.totalTax)],["Take-home per year", fmt(takeAnnual)],
       ["Take-home per month", fmt(takeAnnual / 12)] ]);
   });
@@ -202,11 +207,11 @@ function initMdcat(){
   $("m-calc").addEventListener("click", function(){
     var agg = computeAggregate(num("m-mat-o"), num("m-mat-t") || 1, num("m-fsc-o"), num("m-fsc-t") || 1, num("m-md-o"), num("m-md-t") || 1);
     var out = $("m-result"); out.className = "result show"; out.textContent = "";
-    var big = el("div", "Aggregate: " + fmtN(agg) + "%"); big.className = "big"; out.appendChild(big);
+    var big = el("div", "Aggregate: " + agg.toFixed(2) + "%"); big.className = "big"; out.appendChild(big);
     makeTable(out, ["Part","Contribution"], [
-      ["Matric (10%)", fmtN(num("m-mat-o") / (num("m-mat-t") || 1) * 10) + "%"],
-      ["FSc (40%)", fmtN(num("m-fsc-o") / (num("m-fsc-t") || 1) * 40) + "%"],
-      ["MDCAT (50%)", fmtN(num("m-md-o") / (num("m-md-t") || 1) * 50) + "%"] ]);
+      ["Matric (10%)", (num("m-mat-o") / (num("m-mat-t") || 1) * 10).toFixed(2) + "%"],
+      ["FSc (40%)", (num("m-fsc-o") / (num("m-fsc-t") || 1) * 40).toFixed(2) + "%"],
+      ["MDCAT (50%)", (num("m-md-o") / (num("m-md-t") || 1) * 50).toFixed(2) + "%"] ]);
   });
 }
 
@@ -234,6 +239,10 @@ function initZakat(){
 function canvasBlob(canvas, type, q){ return new Promise(function(res){ canvas.toBlob(res, type, q); }); }
 function initCompress(){
   if (!$("c-go")) return;
+  if ($("c-file")) $("c-file").addEventListener("change", function(){
+    var f0 = this.files[0];
+    if (f0) $("c-status").textContent = "Selected: " + f0.name + " (" + fmtN(f0.size / 1024, 1) + " KB)";
+  });
   $("c-go").addEventListener("click", async function(){
     var f = $("c-file").files[0], out = $("c-result"), status = $("c-status");
     out.textContent = ""; status.textContent = "";
@@ -249,17 +258,28 @@ function initCompress(){
         cv.height = Math.max(1, Math.round(img.naturalHeight * scale));
         var ctx = cv.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, cv.width, cv.height);
         ctx.drawImage(img, 0, 0, cv.width, cv.height);
-        for (var q = 0.92; q >= 0.08; q -= 0.07){
+        /* Coarse quality sweep, then a short bisection inside the winning
+           bracket — lands much closer to the target than the old 0.07 steps
+           (20 KB target used to come out at 16.5 KB). */
+        for (var q = 0.92; q >= 0.05; q -= 0.06){
           var b = await canvasBlob(cv, "image/jpeg", q);
-          if (b && b.size <= target) { blob = b; break; }
-          blob = b;
+          if (b && b.size <= target) {
+            blob = b;
+            var lo2 = q, hi2 = Math.min(0.92, q + 0.06);
+            for (var it = 0; it < 4; it++){
+              var mid = (lo2 + hi2) / 2, mb = await canvasBlob(cv, "image/jpeg", mid);
+              if (mb && mb.size <= target) { blob = mb; lo2 = mid; } else { hi2 = mid; }
+            }
+            break;
+          }
         }
-        if (blob && blob.size <= target) break;
-        blob = null; scale *= 0.8;
+        if (!blob) scale *= 0.8;
       }
       if (!blob) { status.textContent = "Could not reach the target size; try a larger target KB."; return; }
       out.className = "result show";
       out.appendChild(el("p", "Before: " + fmtN(f.size / 1024, 1) + " KB  →  After: " + fmtN(blob.size / 1024, 1) + " KB"));
+      var pv = document.createElement("img"); pv.className = "preview"; pv.alt = "Compressed image preview";
+      pv.src = URL.createObjectURL(blob); out.appendChild(pv);
       out.appendChild(download(URL.createObjectURL(blob), "compressed.jpg"));
     } catch(e){ status.textContent = "That file could not be read as an image."; }
   });
@@ -435,6 +455,229 @@ function imglyRemove(img, fileKey, statusEl){
     });
   });
 }
+/* Solidify a cutout canvas's matte in place (shared post-processing for the
+   BiRefNet path; the imgly path carries its own inline copy of the same
+   algorithm, kept untouched because it is battle-tested): morphological
+   closing seals thin zero-alpha channels along wires; a chamfer interior
+   fill forces deep-interior pixels solid (kills the "blue ghost" over skin);
+   a soft lift keeps hair edges natural; small enclosed pockets whose colour
+   is unlike the corner background are filled. */
+function solidifyCutout(cc){
+  var W2 = cc.width, H2 = cc.height;
+  var cctx2 = cc.getContext("2d");
+  var id = cctx2.getImageData(0, 0, W2, H2), dd = id.data;
+  var aIn = new Float32Array(W2 * H2), aTmp = new Float32Array(W2 * H2), aPass, pi, pj, pk;
+  for (pi = 0; pi < W2 * H2; pi++) aIn[pi] = dd[pi * 4 + 3];
+  for (pk = 0; pk < 2; pk++){
+    for (pj = 0; pj < W2 * H2; pj++){
+      var ax = pj % W2, ay = (pj - ax) / W2, mx = 0;
+      for (var ddy = -1; ddy <= 1; ddy++) for (var ddx = -1; ddx <= 1; ddx++){
+        var nx = ax + ddx, ny = ay + ddy;
+        if (nx >= 0 && nx < W2 && ny >= 0 && ny < H2) mx = Math.max(mx, aIn[ny * W2 + nx]);
+      }
+      aTmp[pj] = mx;
+    }
+    aPass = aIn; aIn = aTmp; aTmp = aPass;
+  }
+  for (pk = 0; pk < 2; pk++){
+    for (pj = 0; pj < W2 * H2; pj++){
+      var ax2 = pj % W2, ay2 = (pj - ax2) / W2, mn2 = 255;
+      for (var edy = -1; edy <= 1; edy++) for (var edx = -1; edx <= 1; edx++){
+        var ex = ax2 + edx, ey = ay2 + edy;
+        if (ex >= 0 && ex < W2 && ey >= 0 && ey < H2) mn2 = Math.min(mn2, aIn[ey * W2 + ex]);
+      }
+      aTmp[pj] = mn2;
+    }
+    aPass = aIn; aIn = aTmp; aTmp = aPass;
+  }
+  for (pi = 0; pi < W2 * H2; pi++) dd[pi * 4 + 3] = Math.round(aIn[pi]);
+  var dist = new Float32Array(W2 * H2), INF = 1e6, xx, yy, qq;
+  for (qq = 0; qq < W2 * H2; qq++) dist[qq] = dd[qq * 4 + 3] <= 24 ? 0 : INF;
+  for (yy = 0; yy < H2; yy++) for (xx = 0; xx < W2; xx++){
+    qq = yy * W2 + xx; if (dist[qq] === 0) continue;
+    var m1 = dist[qq];
+    if (xx > 0) m1 = Math.min(m1, dist[qq - 1] + 1);
+    if (yy > 0) m1 = Math.min(m1, dist[qq - W2] + 1);
+    if (xx > 0 && yy > 0) m1 = Math.min(m1, dist[qq - W2 - 1] + 1.41);
+    if (xx < W2 - 1 && yy > 0) m1 = Math.min(m1, dist[qq - W2 + 1] + 1.41);
+    dist[qq] = m1;
+  }
+  for (yy = H2 - 1; yy >= 0; yy--) for (xx = W2 - 1; xx >= 0; xx--){
+    qq = yy * W2 + xx; if (dist[qq] === 0) continue;
+    var m2 = dist[qq];
+    if (xx < W2 - 1) m2 = Math.min(m2, dist[qq + 1] + 1);
+    if (yy < H2 - 1) m2 = Math.min(m2, dist[qq + W2] + 1);
+    if (xx < W2 - 1 && yy < H2 - 1) m2 = Math.min(m2, dist[qq + W2 + 1] + 1.41);
+    if (xx > 0 && yy < H2 - 1) m2 = Math.min(m2, dist[qq + W2 - 1] + 1.41);
+    dist[qq] = m2;
+  }
+  for (qq = 0; qq < W2 * H2; qq++){
+    var a2 = dd[qq * 4 + 3];
+    if (a2 > 24 && dist[qq] >= 10) dd[qq * 4 + 3] = 255;
+    else if (a2 > 18 && a2 < 255) dd[qq * 4 + 3] = Math.min(255, Math.round((a2 - 18) * 1.8) + 18);
+  }
+  var cR = 0, cG = 0, cB = 0, cN = 0, bx, by2;
+  var corners = [[0, 0], [W2 - 12, 0], [0, H2 - 12], [W2 - 12, H2 - 12]];
+  for (var ci = 0; ci < 4; ci++) for (by2 = 0; by2 < 12; by2++) for (bx = 0; bx < 12; bx++){
+    var cp = ((corners[ci][1] + by2) * W2 + corners[ci][0] + bx) * 4;
+    cR += dd[cp]; cG += dd[cp + 1]; cB += dd[cp + 2]; cN++;
+  }
+  cR /= cN; cG /= cN; cB /= cN;
+  var seen = new Uint8Array(W2 * H2), stack = [];
+  for (var s0 = 0; s0 < W2 * H2; s0++){
+    if (seen[s0] || dd[s0 * 4 + 3] > 24) continue;
+    var comp = [], touches = false, mR = 0, mG = 0, mB = 0;
+    stack.length = 0; stack.push(s0); seen[s0] = 1;
+    while (stack.length){
+      var cur = stack.pop(); comp.push(cur);
+      var cx2 = cur % W2, cy2 = (cur - cx2) / W2;
+      if (cx2 === 0 || cy2 === 0 || cx2 === W2 - 1 || cy2 === H2 - 1) touches = true;
+      mR += dd[cur * 4]; mG += dd[cur * 4 + 1]; mB += dd[cur * 4 + 2];
+      if (cx2 > 0 && !seen[cur - 1] && dd[(cur - 1) * 4 + 3] <= 24){ seen[cur - 1] = 1; stack.push(cur - 1); }
+      if (cx2 < W2 - 1 && !seen[cur + 1] && dd[(cur + 1) * 4 + 3] <= 24){ seen[cur + 1] = 1; stack.push(cur + 1); }
+      if (cy2 > 0 && !seen[cur - W2] && dd[(cur - W2) * 4 + 3] <= 24){ seen[cur - W2] = 1; stack.push(cur - W2); }
+      if (cy2 < H2 - 1 && !seen[cur + W2] && dd[(cur + W2) * 4 + 3] <= 24){ seen[cur + W2] = 1; stack.push(cur + W2); }
+    }
+    if (!touches && comp.length <= 1500){
+      var n2 = comp.length;
+      var dR = mR / n2 - cR, dG = mG / n2 - cG, dB = mB / n2 - cB;
+      if (Math.sqrt(dR * dR + dG * dG + dB * dB) > 45)
+        for (var fi = 0; fi < n2; fi++) dd[comp[fi] * 4 + 3] = 255;
+    }
+  }
+  cctx2.putImageData(id, 0, 0);
+  return cc;
+}
+
+/* ============ 7b. BiRefNet engine (primary) ============ */
+/* BiRefNet-lite (MIT) driven directly through ONNX Runtime Web — the engine
+   hunt's winner (Mazeen's phone tests, 2026-11-09): on his selfie its hair
+   edges are clean where the imgly ISNet matte left a pale remnant over the
+   crown. The fp32 export is used: the fp16 exports declare a float32 input
+   anyway, and on WebGPU the fp16 graph returns a degenerate all-negative
+   mask on his phone's GPU — so execution order is WASM-first until/unless a
+   WebGPU+fp32 run is proven on real hardware (engine-test page, B2-G).
+   A mask sanity check (foreground coverage) guards every run: a degenerate
+   mask falls through to the next path, then to the imgly fallback.
+   The 512 model's one-time download is ~190 MB; the bytes are kept in
+   Cache Storage (plain HTTP cache proved unreliable — his phone re-downloaded
+   model files repeatedly during testing). Photo never leaves the device. */
+var BIREF_MODEL_URL = "https://huggingface.co/studioludens/birefnet-lite-512/resolve/main/onnx/model.onnx";
+var BIREF_CACHE_NAME = "paktoolkit-biref-v1";
+var BIREF_EPS = ["wasm"]; /* flip to ["webgpu", "wasm"] only when B2-G proves WebGPU+fp32 on Mazeen's phone */
+var birefOrtPromise = null, birefBytesPromise = null, birefWarmPromise = null;
+var birefSessions = {}, birefCutout = null, birefCutoutKey = null;
+function loadOrt(){
+  if (!birefOrtPromise) birefOrtPromise = import("https://esm.sh/onnxruntime-web@1.21.0").then(function(ort){
+    try { ort.env.wasm.wasmPaths = "https://cdn.jsdelivr.net/npm/onnxruntime-web@1.21.0/dist/"; } catch (e) {}
+    return ort;
+  });
+  return birefOrtPromise;
+}
+function birefModelBytes(onProgress){
+  if (birefBytesPromise) return birefBytesPromise;
+  birefBytesPromise = (async function(){
+    try {
+      var cache = await caches.open(BIREF_CACHE_NAME);
+      var hit = await cache.match(BIREF_MODEL_URL);
+      if (hit){ if (onProgress) onProgress(1, 1); return new Uint8Array(await hit.arrayBuffer()); }
+    } catch (e) { /* Cache Storage unavailable — plain fetch below */ }
+    var res = await fetch(BIREF_MODEL_URL);
+    if (!res.ok) throw new Error("model download failed (" + res.status + ")");
+    var total = +res.headers.get("Content-Length") || 0, got = 0, chunks = [];
+    if (res.body && res.body.getReader){
+      var reader = res.body.getReader();
+      for (;;){ var r = await reader.read(); if (r.done) break; chunks.push(r.value); got += r.value.length; if (onProgress && total) onProgress(got, total); }
+    } else {
+      var ab = await res.arrayBuffer(); chunks = [new Uint8Array(ab)]; got = chunks[0].length;
+    }
+    var buf = new Uint8Array(got), off = 0;
+    for (var i = 0; i < chunks.length; i++){ buf.set(chunks[i], off); off += chunks[i].length; }
+    try {
+      var c2 = await caches.open(BIREF_CACHE_NAME);
+      await c2.put(BIREF_MODEL_URL, new Response(buf.slice().buffer, { headers: { "Content-Type": "application/octet-stream" } }));
+    } catch (e) { /* caching is best-effort */ }
+    return buf;
+  })();
+  birefBytesPromise.catch(function(){ birefBytesPromise = null; });
+  return birefBytesPromise;
+}
+function warmBiref(onProgress){
+  if (birefWarmPromise) return birefWarmPromise;
+  birefWarmPromise = birefModelBytes(onProgress).then(function(){ return true; });
+  return birefWarmPromise;
+}
+var BR_MEAN = [0.485, 0.456, 0.406], BR_STD = [0.229, 0.224, 0.225];
+function birefInput(img, size){
+  var c = document.createElement("canvas"); c.width = size; c.height = size;
+  var x = c.getContext("2d", { willReadFrequently: true });
+  x.drawImage(img, 0, 0, size, size);
+  var px = x.getImageData(0, 0, size, size).data, n = size * size;
+  var data = new Float32Array(3 * n);
+  for (var i = 0; i < n; i++) for (var ch = 0; ch < 3; ch++)
+    data[ch * n + i] = (px[i * 4 + ch] / 255 - BR_MEAN[ch]) / BR_STD[ch];
+  return data;
+}
+async function birefAlphaCanvas(img, statusEl){
+  var ort = await loadOrt();
+  var bytes = await birefModelBytes(function(got, total){
+    if (statusEl && total > 1) statusEl.textContent = "Downloading the AI model: " + Math.round(100 * got / total) + "% (first time only — then it stays on your device)";
+  });
+  var size = 512, lastErr = null;
+  for (var e = 0; e < BIREF_EPS.length; e++){
+    var ep = BIREF_EPS[e];
+    try {
+      if (!birefSessions[ep]) birefSessions[ep] = await ort.InferenceSession.create(bytes, { executionProviders: [ep] });
+      var session = birefSessions[ep];
+      if (statusEl) statusEl.textContent = "Removing the background…";
+      var feeds = {}; feeds[session.inputNames[0]] = new ort.Tensor("float32", birefInput(img, size), [1, 3, size, size]);
+      var out = await session.run(feeds), t = out[session.outputNames[0]];
+      var raw = t.data, n = size * size, mn = Infinity, mx = -Infinity, i2, v;
+      for (i2 = 0; i2 < n; i2++){ v = raw[i2]; if (v < mn) mn = v; if (v > mx) mx = v; }
+      var needSigmoid = mn < -0.01 || mx > 1.01, fg = 0;
+      var alpha = document.createElement("canvas"); alpha.width = size; alpha.height = size;
+      var actx = alpha.getContext("2d"), imgData = actx.createImageData(size, size);
+      for (i2 = 0; i2 < n; i2++){
+        v = raw[i2]; if (needSigmoid) v = 1 / (1 + Math.exp(-v));
+        if (v > 0.5) fg++;
+        var g = Math.max(0, Math.min(255, Math.round(v * 255)));
+        imgData.data[i2 * 4] = 255; imgData.data[i2 * 4 + 1] = 255; imgData.data[i2 * 4 + 2] = 255; imgData.data[i2 * 4 + 3] = g;
+      }
+      var coverage = fg / n;
+      if (coverage < 0.04 || coverage > 0.96) throw new Error("degenerate mask (fg " + Math.round(coverage * 100) + "%) on " + ep);
+      actx.putImageData(imgData, 0, 0);
+      return alpha;
+    } catch (err) { lastErr = err; delete birefSessions[ep]; }
+  }
+  throw lastErr || new Error("BiRefNet failed");
+}
+function birefRemove(img, fileKey, statusEl){
+  if (birefCutout && birefCutoutKey === fileKey) return Promise.resolve(birefCutout);
+  return birefAlphaCanvas(img, statusEl).then(function(alpha){
+    var iw = img.naturalWidth, ih = img.naturalHeight;
+    var scale = Math.min(1, 1536 / Math.max(iw, ih));
+    var cc = document.createElement("canvas");
+    cc.width = Math.max(1, Math.round(iw * scale)); cc.height = Math.max(1, Math.round(ih * scale));
+    var ctx = cc.getContext("2d");
+    ctx.drawImage(img, 0, 0, cc.width, cc.height);
+    ctx.globalCompositeOperation = "destination-in";
+    ctx.drawImage(alpha, 0, 0, cc.width, cc.height);
+    ctx.globalCompositeOperation = "source-over";
+    solidifyCutout(cc);
+    birefCutout = cc; birefCutoutKey = fileKey;
+    return cc;
+  });
+}
+/* Dispatcher: BiRefNet first, imgly medium as the automatic fallback. */
+var smartCutout = null, smartCutoutKey = null;
+function removeBgSmart(img, fileKey, statusEl){
+  if (smartCutout && smartCutoutKey === fileKey) return Promise.resolve(smartCutout);
+  return birefRemove(img, fileKey, statusEl).catch(function(){
+    if (statusEl) statusEl.textContent = "Switching to the backup AI engine…";
+    return imglyRemove(img, fileKey, statusEl);
+  }).then(function(cc){ smartCutout = cc; smartCutoutKey = fileKey; return cc; });
+}
+
 var PASSPORT_BLUE = "#4f9fe0";
 var passportCanvas = null;
 function initPassport(){
@@ -443,16 +686,16 @@ function initPassport(){
      background is selected; the slim line shows progress, page stays usable. */
   var preEl = $("p-preload");
   function warm(){
-    if (!preEl || imglyCutout) return;
+    if (!preEl || smartCutout) return;
     var hasFile = $("p-file") && $("p-file").files && $("p-file").files.length > 0;
     var wantsBg = !$("p-bg") || $("p-bg").value !== "keep";
     if (!hasFile && !wantsBg) return;
     preEl.style.display = "";
-    if (!imglyWarmPromise) preEl.textContent = "AI tayyar ho raha hai — model is downloading in the background; set your photo and zoom meanwhile…";
-    warmImgly(function(key, current, total){
-      if (key.indexOf("fetch") === 0 && total > 0 && !imglyCutout) preEl.textContent = "AI tayyar ho raha hai — model download: " + Math.round(100 * current / total) + "% (first time only)";
+    if (!birefWarmPromise) preEl.textContent = "AI tayyar ho raha hai — model is downloading in the background; set your photo and zoom meanwhile…";
+    warmBiref(function(got, total){
+      if (total > 1 && !smartCutout) preEl.textContent = "AI tayyar ho raha hai — model download: " + Math.round(100 * got / total) + "% (first time only)";
     });
-    imglyWarmPromise.then(function(){ if (!imglyCutout) preEl.textContent = "AI is ready ✓ — your photo will now process right away."; });
+    birefWarmPromise.then(function(){ if (!smartCutout) preEl.textContent = "AI is ready ✓ — your photo will now process right away."; });
   }
   if ($("p-file")) $("p-file").addEventListener("change", warm);
   if ($("p-bg")) $("p-bg").addEventListener("change", warm);
@@ -474,9 +717,9 @@ function initPassport(){
       if (bgMode === "keep"){
         ctx.drawImage(img, sx, sy, cropW, cropH, 0, 0, 413, 531);
       } else {
-        status.textContent = "Removing the background with AI — the first time, the model downloads once (some data), then every photo is instant…";
+        status.textContent = "Removing the background with AI — the first time, the model downloads once (about 190 MB, Wi-Fi recommended), then every photo is instant…";
         try {
-          var cutout = await imglyRemove(img, f.name + ":" + f.size + ":" + f.lastModified, status);
+          var cutout = await removeBgSmart(img, f.name + ":" + f.size + ":" + f.lastModified, status);
           var cw2 = cutout.width / zoom, ch2 = cw2 / ratio;
           if (ch2 > cutout.height / zoom) { ch2 = cutout.height / zoom; cw2 = ch2 * ratio; }
           cw2 = Math.min(cw2, cutout.width); ch2 = Math.min(ch2, cutout.height);
@@ -513,11 +756,15 @@ function initPassport(){
 /* ============ 8. Image Converter ============ */
 function initConvert(){
   if (!$("v-go")) return;
+  if ($("v-file")) $("v-file").addEventListener("change", function(){
+    var f0 = this.files[0];
+    if (f0) $("v-status").textContent = "Image: " + f0.name + " (" + fmtN(f0.size / 1024, 1) + " KB)";
+  });
   $("v-go").addEventListener("click", async function(){
     var f = $("v-file").files[0], status = $("v-status"), out = $("v-result");
     out.textContent = ""; status.textContent = "";
     if (!f) { status.textContent = "Please choose an image first."; return; }
-    status.textContent = "Image: " + f.name;
+    status.textContent = "Image: " + f.name + " (" + fmtN(f.size / 1024, 1) + " KB)";
     try {
       var img = await fileToImage(f), type = $("v-format").value;
       var cv = document.createElement("canvas"); cv.width = img.naturalWidth; cv.height = img.naturalHeight;
@@ -527,7 +774,9 @@ function initConvert(){
       var ext = type === "image/png" ? "png" : (type === "image/webp" ? "webp" : "jpg");
       var b = await canvasBlob(cv, type, 0.92);
       out.className = "result show";
-      out.appendChild(el("p", "Converted size: " + fmtN(b.size / 1024, 1) + " KB"));
+      out.appendChild(el("p", "Original size: " + fmtN(f.size / 1024, 1) + " KB  →  Converted size: " + fmtN(b.size / 1024, 1) + " KB"));
+      var pv = document.createElement("img"); pv.className = "preview"; pv.alt = "Converted image preview";
+      pv.src = URL.createObjectURL(b); out.appendChild(pv);
       out.appendChild(download(URL.createObjectURL(b), "converted." + ext));
     } catch(e){ status.textContent = "That file could not be read as an image."; }
   });
@@ -539,7 +788,7 @@ function initMerge(){
   $("mp-go").addEventListener("click", async function(){
     var files = $("mp-files").files, status = $("mp-status"), out = $("mp-result");
     out.textContent = ""; status.textContent = "";
-    if (!files.length) { status.textContent = "Please choose at least two PDF files."; return; }
+    if (files.length < 2) { status.textContent = "Please choose at least two PDF files to merge."; return; }
     var list = el("p"); list.textContent = "Files: " + Array.prototype.map.call(files, function(f){ return f.name; }).join(", ");
     out.appendChild(list);
     status.textContent = "Loading the PDF library…";

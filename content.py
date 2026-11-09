@@ -48,6 +48,7 @@ TOOLS["bijli-bill-calculator"] = _tool(
 <div><label for="b-gst">GST % (editable)</label><input id="b-gst" type="number" step="0.1" value="18"></div>
 <div><label for="b-extra">FPA / extra charges per unit, Rs (editable)</label><input id="b-extra" type="number" step="0.01" value="0"></div>
 </div>
+<p class="small">FPA is charged <strong>per unit</strong> — copy the small per-unit FPA rate from your bill, not the total FPA amount printed on it.</p>
 <h3>Slab rates (Rs/unit — editable)</h3>
 <p class="small">Base tariff per S.R.O. 279(I)/2026. Rates are editable because upper-slab figures can vary slightly between DISCO publications.</p>
 <div id="b-rates"></div>
@@ -158,6 +159,7 @@ TOOLS["zakat-calculator"] = _tool(
 <label for="z-cash">Cash in hand + bank balances (Rs)</label><input id="z-cash" type="number" min="0" value="0">
 <label for="z-gold">Value of gold owned (Rs)</label><input id="z-gold" type="number" min="0" value="0">
 <label for="z-silver">Value of silver owned (Rs)</label><input id="z-silver" type="number" min="0" value="0">
+<p class="small">Gold and silver are entered as rupee values — if you know the weight instead, value = weight in tola × the current price per tola.</p>
 <label for="z-other">Other zakatable assets — savings, business stock, money owed to you (Rs)</label><input id="z-other" type="number" min="0" value="0">
 <label for="z-liab">Liabilities — debts you must repay (Rs)</label><input id="z-liab" type="number" min="0" value="0">
 <label for="z-nisab">Nisab (Rs — editable)</label><input id="z-nisab" type="number" min="0">
@@ -204,7 +206,7 @@ TOOLS["passport-size-photo-maker"] = _tool(
     "Turn any photo into a correct 35 × 45 mm passport-size photo, ready to print or upload.",
     "This passport size photo maker online tool crops your picture to the official 35 × 45 mm ratio and exports it at 413 × 531 pixels (300 DPI) — the size used for Pakistani passports, CNIC-related forms and most visa applications. It can also remove the background of your photo and replace it with plain white or blue, and make a 4-copy print sheet for the studio.",
     """
-<p class="note">📸 For the best result, choose a clear, front-facing photo in good light. The tool uses a photo-grade AI model to remove the background — even a busy background — and replace it with white or blue (pick below), keeping hair edges clean. The first time you use it, the AI model downloads once (about 90 MB, so use Wi-Fi if you can); after that it stays cached, runs right on your device, and your photo is never uploaded. Tip: take earphones and loose wires off before the photo — thin wires can confuse the AI.</p>
+<p class="note">📸 For the best result, choose a clear, front-facing photo in good light. The tool uses a photo-grade AI model to remove the background — even a busy background — and replace it with white or blue (pick below), keeping hair edges clean. The first time you use it, the AI model downloads once (about 190 MB, so use Wi-Fi if you can); after that it stays cached, runs right on your device, and your photo is never uploaded. Tip: take earphones and loose wires off before the photo — thin wires can confuse the AI.</p>
 <label for="p-file">Choose your photo</label><input id="p-file" type="file" accept="image/*">
 <label for="p-zoom">Zoom (1 = whole photo, higher = closer face crop)</label>
 <input id="p-zoom" type="range" min="1" max="2.5" step="0.05" value="1">
@@ -227,7 +229,7 @@ TOOLS["passport-size-photo-maker"] = _tool(
     "Example: a normal selfie cropped with zoom 1.4 usually frames the head and shoulders correctly for a 35 × 45 mm print.",
     [("What is the passport photo size in Pakistan?", "35 × 45 mm, which is 413 × 531 pixels at 300 DPI. This is the size this tool produces."),
      ("Can I use this photo for online forms?", "Yes — the JPG is sized for both printing and uploading. If a form also has a KB limit, run the result through our Image Compressor to KB tool."),
-     ("What background should a passport photo have?", "A plain white background is the standard requirement (some forms ask for blue). This tool removes your photo's background with a photo-grade AI matting model — it works on busy backgrounds too, not just plain walls, and keeps hair edges clean — and replaces it with white or blue. The AI model downloads once (about 90 MB) and then runs entirely on your device; your photo is never uploaded."),
+     ("What background should a passport photo have?", "A plain white background is the standard requirement (some forms ask for blue). This tool removes your photo's background with a photo-grade AI matting model — it works on busy backgrounds too, not just plain walls, and keeps hair edges clean — and replaces it with white or blue. The AI model downloads once (about 190 MB) and then runs entirely on your device; your photo is never uploaded."),
      ("Is my photo uploaded anywhere?", "No. The crop is made in your browser; your files never leave your device.")],
     False)
 
