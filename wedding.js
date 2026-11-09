@@ -101,9 +101,13 @@ var W_CSS = `
 #wguest.sty-tieback .doors.open .panel.right{transform:scaleX(.52) translateX(4%);clip-path:polygon(0 0,100% 0,100% 100%,80% 100%,66% 50%)}
 #wguest.sty-tieback .panel::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 43%,rgba(0,0,0,.25) 52%,rgba(255,255,255,.07) 59%,transparent 67%);opacity:0;transition:opacity 1.4s ease .3s;pointer-events:none}
 #wguest.sty-tieback .doors.open .panel::after{opacity:1}
-#wguest .tieband{position:absolute;top:49%;z-index:2;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f3e2ac,var(--gold) 60%,#8a6d1c);box-shadow:0 3px 10px rgba(0,0,0,.45);opacity:0;transition:opacity .7s ease 1.1s;pointer-events:none}
-#wguest .tieband.l{left:21.5%}#wguest .tieband.r{right:21.5%}
+#wguest .tieband{position:absolute;top:48.5%;z-index:2;width:46px;height:17px;border-radius:9px;background:linear-gradient(180deg,#e8cf7a,#c9a227 55%,#9a7b1e);box-shadow:0 3px 10px rgba(0,0,0,.45),inset 0 1px 2px rgba(255,255,255,.6);opacity:0;transition:opacity .7s ease 1.1s,left .9s ease,right .9s ease;pointer-events:none}
+#wguest .tieband.l{left:20%}#wguest .tieband.r{right:20%}
 #wguest .doors.open .tieband{opacity:1}
+#wguest .doors.settled .panel{transition-duration:.9s}
+#wguest .doors.settled .panel.left{transform:scaleX(.30) translateX(-2%);clip-path:polygon(0 0,100% 0,52% 46%,34% 100%,0 100%)}
+#wguest .doors.settled .panel.right{transform:scaleX(.30) translateX(2%);clip-path:polygon(0 0,100% 0,100% 100%,66% 100%,48% 46%)}
+#wguest .doors.settled .tieband.l{left:10.5%}#wguest .doors.settled .tieband.r{right:10.5%}
 #wguest .panel.left .knob{right:16px}#wguest .panel.right .knob{left:16px}
 #wguest.sty-arch .panel{width:100%;background:radial-gradient(circle at 20% 15%,rgba(232,207,122,.28) 0 26px,transparent 27px),radial-gradient(circle at 82% 22%,rgba(232,207,122,.22) 0 20px,transparent 21px),radial-gradient(circle at 50% 88%,rgba(232,207,122,.18) 0 30px,transparent 31px),linear-gradient(160deg,var(--deep2),var(--deep) 55%,var(--dark))}
 #wguest.sty-arch .panel.right{display:none}
@@ -372,7 +376,15 @@ function wRenderGuest(d, opts){
     }
     if (d.style === "doors2") setTimeout(function(){ doors.classList.add("copen"); wPetals(root); }, 2350);
     setTimeout(function(){
-      wrap.style.display = "none"; root.scrollTop = 0;
+      if (d.style === "tieback"){
+        /* Tied-back curtains STAY as a frame around the card (like the
+           reference photo) — the wrap becomes click-through instead of
+           being removed. */
+        doors.classList.add("settled"); wrap.style.pointerEvents = "none";
+      } else {
+        wrap.style.display = "none";
+      }
+      root.scrollTop = 0;
       var io = new IntersectionObserver(function(entries){
         entries.forEach(function(en){ if (en.isIntersecting){ en.target.classList.add(en.target.hasAttribute("data-curtain") ? "open" : "in"); io.unobserve(en.target); } });
       }, { root: root, threshold: 0.3 });
