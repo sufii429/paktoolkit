@@ -163,18 +163,12 @@ var W_CSS = `
 @keyframes wpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
 #wguest .hint{font-size:.8rem;color:#d9c9a8;margin-top:10px;font-family:system-ui,Arial,sans-serif}
 #wguest .valance{height:40px;background:radial-gradient(circle at 50% -8px,transparent 25px,var(--gold) 26px,var(--deep2) 28px,var(--deep) 44px);background-size:64px 40px;background-repeat:repeat-x;filter:drop-shadow(0 3px 3px rgba(0,0,0,.18))}
-#wguest .minicurtain{position:relative;height:74px;margin:26px -22px 4px;overflow:hidden}
-#wguest .minicurtain .mp{position:absolute;top:0;width:50.5%;height:100%;z-index:2;will-change:transform,opacity;transition:transform 1.5s cubic-bezier(.7,0,.25,1),opacity .9s ease;background:repeating-linear-gradient(90deg,var(--dark) 0 10px,var(--deep2) 10px 19px,var(--deep) 19px 28px,var(--deep2) 28px 37px,var(--dark) 37px 46px)}
-#wguest .minicurtain .mp.l{left:0;border-right:2px solid var(--gold)}#wguest .minicurtain .mp.r{right:0;border-left:2px solid var(--gold)}
-#wguest .minicurtain.open .mp.l{transform:translateX(-103%)}#wguest .minicurtain.open .mp.r{transform:translateX(103%)}
-#wguest .minicurtain.flat .mp{width:100%}
-#wguest .minicurtain.flat .mp.r{display:none}
-#wguest .minicurtain.flat.open .mp{opacity:0;transform:none}
-#wguest .minicurtain .medal{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s;color:var(--gold2)}
-#wguest .minicurtain.open .medal{opacity:0}
-#wguest .minicurtain .medal .en{letter-spacing:.3em;font-size:.78rem}
-#wguest .minicurtain .medal .ur{font-size:1.15rem;line-height:1.9}
-#wguest .minicurtain .behind{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:var(--deep)}
+#wguest .minicurtain{position:relative;margin:30px -22px 6px;text-align:center}
+#wguest .minicurtain .mp{display:none}
+#wguest .minicurtain .medal{display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--deep)}
+#wguest .minicurtain .medal .en{letter-spacing:.28em;font-size:1rem;text-transform:uppercase;color:var(--deep)}
+#wguest .minicurtain .medal .ur{font-size:1.15rem;line-height:1.9;color:#8a6d1c}
+#wguest .minicurtain .behind{font-size:1.05rem;color:var(--deep);margin-bottom:2px}
 #wguest .rise{opacity:0;transform:translateY(26px);transition:opacity .8s ease,transform .8s ease}
 #wguest .rise.in{opacity:1;transform:none}
 #wguest .inv{padding:0 22px 8px;text-align:center;background:radial-gradient(circle at 15% 4%,rgba(201,162,39,.13),transparent 42%),radial-gradient(circle at 85% 30%,rgba(201,162,39,.11),transparent 42%),var(--cream)}
