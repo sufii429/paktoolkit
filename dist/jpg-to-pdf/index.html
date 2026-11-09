@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JPG to PDF Converter — Free Online | PakToolkit</title>
+<meta name="description" content="Convert JPG images to PDF, or turn PDF pages into JPG images, in one free tool. No sign-up, no upload — everything happens privately in your browser.">
+<link rel="canonical" href="https://paktoolkit.top/jpg-to-pdf/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PakToolkit">
+<meta property="og:title" content="JPG to PDF Converter — Free Online | PakToolkit">
+<meta property="og:description" content="Convert JPG images to PDF, or turn PDF pages into JPG images, in one free tool. No sign-up, no upload — everything happens privately in your browser.">
+<meta property="og:url" content="https://paktoolkit.top/jpg-to-pdf/">
+<meta property="og:image" content="https://paktoolkit.top/assets/og-image.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="JPG to PDF Converter — Free Online | PakToolkit">
+<meta name="twitter:description" content="Convert JPG images to PDF, or turn PDF pages into JPG images, in one free tool. No sign-up, no upload — everything happens privately in your browser.">
+<meta name="twitter:image" content="https://paktoolkit.top/assets/og-image.svg">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "JPG to PDF Converter",
+  "url": "https://paktoolkit.top/jpg-to-pdf/",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any — browser",
+  "offers": {
+    "@type": "Offer",
+    "price": 0,
+    "priceCurrency": "PKR"
+  },
+  "description": "Convert JPG images to PDF, or turn PDF pages into JPG images, in one free tool. No sign-up, no upload — everything happens privately in your browser."
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://paktoolkit.top/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "PDF Tools",
+      "item": "https://paktoolkit.top/pdf-tools/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "JPG to PDF Converter",
+      "item": "https://paktoolkit.top/jpg-to-pdf/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Can I put several images into one PDF?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes — select multiple images and they become consecutive pages of one PDF, in selection order."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What quality are the PDF-to-JPG images?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Pages are rendered at 2× scale, which is sharp enough for sharing and re-uploading to forms."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Are my files uploaded?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No. Both conversions run in your browser; your files never leave your device."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which image types work for images-to-PDF?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "JPG and PNG. Other formats can be converted first with our Image Converter tool."
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<header class="site"><div class="wrap header-in">
+<a class="logo" href="/">Pak<span>Toolkit</span></a>
+<nav class="mainnav">
+<a href="/pakistan-calculators/">Pakistan Calculators</a>
+<a href="/image-tools/">Image Tools</a>
+<a href="/pdf-tools/">PDF Tools</a>
+<a href="/everyday-calculators/">Everyday</a>
+<a href="/about/">About</a>
+</nav></div></header>
+<main class="wrap">
+<nav class="breadcrumb"><a href="/">Home</a> › <a href="/pdf-tools/">PDF Tools</a> › JPG to PDF Converter</nav>
+<h1>JPG to PDF Converter</h1>
+<p>This jpg to pdf converter does both directions: turn one or more JPG/PNG images into a single PDF, or render every page of a PDF into JPG images. Everything happens in your browser — no uploads, no sign-up.</p>
+<section class="toolbox">
+<p class="privacy">🔒 Your files never leave your device.</p>
+
+<h3>Mode 1 — Images to PDF</h3>
+<label for="j-files">Choose images (JPG / PNG)</label>
+<input id="j-files" type="file" accept="image/jpeg,image/png" multiple>
+<button class="btn" id="j-go" type="button">Convert images to PDF</button>
+<p id="j-status"></p>
+<div id="j-result"></div>
+<h3>Mode 2 — PDF to JPG</h3>
+<label for="pj-file">Choose a PDF file</label>
+<input id="pj-file" type="file" accept="application/pdf">
+<button class="btn secondary" id="pj-go" type="button">Convert PDF pages to JPG</button>
+<p id="pj-status"></p>
+<div id="pj-result"></div>
+
+</section>
+<h2>How to use</h2>
+<ol><li>For images to PDF: select your images and press Convert images to PDF — each image becomes one page, in order.</li>
+<li>For PDF to JPG: select a PDF and press Convert PDF pages to JPG.</li>
+<li>Download the PDF, or each page&#x27;s JPG from the links that appear.</li></ol>
+<h2>How it works</h2>
+<p>Images-to-PDF uses pdf-lib (loaded on demand): each image is embedded on a page of its own size. PDF-to-JPG uses pdf.js (also loaded on demand) to render every page at double size and save it as a JPG. Both run fully in your browser.</p>
+<p><strong>Worked example:</strong> Example: photograph three pages of a form, convert them to one PDF, and upload that single file to an application portal.</p>
+
+<h2>Frequently asked questions</h2>
+<details><summary>Can I put several images into one PDF?</summary><p>Yes — select multiple images and they become consecutive pages of one PDF, in selection order.</p></details>
+<details><summary>What quality are the PDF-to-JPG images?</summary><p>Pages are rendered at 2× scale, which is sharp enough for sharing and re-uploading to forms.</p></details>
+<details><summary>Are my files uploaded?</summary><p>No. Both conversions run in your browser; your files never leave your device.</p></details>
+<details><summary>Which image types work for images-to-PDF?</summary><p>JPG and PNG. Other formats can be converted first with our Image Converter tool.</p></details>
+<h2>Related tools</h2>
+<div class="grid"><a class="card tool-card" data-search="Merge PDF Combine several PDFs into one file — privately, in your browser." href="/merge-pdf/"><div class="icon">📎</div><h3>Merge PDF</h3><p>Combine several PDFs into one file — privately, in your browser.</p></a>
+<a class="card tool-card" data-search="Split PDF Extract the pages you need from a PDF into a new, smaller file." href="/split-pdf/"><div class="icon">✂️</div><h3>Split PDF</h3><p>Extract the pages you need from a PDF into a new, smaller file.</p></a>
+<a class="card tool-card" data-search="Bijli Bill Calculator Estimate your electricity bill from units, slab by slab, with GST." href="/bijli-bill-calculator/"><div class="icon">💡</div><h3>Bijli Bill Calculator</h3><p>Estimate your electricity bill from units, slab by slab, with GST.</p></a></div>
+
+</main>
+<footer class="site"><div class="wrap">
+<p><strong>PakToolkit</strong> — free online tools for Pakistan. Every tool runs in your browser; your files never leave your device.</p>
+<p><a href="/about/">About</a> <a href="/contact/">Contact</a> <a href="/privacy-policy/">Privacy Policy</a> <a href="/terms/">Terms of Use</a> <a href="/disclaimer/">Disclaimer</a></p>
+<p><a href="/pakistan-calculators/">Pakistan Calculators</a> <a href="/image-tools/">Image Tools</a> <a href="/pdf-tools/">PDF Tools</a> <a href="/everyday-calculators/">Everyday Calculators</a></p>
+</div></footer>
+<script src="/assets/tools.js" defer></script>
+</body></html>

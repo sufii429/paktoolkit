@@ -1,0 +1,54 @@
+:root{--green:#0a7a42;--green-dark:#065e32;--green-light:#e6f4ec;--ink:#17251d;--muted:#5b6b60;--line:#dce7df;--bg:#f7faf8;--card:#fff;--radius:14px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.55;font-size:16px}
+a{color:var(--green-dark)}
+.wrap{max-width:1060px;margin:0 auto;padding:0 16px}
+header.site{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+.header-in{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:10px 0}
+.logo{font-size:1.35rem;font-weight:800;color:var(--green-dark);text-decoration:none}
+.logo span{color:var(--ink)}
+nav.mainnav{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+nav.mainnav a{text-decoration:none;color:var(--ink);padding:10px 12px;border-radius:10px;min-height:48px;display:inline-flex;align-items:center}
+nav.mainnav a:hover{background:var(--green-light)}
+.hero{background:linear-gradient(180deg,var(--green-light),var(--bg));padding:34px 0 10px}
+.hero h1{font-size:2rem;margin:0 0 8px;line-height:1.2}
+.hero p{color:var(--muted);max-width:640px;margin:0 0 16px}
+.searchbox{width:100%;padding:14px 16px;font-size:1.05rem;border:2px solid var(--green);border-radius:12px;min-height:52px;background:#fff}
+h1{font-size:1.7rem;line-height:1.25;margin:14px 0 8px}
+h2{font-size:1.3rem;margin:30px 0 10px}
+h3{font-size:1.08rem;margin:18px 0 6px}
+.breadcrumb{font-size:.9rem;color:var(--muted);padding-top:14px}
+.breadcrumb a{color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin:14px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;text-decoration:none;color:var(--ink);display:block}
+.card:hover{border-color:var(--green);box-shadow:0 4px 14px rgba(10,122,66,.10)}
+.card .icon{font-size:1.6rem}
+.card h3{margin:8px 0 4px;color:var(--green-dark)}
+.card p{margin:0;color:var(--muted);font-size:.94rem}
+.toolbox{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin:14px 0}
+.toolbox label{display:block;font-weight:600;margin:12px 0 4px}
+.toolbox input,.toolbox select{width:100%;padding:12px;font-size:1rem;border:1px solid #b9ccc0;border-radius:10px;min-height:48px;background:#fff}
+.toolbox input[type=file]{padding:10px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:560px){.row2{grid-template-columns:1fr}}
+.btn{background:var(--green);color:#fff;border:0;border-radius:10px;padding:13px 22px;font-size:1.02rem;font-weight:700;cursor:pointer;min-height:48px;margin-top:14px;width:100%}
+.btn:hover{background:var(--green-dark)}
+.btn.secondary{background:#fff;color:var(--green-dark);border:2px solid var(--green)}
+.privacy{color:var(--green-dark);background:var(--green-light);border-radius:10px;padding:10px 14px;font-weight:600}
+.result{background:var(--green-light);border:1px solid var(--green);border-radius:12px;padding:14px 16px;margin-top:16px;display:none}
+.result.show{display:block}
+.result .big{font-size:1.5rem;font-weight:800;color:var(--green-dark)}
+table{width:100%;border-collapse:collapse;margin:12px 0;background:#fff}
+th,td{border:1px solid var(--line);padding:9px 10px;text-align:left;font-size:.95rem}
+th{background:var(--green-light)}
+.small{font-size:.9rem;color:var(--muted)}
+.note{font-size:.92rem;background:#fff8e6;border:1px solid #ecd9a0;border-radius:10px;padding:10px 14px}
+details{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:8px 0}
+details summary{font-weight:700;cursor:pointer;min-height:32px}
+footer.site{background:#fff;border-top:1px solid var(--line);margin-top:44px;padding:26px 0;color:var(--muted)}
+footer.site a{margin-right:14px;line-height:2}
+.dl{display:inline-block;background:var(--green);color:#fff;text-decoration:none;padding:12px 20px;border-radius:10px;font-weight:700;min-height:48px;margin-top:10px}
+canvas.preview{max-width:100%;border:1px solid var(--line);border-radius:10px;margin-top:10px}
+.rate-input{width:110px!important;min-height:40px!important;padding:7px!important}
+.err{color:#a11;font-weight:600}

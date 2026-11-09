@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Age Calculator — Exact Age &amp; Date Difference | PakToolkit</title>
+<meta name="description" content="Find your exact age in years, months and days, or the difference between any two dates. Free age calculator with total days, weeks and months breakdown.">
+<link rel="canonical" href="https://paktoolkit.top/age-calculator/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PakToolkit">
+<meta property="og:title" content="Age Calculator — Exact Age &amp; Date Difference | PakToolkit">
+<meta property="og:description" content="Find your exact age in years, months and days, or the difference between any two dates. Free age calculator with total days, weeks and months breakdown.">
+<meta property="og:url" content="https://paktoolkit.top/age-calculator/">
+<meta property="og:image" content="https://paktoolkit.top/assets/og-image.svg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Age Calculator — Exact Age &amp; Date Difference | PakToolkit">
+<meta name="twitter:description" content="Find your exact age in years, months and days, or the difference between any two dates. Free age calculator with total days, weeks and months breakdown.">
+<meta name="twitter:image" content="https://paktoolkit.top/assets/og-image.svg">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/style.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Age & Date Difference Calculator",
+  "url": "https://paktoolkit.top/age-calculator/",
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any — browser",
+  "offers": {
+    "@type": "Offer",
+    "price": 0,
+    "priceCurrency": "PKR"
+  },
+  "description": "Find your exact age in years, months and days, or the difference between any two dates. Free age calculator with total days, weeks and months breakdown."
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://paktoolkit.top/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Everyday Calculators",
+      "item": "https://paktoolkit.top/everyday-calculators/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "Age & Date Difference Calculator",
+      "item": "https://paktoolkit.top/age-calculator/"
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Why do forms ask for age in years, months and days?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Many Pakistani government job and admission forms set age limits like '25 years on the closing date'. An exact years-months-days figure shows immediately whether you are within the limit."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does the calculator count leap years correctly?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes — total days are counted from the actual calendar, so 29 February leap days are included."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I check my age on a future date?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Set 'Age at date' to any future date, such as an application closing date."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the date difference mode for?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "It finds the exact gap between any two dates — useful for service duration, tenancy periods or counting days between events."
+      }
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<header class="site"><div class="wrap header-in">
+<a class="logo" href="/">Pak<span>Toolkit</span></a>
+<nav class="mainnav">
+<a href="/pakistan-calculators/">Pakistan Calculators</a>
+<a href="/image-tools/">Image Tools</a>
+<a href="/pdf-tools/">PDF Tools</a>
+<a href="/everyday-calculators/">Everyday</a>
+<a href="/about/">About</a>
+</nav></div></header>
+<main class="wrap">
+<nav class="breadcrumb"><a href="/">Home</a> › <a href="/everyday-calculators/">Everyday Calculators</a> › Age &amp; Date Difference Calculator</nav>
+<h1>Age &amp; Date Difference Calculator</h1>
+<p>This age calculator gives your exact age — not just the year count, but years, months and days, with totals in days and weeks. It also has a date difference mode for finding the exact gap between any two dates.</p>
+<section class="toolbox">
+<p class="privacy">🔒 Your files never leave your device.</p>
+
+<h3>Your exact age</h3>
+<label for="dob">Date of birth</label><input id="dob" type="date" value="2000-01-01">
+<label for="age-at">Age at date</label><input id="age-at" type="date">
+<button class="btn" id="age-go" type="button">Calculate age</button>
+<div class="result" id="age-result"></div>
+<h3>Difference between two dates</h3>
+<label for="d1">First date</label><input id="d1" type="date" value="2024-01-01">
+<label for="d2">Second date</label><input id="d2" type="date">
+<button class="btn secondary" id="dd-go" type="button">Calculate difference</button>
+<div class="result" id="dd-result"></div>
+
+</section>
+<h2>How to use</h2>
+<ol><li>Enter your date of birth.</li>
+<li>Leave &#x27;Age at date&#x27; as today, or pick any date — a job application deadline, for example.</li>
+<li>Press Calculate age for the exact figure in years, months, days and total days.</li></ol>
+<h2>How it works</h2>
+<p>The calculator counts full calendar years first, then full months, then the remaining days — the same method used on official forms. Total days are counted exactly between the two dates, and total weeks are whole weeks within that count.</p>
+<p><strong>Worked example:</strong> Example: born on 1 January 2000, your age on 1 January 2025 is exactly 25 years, 0 months, 0 days — 9,132 days in total, including leap days.</p>
+
+<h2>Frequently asked questions</h2>
+<details><summary>Why do forms ask for age in years, months and days?</summary><p>Many Pakistani government job and admission forms set age limits like &#x27;25 years on the closing date&#x27;. An exact years-months-days figure shows immediately whether you are within the limit.</p></details>
+<details><summary>Does the calculator count leap years correctly?</summary><p>Yes — total days are counted from the actual calendar, so 29 February leap days are included.</p></details>
+<details><summary>Can I check my age on a future date?</summary><p>Yes. Set &#x27;Age at date&#x27; to any future date, such as an application closing date.</p></details>
+<details><summary>What is the date difference mode for?</summary><p>It finds the exact gap between any two dates — useful for service duration, tenancy periods or counting days between events.</p></details>
+<h2>Related tools</h2>
+<div class="grid"><a class="card tool-card" data-search="Bijli Bill Calculator Estimate your electricity bill from units, slab by slab, with GST." href="/bijli-bill-calculator/"><div class="icon">💡</div><h3>Bijli Bill Calculator</h3><p>Estimate your electricity bill from units, slab by slab, with GST.</p></a>
+<a class="card tool-card" data-search="Marla / Kanal Converter Convert Marla, Kanal, square feet, square yards, metres and acres instantly." href="/marla-kanal-converter/"><div class="icon">🏠</div><h3>Marla / Kanal Converter</h3><p>Convert Marla, Kanal, square feet, square yards, metres and acres instantly.</p></a>
+<a class="card tool-card" data-search="Salary Tax Calculator 2025-26 Income tax on your salary with the 2025-26 slabs, plus the Section 4AB surcharge." href="/salary-tax-calculator-pakistan/"><div class="icon">🧾</div><h3>Salary Tax Calculator 2025-26</h3><p>Income tax on your salary with the 2025-26 slabs, plus the Section 4AB surcharge.</p></a></div>
+
+</main>
+<footer class="site"><div class="wrap">
+<p><strong>PakToolkit</strong> — free online tools for Pakistan. Every tool runs in your browser; your files never leave your device.</p>
+<p><a href="/about/">About</a> <a href="/contact/">Contact</a> <a href="/privacy-policy/">Privacy Policy</a> <a href="/terms/">Terms of Use</a> <a href="/disclaimer/">Disclaimer</a></p>
+<p><a href="/pakistan-calculators/">Pakistan Calculators</a> <a href="/image-tools/">Image Tools</a> <a href="/pdf-tools/">PDF Tools</a> <a href="/everyday-calculators/">Everyday Calculators</a></p>
+</div></footer>
+<script src="/assets/tools.js" defer></script>
+</body></html>
