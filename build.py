@@ -177,7 +177,7 @@ def tool_page(path, row):
 <div class="grid">{rel_cards}</div>
 {disclaimer}
 </main>
-{footer(TAB_FOR_CAT[t['cat']], '<script src="/assets/wedding.js" defer></script>' if slug == "wedding-invitation-maker" else "")}"""
+{footer(TAB_FOR_CAT[t['cat']], '<script src="/assets/shotdata-maroon.js" defer></script><script src="/assets/shotdata-green.js" defer></script><script src="/assets/shotdata-royal.js" defer></script><script src="/assets/wedding.js" defer></script>' if slug == "wedding-invitation-maker" else "")}"""
     return body
 
 def category_page(path, row):
@@ -274,6 +274,10 @@ def main():
     shutil.copy(os.path.join(HERE, "style.css"), os.path.join(DIST, "assets", "style.css"))
     shutil.copy(os.path.join(HERE, "tools.js"), os.path.join(DIST, "assets", "tools.js"))
     shutil.copy(os.path.join(HERE, "wedding.js"), os.path.join(DIST, "assets", "wedding.js"))
+    for _sn in ("maroon", "green", "royal"):
+        _sp = os.path.join(HERE, "shotdata-" + _sn + ".js")
+        if os.path.exists(_sp):
+            shutil.copy(_sp, os.path.join(DIST, "assets", "shotdata-" + _sn + ".js"))
     shutil.copy(os.path.join(HERE, "favicon.svg"), os.path.join(DIST, "favicon.svg"))
     shutil.copy(os.path.join(HERE, "og-image.svg"), os.path.join(DIST, "assets", "og-image.svg"))
     shutil.copy(os.path.join(HERE, "robots.txt"), os.path.join(DIST, "robots.txt"))
