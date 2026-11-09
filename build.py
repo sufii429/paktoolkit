@@ -108,7 +108,7 @@ TABS = [("home", "/", "🏠", "Home"), ("calc", "/pakistan-calculators/", "🧮"
         ("image", "/image-tools/", "🖼️", "Image"), ("pdf", "/pdf-tools/", "📄", "PDF"),
         ("about", "/about/", "👤", "About")]
 TAB_FOR_CAT = {"pakistan-calculators": "calc", "everyday-calculators": "calc",
-               "image-tools": "image", "pdf-tools": "pdf"}
+               "image-tools": "image", "pdf-tools": "pdf", "cards-invitations": ""}
 
 def tabbar(active):
     links = "".join(
@@ -116,14 +116,15 @@ def tabbar(active):
         for key, href, icon, label in TABS)
     return f'<nav class="tabbar">{links}</nav>'
 
-def footer(active=""):
+def footer(active="", extra=""):
     return """<footer class="site"><div class="wrap">
 <p><strong>PakToolkit</strong> — free online tools for Pakistan. Every tool runs in your browser; your files never leave your device.</p>
 <p><a href="/about/">About</a> <a href="/contact/">Contact</a> <a href="/privacy-policy/">Privacy Policy</a> <a href="/terms/">Terms of Use</a> <a href="/disclaimer/">Disclaimer</a></p>
-<p><a href="/pakistan-calculators/">Pakistan Calculators</a> <a href="/image-tools/">Image Tools</a> <a href="/pdf-tools/">PDF Tools</a> <a href="/everyday-calculators/">Everyday Calculators</a></p>
+<p><a href="/pakistan-calculators/">Pakistan Calculators</a> <a href="/image-tools/">Image Tools</a> <a href="/pdf-tools/">PDF Tools</a> <a href="/everyday-calculators/">Everyday Calculators</a> <a href="/cards-invitations/">Cards &amp; Invitations</a></p>
 </div></footer>
 """ + tabbar(active) + """
 <script src="/assets/tools.js" defer></script>
+""" + extra + """
 </body></html>"""
 
 def card(slug):
@@ -176,7 +177,7 @@ def tool_page(path, row):
 <div class="grid">{rel_cards}</div>
 {disclaimer}
 </main>
-{footer(TAB_FOR_CAT[t['cat']])}"""
+{footer(TAB_FOR_CAT[t['cat']], '<script src="/assets/wedding.js" defer></script>' if slug == "wedding-invitation-maker" else "")}"""
     return body
 
 def category_page(path, row):
@@ -272,6 +273,7 @@ def main():
         built.append(row["url"])
     shutil.copy(os.path.join(HERE, "style.css"), os.path.join(DIST, "assets", "style.css"))
     shutil.copy(os.path.join(HERE, "tools.js"), os.path.join(DIST, "assets", "tools.js"))
+    shutil.copy(os.path.join(HERE, "wedding.js"), os.path.join(DIST, "assets", "wedding.js"))
     shutil.copy(os.path.join(HERE, "favicon.svg"), os.path.join(DIST, "favicon.svg"))
     shutil.copy(os.path.join(HERE, "og-image.svg"), os.path.join(DIST, "assets", "og-image.svg"))
     shutil.copy(os.path.join(HERE, "robots.txt"), os.path.join(DIST, "robots.txt"))
