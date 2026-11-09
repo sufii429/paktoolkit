@@ -52,3 +52,53 @@ footer.site a{margin-right:14px;line-height:2}
 canvas.preview{max-width:100%;border:1px solid var(--line);border-radius:10px;margin-top:10px}
 .rate-input{width:110px!important;min-height:40px!important;padding:7px!important}
 .err{color:#a11;font-weight:600}
+.tabbar{display:none}
+
+/* ================= Mobile app look (approved namuna v1, 2026-11-09) =================
+   Mobile only — desktop rendering is untouched. Pure CSS, no assets. */
+@media (max-width:700px){
+  body{padding-bottom:72px;background:#f3f8f4}
+  /* app bar: logo tile + scrollable pill nav */
+  .header-in{gap:8px;padding:8px 0 4px}
+  .logo{display:inline-flex;align-items:center;gap:9px;font-size:1.18rem}
+  .logo::before{content:"🧰";width:38px;height:38px;flex:none;border-radius:12px;background:linear-gradient(145deg,#0d8a4a,#065e32);display:inline-flex;align-items:center;justify-content:center;font-size:1.1rem;box-shadow:0 4px 10px rgba(10,122,66,.30)}
+  nav.mainnav{order:3;width:100%;margin:0;flex-wrap:nowrap;overflow-x:auto;padding:6px 0 8px;scrollbar-width:none}
+  nav.mainnav::-webkit-scrollbar{display:none}
+  nav.mainnav a{flex:none;white-space:nowrap;background:#fff;border:1px solid var(--line);border-radius:999px;min-height:40px;padding:8px 14px;font-weight:600;font-size:.93rem}
+  /* hero + pill search */
+  .hero{padding:20px 0 4px}
+  .hero h1{font-size:1.55rem}
+  .searchbox{border-radius:999px;border-width:1.5px;padding:14px 20px;box-shadow:0 6px 18px rgba(6,94,50,.12)}
+  h1{font-size:1.45rem}
+  /* app grid cards with coloured icon tiles */
+  .grid{grid-template-columns:1fr 1fr;gap:12px}
+  .card{border:0;border-radius:20px;box-shadow:0 5px 16px rgba(23,37,29,.08);padding:15px 13px}
+  .card:active{transform:scale(.97)}
+  .card .icon{font-size:1.35rem;width:46px;height:46px;border-radius:14px;background:#e6f4ec;display:flex;align-items:center;justify-content:center;margin-bottom:6px}
+  .grid .card:nth-child(6n+2) .icon{background:#fff3d9}
+  .grid .card:nth-child(6n+3) .icon{background:#e5eefc}
+  .grid .card:nth-child(6n+4) .icon{background:#fde8e8}
+  .grid .card:nth-child(6n+5) .icon{background:#efe7fb}
+  .grid .card:nth-child(6n+6) .icon{background:#e2f4f1}
+  .card h3{font-size:1rem}
+  .card p{font-size:.85rem}
+  /* tool sheet */
+  .toolbox{border:0;border-radius:24px;box-shadow:0 8px 22px rgba(23,37,29,.09);padding:18px 16px}
+  .toolbox input,.toolbox select{border:1.5px solid #d7e5db;background:#f7faf8;border-radius:14px;min-height:52px;padding:12px 14px}
+  .toolbox input[type=file]{background:#fff}
+  .privacy{border-radius:14px}
+  .btn{border-radius:16px;min-height:54px;font-size:1.05rem;background:linear-gradient(180deg,#0d8a4a,#0a7a42);box-shadow:0 8px 18px rgba(10,122,66,.30)}
+  .btn.secondary{background:#fff;box-shadow:none}
+  .dl{border-radius:14px}
+  details{border-radius:16px}
+  /* result as an app card */
+  .result{border:0;border-radius:18px;background:linear-gradient(180deg,#eaf7ef,#dff1e5);text-align:center;padding:16px}
+  .result .big{font-size:1.8rem}
+  .result table{text-align:left;border-radius:10px;overflow:hidden}
+  /* bottom tab bar */
+  .tabbar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:30;background:rgba(255,255,255,.97);border-top:1px solid var(--line);padding:8px 6px calc(8px + env(safe-area-inset-bottom))}
+  .tabbar a{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.7rem;font-weight:600;color:#7d9184;text-decoration:none;padding:3px 0}
+  .tabbar a .ic{font-size:1.28rem;line-height:1.25}
+  .tabbar a.on{color:var(--green-dark)}
+  .tabbar a.on .ic{background:var(--green-light);border-radius:999px;padding:2px 14px}
+}

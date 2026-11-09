@@ -104,11 +104,25 @@ HEADER = """<header class="site"><div class="wrap header-in">
 <a href="/about/">About</a>
 </nav></div></header>"""
 
-FOOTER = """<footer class="site"><div class="wrap">
+TABS = [("home", "/", "🏠", "Home"), ("calc", "/pakistan-calculators/", "🧮", "Calc"),
+        ("image", "/image-tools/", "🖼️", "Image"), ("pdf", "/pdf-tools/", "📄", "PDF"),
+        ("about", "/about/", "👤", "About")]
+TAB_FOR_CAT = {"pakistan-calculators": "calc", "everyday-calculators": "calc",
+               "image-tools": "image", "pdf-tools": "pdf"}
+
+def tabbar(active):
+    links = "".join(
+        f'<a href="{href}"{" class=\"on\"" if key == active else ""}><span class="ic">{icon}</span>{label}</a>'
+        for key, href, icon, label in TABS)
+    return f'<nav class="tabbar">{links}</nav>'
+
+def footer(active=""):
+    return """<footer class="site"><div class="wrap">
 <p><strong>PakToolkit</strong> — free online tools for Pakistan. Every tool runs in your browser; your files never leave your device.</p>
 <p><a href="/about/">About</a> <a href="/contact/">Contact</a> <a href="/privacy-policy/">Privacy Policy</a> <a href="/terms/">Terms of Use</a> <a href="/disclaimer/">Disclaimer</a></p>
 <p><a href="/pakistan-calculators/">Pakistan Calculators</a> <a href="/image-tools/">Image Tools</a> <a href="/pdf-tools/">PDF Tools</a> <a href="/everyday-calculators/">Everyday Calculators</a></p>
 </div></footer>
+""" + tabbar(active) + """
 <script src="/assets/tools.js" defer></script>
 </body></html>"""
 
@@ -161,7 +175,7 @@ def tool_page(path, row):
 <div class="grid">{rel_cards}</div>
 {disclaimer}
 </main>
-{FOOTER}"""
+{footer(TAB_FOR_CAT[t['cat']])}"""
     return body
 
 def category_page(path, row):
@@ -178,7 +192,7 @@ def category_page(path, row):
 <div class="grid">{cards}</div>
 <p class="small">Every tool on PakToolkit is free, needs no sign-up, and runs in your browser — your files never leave your device.</p>
 </main>
-{FOOTER}"""
+{footer(TAB_FOR_CAT[slug])}"""
 
 def home_page(path, row):
     sections = []
@@ -204,7 +218,7 @@ def home_page(path, row):
 {faq_html(HOME_FAQS)}
 </section>
 </main>
-{FOOTER}"""
+{footer('home')}"""
 
 def trust_page(path, row):
     slug = path.strip("/")
@@ -222,7 +236,7 @@ def trust_page(path, row):
 {''.join(parts)}
 {mail}
 </main>
-{FOOTER}"""
+{footer('about')}"""
 
 def sitemap(urls):
     prio = {"/": "1.0", "/pakistan-calculators/": "0.9", "/image-tools/": "0.9", "/pdf-tools/": "0.9",
