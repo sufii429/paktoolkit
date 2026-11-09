@@ -23,6 +23,11 @@ CATEGORIES = {
         "intro": "Small calculators for everyday questions — starting with an exact age and date difference calculator that gives your age in years, months and days, plus totals in days and weeks.",
         "tools": ["age-calculator"],
     },
+    "cards-invitations": {
+        "name": "Cards & Invitations",
+        "intro": "Beautiful digital cards and invitations that you make in your browser and share on WhatsApp — starting with a full wedding invitation maker with opening curtains, music, a live countdown and RSVP. Free, no sign-up, and everything is created on your own device.",
+        "tools": ["wedding-invitation-maker"],
+    },
 }
 
 def _tool(slug, cat, name, icon, blurb, intro, ui, steps, works, example, faqs, disclaimer, extra=""):
@@ -355,6 +360,124 @@ TOOLS["age-calculator"] = _tool(
      ("Does the calculator count leap years correctly?", "Yes — total days are counted from the actual calendar, so 29 February leap days are included."),
      ("Can I check my age on a future date?", "Yes. Set 'Age at date' to any future date, such as an application closing date."),
      ("What is the date difference mode for?", "It finds the exact gap between any two dates — useful for service duration, tenancy periods or counting days between events.")],
+    False)
+
+TOOLS["wedding-invitation-maker"] = _tool(
+    "wedding-invitation-maker", "cards-invitations", "Wedding Invitation Maker", "💌",
+    "Make a digital wedding invitation with opening curtains, music, countdown and WhatsApp RSVP.",
+    "Create a beautiful digital wedding invitation — dawwat-nama — right on your phone. Fill in the names, dates and venue, choose a curtain, door or floral-arch opening, and share a link on WhatsApp: when your guest taps it, the doors open with music, a scratch card reveals the date, a live countdown runs, and they can RSVP back on WhatsApp. You can also add the couple's photo (its background is removed by the same AI as our passport photo tool) and download a video invitation.",
+    """
+<label for="w-groom">Dulha (groom) — name in English</label>
+<input id="w-groom" type="text" value="Muhammad Ahmed">
+<label for="w-bride">Dulhan (bride) — name in English</label>
+<input id="w-bride" type="text" value="Fatima Noor">
+<div class="row2">
+<div><label for="w-groom-u">Dulha ka naam Urdu mein (optional)</label><input id="w-groom-u" type="text" value="محمد احمد"></div>
+<div><label for="w-bride-u">Dulhan ka naam Urdu mein (optional)</label><input id="w-bride-u" type="text" value="فاطمہ نور"></div>
+</div>
+<label for="w-host">Dawwat dene wale (hosts)</label>
+<input id="w-host" type="text" value="Mr. &amp; Mrs. Muhammad Siddique">
+<div class="row2">
+<div><label for="w-groom-fam">Dulha ki family line</label><input id="w-groom-fam" type="text" value="son of Mr. &amp; Mrs. Muhammad Siddique"></div>
+<div><label for="w-bride-fam">Dulhan ki family line</label><input id="w-bride-fam" type="text" value="daughter of Mr. &amp; Mrs. Tariq Mehmood"></div>
+</div>
+<div class="row2">
+<div><label for="w-style">Khulne wala andaaz (opening style)</label>
+<select id="w-style">
+<option value="curtain" selected>Surkh Parda (red curtains)</option>
+<option value="doors">Sunahre Darwaze (golden doors)</option>
+<option value="arch">Gulon wala Mehrab (floral arch)</option>
+</select></div>
+<div><label for="w-pal">Rang (colour theme)</label>
+<select id="w-pal">
+<option value="maroon" selected>Maroon &amp; Gold</option>
+<option value="green">Sabz (emerald) &amp; Gold</option>
+<option value="royal">Shahi Neela (royal blue) &amp; Gold</option>
+</select></div>
+</div>
+<label for="w-tune">Mehman ke liye dhun (built-in tune)</label>
+<select id="w-tune">
+<option value="strings" selected>🎻 Taar wali dhun (plucked strings)</option>
+<option value="bells">🔔 Ghanti wali dhun (soft bells)</option>
+<option value="drone">🎶 Tanpura dhun (drone)</option>
+<option value="none">Koi dhun nahi (no music)</option>
+</select>
+<h3>Program (events)</h3>
+<div class="row2">
+<div><label for="w-ev1-n">Event 1</label><input id="w-ev1-n" type="text" value="Mehndi"></div>
+<div><label for="w-ev1-d">Date</label><input id="w-ev1-d" type="date" value="2026-12-18"></div>
+</div>
+<div class="row2">
+<div><label for="w-ev1-t">Time</label><input id="w-ev1-t" type="text" value="7:00 PM"></div>
+<div><label for="w-ev1-v">Jagah / note</label><input id="w-ev1-v" type="text" value="Royal Palm Marquee, Faisalabad"></div>
+</div>
+<div class="row2">
+<div><label for="w-ev2-n">Event 2 (main)</label><input id="w-ev2-n" type="text" value="Barat"></div>
+<div><label for="w-ev2-d">Date</label><input id="w-ev2-d" type="date" value="2026-12-19"></div>
+</div>
+<div class="row2">
+<div><label for="w-ev2-t">Time</label><input id="w-ev2-t" type="text" value="7:00 PM"></div>
+<div><label for="w-ev2-v">Jagah / note</label><input id="w-ev2-v" type="text" value="Royal Palm Marquee, Faisalabad"></div>
+</div>
+<div class="row2">
+<div><label for="w-ev3-n">Event 3 (optional)</label><input id="w-ev3-n" type="text" value="Walima"></div>
+<div><label for="w-ev3-d">Date</label><input id="w-ev3-d" type="date" value="2026-12-20"></div>
+</div>
+<div class="row2">
+<div><label for="w-ev3-t">Time</label><input id="w-ev3-t" type="text" value="7:00 PM"></div>
+<div><label for="w-ev3-v">Jagah / note</label><input id="w-ev3-v" type="text" value="Royal Palm Marquee, Faisalabad"></div>
+</div>
+<p class="small">The Barat (event 2) is treated as the main event — the scratch card, countdown and calendar file use its date. Leave event 3's name empty to skip it.</p>
+<label for="w-venue">Venue (main jagah)</label>
+<input id="w-venue" type="text" value="The Royal Palm Marquee">
+<label for="w-addr">Venue ka pata (address)</label>
+<input id="w-addr" type="text" value="Main Boulevard, Faisalabad">
+<div class="row2">
+<div><label for="w-dress">Dress code (optional)</label><input id="w-dress" type="text" value="Formal"></div>
+<div><label for="w-rsvp">RSVP WhatsApp number</label><input id="w-rsvp" type="text" value="0300 1234567"></div>
+</div>
+<button class="btn" id="w-makelink" type="button">💌 Invitation ka link banayein</button>
+<div class="result" id="w-linkresult"></div>
+<h3>Apni dhun (sirf apne preview aur video ke liye)</h3>
+<p class="small">Mehman ke link mein built-in dhun chalegi — apni MP3 mehman ke link mein nahi ja sakti. Lekin apne preview mein aur video invitation mein aap apni MP3 istemal kar sakte hain.</p>
+<button class="btn" id="w-mp3btn" type="button">🎵 Apni MP3 chunein</button>
+<input id="w-mp3file" type="file" accept="audio/*" style="display:none">
+<div id="w-mp3name" class="small"></div>
+<h3>Dulha-Dulhan ki photo (video aur poster ke liye)</h3>
+<p class="small">Photo ka background AI se remove hoga — wahi engine jo hamare Passport Photo tool mein hai (~190 MB model pehli dafa download hota hai). Photo mehman ke link mein nahi jati; photo sirf video aur poster image mein aati hai.</p>
+<label for="w-photo">Couple ki photo chunein</label>
+<input id="w-photo" type="file" accept="image/*">
+<label for="w-photobg">Photo ka naya background</label>
+<select id="w-photobg">
+<option value="gold" selected>Sunehra (golden glow)</option>
+<option value="maroon">Maroon sajawat</option>
+<option value="garden">Sabz bagh (garden green)</option>
+<option value="sky">Halka neela (soft sky)</option>
+</select>
+<button class="btn" id="w-photogo" type="button">✂️ Background remove karein</button>
+<div id="w-photostatus" class="small"></div>
+<div class="result" id="w-photoresult"></div>
+<h3>Video invitation (WhatsApp ke liye)</h3>
+<p class="small">Video mein darwaze khulte hain, naam aate hain, photo (agar di ho) zahir hoti hai, program aur venue dikhta hai — dhun ke saath. Taqreeban 15 second ki video banti hai.</p>
+<button class="btn" id="w-videogo" type="button">🎬 Video invitation banayein</button>
+<div id="w-videostatus" class="small"></div>
+<div class="result" id="w-videoresult"></div>
+<p class="small">Poster image chahiye to video wale hisse se hi aik khoobsurat still image bhi ban jati hai:</p>
+<button class="btn" id="w-postergo" type="button">🖼️ Poster image banayein (photo ke saath)</button>
+<div class="result" id="w-posterresult"></div>
+""",
+    ["Fill in the couple's names, the hosts, the event dates and the venue — the sample names show you exactly what to type.",
+     "Choose an opening style (curtains, golden doors or a floral arch), a colour theme and a built-in tune, then press the link button.",
+     "Share the link on WhatsApp. Guests tap to open: the doors open with music, they scratch to reveal the date, watch the live countdown and RSVP back to your WhatsApp number.",
+     "Optionally add the couple's photo — the AI removes its background — and download a video invitation or poster image to send as a file."],
+    "Everything happens on your device. Your details travel inside the invitation link itself (compressed into the web address), not to any server — PakToolkit never sees your names, dates or photos. The guest's phone rebuilds the invitation from the link. A photo cannot travel inside a link, so the photo appears only in the video invitation and poster image that you download and send as files. The music in a guest's link is one of the built-in tunes, generated by the phone itself; your own MP3 can be used in your preview and in the video.",
+    "Example: Ahmed and Fatima's invitation opens with red curtains, their names in Nastaleeq, a scratch card revealing 'Saturday, 19 December 2026 — Barat, 7:00 PM', a live countdown, and an RSVP button that messages the host's WhatsApp.",
+    [("Is the wedding invitation maker free?", "Yes — completely free, no sign-up and no watermark. Make as many invitations as you like."),
+     ("How do guests open the invitation?", "You send them a link on WhatsApp. Tapping it opens the invitation in their browser — curtains or doors open with music, and they can scratch to reveal the date, save it to their calendar and RSVP on WhatsApp."),
+     ("Can I use my own song in the invitation?", "In your own preview and in the downloadable video, yes — pick any MP3 from your phone. In the link you send guests, a built-in tune is used instead, because a song file cannot travel inside a link."),
+     ("Why does the photo not appear in the link?", "A photo is far too large to fit inside a web link. The photo is used in the video invitation and the poster image, which you download and send as files — the link itself carries the names, dates and venue."),
+     ("Is my data uploaded anywhere?", "No. The maker runs entirely in your browser. Your details are compressed into the link itself, and your photo is processed on your device by the same on-device AI as our passport photo tool."),
+     ("Can I change the dates or names later?", "Yes — just edit the form and make a new link. Old links keep showing the old details, so send the new link to your guests.")],
     False)
 
 HOME_FAQS = [
