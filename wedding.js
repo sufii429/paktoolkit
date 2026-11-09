@@ -134,9 +134,9 @@ var W_CSS = `
 #wguest .tieband{position:absolute;top:48.5%;z-index:2;width:46px;height:17px;border-radius:9px;background:linear-gradient(180deg,#e8cf7a,#c9a227 55%,#9a7b1e);box-shadow:0 3px 10px rgba(0,0,0,.45),inset 0 1px 2px rgba(255,255,255,.6);opacity:0;transition:opacity .7s ease 1.1s,left .9s ease,right .9s ease;pointer-events:none}
 #wguest .tieband.l{left:20%}#wguest .tieband.r{right:20%}
 #wguest .doors.open .tieband{opacity:1}
-#wguest .doors.settled .panel{transition-duration:.9s}
-#wguest .doors.settled .panel.left{transform:scaleX(.13) translateX(-2%);clip-path:polygon(0 0,100% 0,88% 46%,76% 100%,0 100%)}
-#wguest .doors.settled .panel.right{transform:scaleX(.13) translateX(2%);clip-path:polygon(0 0,100% 0,100% 100%,24% 100%,12% 46%)}
+#wguest.sty-tieback .doors.open.settled .panel{transition-duration:.9s}
+#wguest.sty-tieback .doors.open.settled .panel.left{transform:scaleX(.13) translateX(-2%);clip-path:polygon(0 0,100% 0,88% 46%,76% 100%,0 100%)}
+#wguest.sty-tieback .doors.open.settled .panel.right{transform:scaleX(.13) translateX(2%);clip-path:polygon(0 0,100% 0,100% 100%,24% 100%,12% 46%)}
 #wguest .doors.settled .tieband{width:30px;height:14px}
 #wguest .doors.settled .tieband.l{left:4px}#wguest .doors.settled .tieband.r{right:4px}
 #wguest .inv{transition:padding .9s ease}
