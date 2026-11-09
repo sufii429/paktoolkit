@@ -284,20 +284,102 @@ function loadSegmenter(){
     return seg;
   });
 }
-function maskToAlpha(maskData, imgData, w, h){
-  var raw = new Uint8Array(w * h), q, x, y, dx, dy;
-  for (q = 0; q < w * h; q++){
-    var v = maskData[q * 4]; /* red channel: 255 = person, 0 = background */
-    var a = (v - 40) * 255 / 175;
-    raw[q] = a <= 0 ? 0 : a >= 255 ? 255 : Math.round(a);
-  }
+function blurAlphaPass(src, w, h){
+  var dst = new Float32Array(w * h), x, y, dx, dy;
   for (y = 0; y < h; y++) for (x = 0; x < w; x++){
     var sum = 0, n = 0;
     for (dy = -1; dy <= 1; dy++) for (dx = -1; dx <= 1; dx++){
       var xx = x + dx, yy = y + dy;
-      if (xx >= 0 && xx < w && yy >= 0 && yy < h){ sum += raw[yy * w + xx]; n++; }
+      if (xx >= 0 && xx < w && yy >= 0 && yy < h){ sum += src[yy * w + xx]; n++; }
     }
-    imgData[(y * w + x) * 4 + 3] = Math.round(sum / n);
+    dst[y * w + x] = sum / n;
+  }
+  return dst;
+}
+/* Keep only the largest person blob (plus any holes fully inside it);
+   stray mask islands — specks of background the model kept — are dropped. */
+function largestBlobKeep(bin, w, h){
+  var label = new Int32Array(w * h), q, x, y, cur = 0, largest = 0, largestSize = 0;
+  for (q = 0; q < w * h; q++){
+    if (!bin[q] || label[q]) continue;
+    cur++; var size = 0, stack = [q]; label[q] = cur;
+    while (stack.length){
+      var p = stack.pop(); size++;
+      var px = p % w, py = (p / w) | 0;
+      if (px > 0 && bin[p - 1] && !label[p - 1]){ label[p - 1] = cur; stack.push(p - 1); }
+      if (px < w - 1 && bin[p + 1] && !label[p + 1]){ label[p + 1] = cur; stack.push(p + 1); }
+      if (py > 0 && bin[p - w] && !label[p - w]){ label[p - w] = cur; stack.push(p - w); }
+      if (py < h - 1 && bin[p + w] && !label[p + w]){ label[p + w] = cur; stack.push(p + w); }
+    }
+    if (size > largestSize){ largestSize = size; largest = cur; }
+  }
+  var outside = new Uint8Array(w * h), st = [];
+  function oseed(pxx, pyy){ var pp = pyy * w + pxx; if (!bin[pp] && !outside[pp]){ outside[pp] = 1; st.push(pp); } }
+  for (x = 0; x < w; x++){ oseed(x, 0); oseed(x, h - 1); }
+  for (y = 0; y < h; y++){ oseed(0, y); oseed(w - 1, y); }
+  while (st.length){
+    var p2 = st.pop(), qx = p2 % w, qy = (p2 / w) | 0;
+    if (qx > 0) oseed(qx - 1, qy);
+    if (qx < w - 1) oseed(qx + 1, qy);
+    if (qy > 0) oseed(qx, qy - 1);
+    if (qy < h - 1) oseed(qx, qy + 1);
+  }
+  var keep = new Uint8Array(w * h);
+  for (q = 0; q < w * h; q++) keep[q] = (label[q] === largest || (!bin[q] && !outside[q])) ? 1 : 0;
+  return keep;
+}
+function cornerBgRef(imgData, w, h){
+  function patch(cx, cy){
+    var r = 0, g = 0, b = 0, n = 0;
+    for (var y = Math.max(0, cy - 2); y <= Math.min(h - 1, cy + 2); y++)
+      for (var x = Math.max(0, cx - 2); x <= Math.min(w - 1, cx + 2); x++){
+        var i = (y * w + x) * 4; r += imgData[i]; g += imgData[i + 1]; b += imgData[i + 2]; n++;
+      }
+    return [r / n, g / n, b / n];
+  }
+  var cs = [patch(2, 2), patch(w - 3, 2), patch(2, h - 3), patch(w - 3, h - 3)], out = [0, 0, 0];
+  for (var k = 0; k < 4; k++) for (var c = 0; c < 3; c++) out[c] += cs[k][c] / 4;
+  return out;
+}
+function maskToAlpha(maskData, imgData, w, h){
+  var q, x, y, dx, dy;
+  /* 1) soft alpha from the mask's red channel (wide ramp = soft steps) */
+  var raw = new Float32Array(w * h);
+  for (q = 0; q < w * h; q++){
+    var v = maskData[q * 4]; /* 255 = person, 0 = background */
+    var a = (v - 30) * 255 / 195;
+    raw[q] = a <= 0 ? 0 : a >= 255 ? 255 : a;
+  }
+  /* 2) two blur passes smooth the low-res mask's blocky staircase edges */
+  raw = blurAlphaPass(raw, w, h);
+  raw = blurAlphaPass(raw, w, h);
+  /* 3) drop stray islands, fill holes */
+  var bin = new Uint8Array(w * h);
+  for (q = 0; q < w * h; q++) bin[q] = raw[q] > 127 ? 1 : 0;
+  var keep = largestBlobKeep(bin, w, h);
+  for (q = 0; q < w * h; q++) if (keep[q] && !bin[q]) raw[q] = 255; /* holes count as solid person before the edge erosion below, or the erosion would eat them back to 0 */
+  /* 4) erode ~1px: out[q] = min over the 3x3 neighbourhood of kept alpha —
+        the outermost rim (background-contaminated pixels) is dropped */
+  var bgRef = cornerBgRef(imgData, w, h);
+  for (y = 0; y < h; y++) for (x = 0; x < w; x++){
+    q = y * w + x;
+    if (!keep[q]){ imgData[q * 4 + 3] = 0; continue; }
+    var mn = 255;
+    for (dy = -1; dy <= 1; dy++) for (dx = -1; dx <= 1; dx++){
+      var xx = x + dx, yy = y + dy;
+      var val = (xx < 0 || xx >= w || yy < 0 || yy >= h || !keep[yy * w + xx]) ? 0 : raw[yy * w + xx];
+      if (val < mn) mn = val;
+    }
+    imgData[q * 4 + 3] = Math.round(mn);
+    /* 5) decontaminate edge colours: edge pixels are part person, part old
+          background; un-blend the background share so no halo survives */
+    if (mn > 12 && mn < 250){
+      var t = mn / 255;
+      for (var c = 0; c < 3; c++){
+        var F = (imgData[q * 4 + c] - (1 - t) * bgRef[c]) / t;
+        imgData[q * 4 + c] = F < 0 ? 0 : F > 255 ? 255 : Math.round(F);
+      }
+    }
   }
 }
 function segmentPerson(srcCanvas){
