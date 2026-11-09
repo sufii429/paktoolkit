@@ -295,7 +295,7 @@ function imglyRemove(img, fileKey, statusEl){
       ic.toBlob(function(blob){ if (blob) resolve(blob); else reject(new Error("input encode failed")); }, "image/png");
     }).then(function(blob){
       return removeBackground(blob, {
-        model: "medium", /* 1.4.5 schema: "small" | "medium" — medium is the full-quality matting model */
+        model: "small", /* 1.4.5 schema: "small" (44 MB) | "medium" (88 MB) — TESTING small on Mazeen's instruction 2026-11-09; winner stays live */
         output: { format: "image/png", quality: 1 },
         progress: function(key, current, total){
           if (!statusEl) return;
