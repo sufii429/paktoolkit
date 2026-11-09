@@ -81,6 +81,29 @@ var W_CSS = `
 #wguest.sty-doors .panel.left{transform-origin:left center;border-right-width:2px}#wguest.sty-doors .panel.right{transform-origin:right center;border-left-width:2px}
 #wguest.sty-doors .doors.open .panel.left{transform:rotateY(-102deg)}#wguest.sty-doors .doors.open .panel.right{transform:rotateY(102deg)}
 #wguest .knob{position:absolute;top:50%;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f3e2ac,var(--gold) 60%,#8a6d1c);box-shadow:0 2px 8px rgba(0,0,0,.5)}
+#wguest .dpanel{position:absolute;top:0;width:50.5%;height:100%;will-change:transform;transition:transform 2.4s cubic-bezier(.6,.02,.2,1);background:repeating-linear-gradient(90deg,#3a2413 0 34px,#4c2f18 34px 40px,#3a2413 40px 74px);border:4px solid var(--gold);z-index:2;box-shadow:inset 0 0 50px rgba(0,0,0,.5)}
+#wguest .dpanel.left{left:0;transform-origin:left center;border-right-width:2px}
+#wguest .dpanel.right{right:0;transform-origin:right center;border-left-width:2px}
+#wguest .dpanel.left .knob{right:16px}#wguest .dpanel.right .knob{left:16px}
+#wguest .doors.dopen .dpanel.left{transform:rotateY(-103deg)}
+#wguest .doors.dopen .dpanel.right{transform:rotateY(103deg)}
+#wguest .doors.dopen .doorcenter{opacity:0;pointer-events:none}
+#wguest.sty-doors2 .panel{z-index:1;transition:transform 1.7s cubic-bezier(.7,0,.25,1);background:repeating-linear-gradient(90deg,var(--dark) 0 16px,var(--deep2) 16px 30px,var(--deep) 30px 44px,var(--deep2) 44px 58px,var(--dark) 58px 72px)}
+#wguest.sty-doors2 .panel.left{border-right:3px solid var(--gold)}#wguest.sty-doors2 .panel.right{border-left:3px solid var(--gold)}
+#wguest .doors.copen .panel.left{transform:translateX(-104%)}
+#wguest .doors.copen .panel.right{transform:translateX(104%)}
+#wguest .cmedal{position:absolute;inset:0;z-index:1;display:flex;align-items:center;justify-content:center;font-size:2.1rem;color:var(--gold2);transition:opacity .5s;text-shadow:0 2px 12px rgba(0,0,0,.45);pointer-events:none}
+#wguest .doors.copen .cmedal{opacity:0}
+#wguest.sty-tieback .panel{background:repeating-linear-gradient(90deg,var(--dark) 0 16px,var(--deep2) 16px 30px,var(--deep) 30px 44px,var(--deep2) 44px 58px,var(--dark) 58px 72px);transition:transform 2.2s cubic-bezier(.65,0,.25,1),clip-path 2.2s cubic-bezier(.65,0,.25,1),opacity 1.1s ease;clip-path:polygon(0 0,100% 0,100% 100%,50% 100%,0 100%)}
+#wguest.sty-tieback .panel.left{border-right:3px solid var(--gold);transform-origin:left top}
+#wguest.sty-tieback .panel.right{border-left:3px solid var(--gold);transform-origin:right top}
+#wguest.sty-tieback .doors.open .panel.left{transform:scaleX(.52) translateX(-4%);clip-path:polygon(0 0,100% 0,34% 50%,20% 100%,0 100%)}
+#wguest.sty-tieback .doors.open .panel.right{transform:scaleX(.52) translateX(4%);clip-path:polygon(0 0,100% 0,100% 100%,80% 100%,66% 50%)}
+#wguest.sty-tieback .panel::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 43%,rgba(0,0,0,.25) 52%,rgba(255,255,255,.07) 59%,transparent 67%);opacity:0;transition:opacity 1.4s ease .3s;pointer-events:none}
+#wguest.sty-tieback .doors.open .panel::after{opacity:1}
+#wguest .tieband{position:absolute;top:49%;z-index:2;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f3e2ac,var(--gold) 60%,#8a6d1c);box-shadow:0 3px 10px rgba(0,0,0,.45);opacity:0;transition:opacity .7s ease 1.1s;pointer-events:none}
+#wguest .tieband.l{left:21.5%}#wguest .tieband.r{right:21.5%}
+#wguest .doors.open .tieband{opacity:1}
 #wguest .panel.left .knob{right:16px}#wguest .panel.right .knob{left:16px}
 #wguest.sty-arch .panel{width:100%;background:radial-gradient(circle at 20% 15%,rgba(232,207,122,.28) 0 26px,transparent 27px),radial-gradient(circle at 82% 22%,rgba(232,207,122,.22) 0 20px,transparent 21px),radial-gradient(circle at 50% 88%,rgba(232,207,122,.18) 0 30px,transparent 31px),linear-gradient(160deg,var(--deep2),var(--deep) 55%,var(--dark))}
 #wguest.sty-arch .panel.right{display:none}
@@ -187,6 +210,17 @@ function wRenderGuest(d, opts){
   var pl = el("div"); pl.className = "panel left"; var pr = el("div"); pr.className = "panel right";
   if (d.style === "doors"){ var k1 = el("div"); k1.className = "knob"; pl.appendChild(k1); var k2 = el("div"); k2.className = "knob"; pr.appendChild(k2); }
   doors.appendChild(pl); doors.appendChild(pr);
+  if (d.style === "doors2"){
+    var cmedal = el("div", "✦"); cmedal.className = "cmedal"; doors.appendChild(cmedal);
+    var dl = el("div"); dl.className = "dpanel left"; var dr = el("div"); dr.className = "dpanel right";
+    var dk1 = el("div"); dk1.className = "knob"; dl.appendChild(dk1);
+    var dk2 = el("div"); dk2.className = "knob"; dr.appendChild(dk2);
+    doors.appendChild(dl); doors.appendChild(dr);
+  }
+  if (d.style === "tieback"){
+    var tb1 = el("div"); tb1.className = "tieband l"; var tb2 = el("div"); tb2.className = "tieband r";
+    doors.appendChild(tb1); doors.appendChild(tb2);
+  }
   var dc = el("div"); dc.className = "doorcenter";
   var dcIn = el("div"); if (d.style === "arch") dcIn.className = "archframe";
   var bis = el("div"); bis.className = "bismillah arabic"; bis.textContent = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"; dcIn.appendChild(bis);
@@ -317,7 +351,8 @@ function wRenderGuest(d, opts){
     stage.appendChild(closeB);
   }
   tap.addEventListener("click", function(){
-    doors.classList.add("open"); wPetals(root);
+    if (d.style === "doors2") doors.classList.add("dopen"); else doors.classList.add("open");
+    wPetals(root);
     if (opts.preview && wMp3){
       pvAudio = new Audio(wMp3.url); pvAudio.loop = true;
       pvAudio.play().then(function(){ snd.style.display = "flex"; }).catch(function(){});
@@ -326,13 +361,14 @@ function wRenderGuest(d, opts){
       tune = wTuneStart(d.tune, null);
       if (tune) { snd.style.display = "flex"; }
     }
+    if (d.style === "doors2") setTimeout(function(){ doors.classList.add("copen"); wPetals(root); }, 2350);
     setTimeout(function(){
       wrap.style.display = "none"; root.scrollTop = 0;
       var io = new IntersectionObserver(function(entries){
         entries.forEach(function(en){ if (en.isIntersecting){ en.target.classList.add(en.target.hasAttribute("data-curtain") ? "open" : "in"); io.unobserve(en.target); } });
       }, { root: root, threshold: 0.3 });
       root.querySelectorAll(".rise, [data-curtain]").forEach(function(n){ io.observe(n); });
-    }, d.style === "doors" ? 2100 : 1950);
+    }, d.style === "doors2" ? 4600 : (d.style === "tieback" ? 2500 : (d.style === "doors" ? 2100 : 1950)));
   });
   var sndOn = true;
   snd.addEventListener("click", function(){
