@@ -235,6 +235,15 @@ function wRenderGuest(d, opts){
     doors.classList.add("withphoto");
     var cimg = document.createElement("img");
     cimg.className = "coverphoto"; cimg.src = coverSrc; cimg.alt = "Couple photo";
+    cimg.onerror = function(){
+      /* A photo that cannot decode must never leave a broken frame —
+         fall back to the monogram cover. */
+      cimg.remove(); doors.classList.remove("withphoto");
+      var mono2 = el("div"); mono2.className = "mono";
+      var ini2 = el("div"); ini2.className = "ini"; ini2.textContent = (d.g || "G").charAt(0).toUpperCase() + " ♥ " + (d.b || "B").charAt(0).toUpperCase(); mono2.appendChild(ini2);
+      var sm2 = el("div"); sm2.className = "sm"; sm2.textContent = "WEDDING"; mono2.appendChild(sm2);
+      dcIn.insertBefore(mono2, dcIn.children[1] || null);
+    };
     dcIn.appendChild(cimg);
   } else {
     var mono = el("div"); mono.className = "mono";
@@ -930,10 +939,11 @@ function initWedding(){
       try {
         var tiny = document.createElement("canvas"); tiny.width = 264; tiny.height = 338;
         tiny.getContext("2d").drawImage(cv, 0, 0, 264, 338);
-        var tb = await canvasBlob(tiny, "image/webp", 0.62);
-        if (tb.type !== "image/webp") tb = await canvasBlob(tiny, "image/jpeg", 0.62);
+        /* JPEG on purpose: every browser decodes it. (A WebP copy failed to
+           decode in one test browser — not worth the risk for a cover.) */
+        var tb = await canvasBlob(tiny, "image/jpeg", 0.66);
         var tbuf = new Uint8Array(await tb.arrayBuffer());
-        wPhotoB64 = (tb.type === "image/jpeg" ? "j." : "w.") + wB64UrlEncode(tbuf);
+        wPhotoB64 = "j." + wB64UrlEncode(tbuf);
       } catch (e2) { wPhotoB64 = null; }
       status.textContent = "Photo tayyar hai ✓ — yehi photo cover par lagegi aur link ke saath mehman tak jayegi.";
       out.className = "result show";
