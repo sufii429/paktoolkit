@@ -266,6 +266,58 @@ function initCompress(){
 }
 
 /* ============ 7. Passport Photo ============ */
+/* Background removal: flood-fill from the borders through pixels whose colour
+   is close to the corner-sampled background colour, with a distance-ramped
+   alpha on the region edge so hair/shoulder edges feather instead of biting.
+   Pure function over the RGBA array so it can be unit-tested outside the DOM. */
+function computeBgAlpha(data, w, h, T){
+  function refAt(cx, cy){
+    var r = 0, g = 0, b = 0, n = 0;
+    for (var y = Math.max(0, cy - 2); y <= Math.min(h - 1, cy + 2); y++)
+      for (var x = Math.max(0, cx - 2); x <= Math.min(w - 1, cx + 2); x++){
+        var i = (y * w + x) * 4; r += data[i]; g += data[i + 1]; b += data[i + 2]; n++;
+      }
+    return [r / n, g / n, b / n];
+  }
+  /* Single averaged reference: taking the nearest of four corner colours let a
+     bright corner (window light) match skin tones and eat the face. */
+  var c1 = refAt(2, 2), c2 = refAt(w - 3, 2), c3 = refAt(2, h - 3), c4 = refAt(w - 3, h - 3);
+  var ref = [(c1[0] + c2[0] + c3[0] + c4[0]) / 4, (c1[1] + c2[1] + c3[1] + c4[1]) / 4, (c1[2] + c2[2] + c3[2] + c4[2]) / 4];
+  function dist(i){
+    var dr = data[i] - ref[0], dg = data[i + 1] - ref[1], db = data[i + 2] - ref[2];
+    return Math.sqrt(dr * dr + dg * dg + db * db);
+  }
+  var inBg = new Uint8Array(w * h), alpha = new Uint8Array(w * h), stack = [];
+  function seed(x, y, fromP){
+    var p = y * w + x;
+    if (inBg[p]) return;
+    var ok = dist(p * 4) < T;
+    if (!ok && fromP >= 0){ /* gradient walls: accept a small step from an accepted neighbour */
+      var i = p * 4, j = fromP * 4;
+      var dr = data[i] - data[j], dg = data[i + 1] - data[j + 1], db = data[i + 2] - data[j + 2];
+      ok = Math.sqrt(dr * dr + dg * dg + db * db) < 26 && dist(p * 4) < T * 2.1;
+    }
+    if (ok){ inBg[p] = 1; stack.push(p); }
+  }
+  for (var bx = 0; bx < w; bx++){ seed(bx, 0, -1); seed(bx, h - 1, -1); }
+  for (var by = 0; by < h; by++){ seed(0, by, -1); seed(w - 1, by, -1); }
+  while (stack.length){
+    var p = stack.pop(), px = p % w, py = (p / w) | 0;
+    if (px > 0) seed(px - 1, py, p);
+    if (px < w - 1) seed(px + 1, py, p);
+    if (py > 0) seed(px, py - 1, p);
+    if (py < h - 1) seed(px, py + 1, p);
+  }
+  var t0 = T * 0.55, t1 = T * 1.45;
+  for (var q = 0; q < w * h; q++){
+    if (!inBg[q]){ alpha[q] = 255; continue; }
+    var dd2 = dist(q * 4);
+    alpha[q] = dd2 <= t0 ? 0 : dd2 >= t1 ? 235 : Math.round(235 * (dd2 - t0) / (t1 - t0));
+  }
+  return alpha;
+}
+var PASSPORT_BLUE = "#4f9fe0";
+var passportCanvas = null;
 function initPassport(){
   if (!$("p-go")) return;
   $("p-go").addEventListener("click", async function(){
@@ -283,11 +335,36 @@ function initPassport(){
       var cv = document.createElement("canvas"); cv.width = 413; cv.height = 531;
       var ctx = cv.getContext("2d"); ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, 413, 531);
       ctx.drawImage(img, sx, sy, cropW, cropH, 0, 0, 413, 531);
+      var bgMode = $("p-bg") ? $("p-bg").value : "keep";
+      if (bgMode !== "keep"){
+        status.textContent = "Removing the background…";
+        var idata = ctx.getImageData(0, 0, 413, 531);
+        var strength = $("p-str") ? parseFloat($("p-str").value) || 38 : 38;
+        var alpha = computeBgAlpha(idata.data, 413, 531, strength * 1.8);
+        for (var q = 0; q < alpha.length; q++) idata.data[q * 4 + 3] = alpha[q];
+        var tmp = document.createElement("canvas"); tmp.width = 413; tmp.height = 531;
+        tmp.getContext("2d").putImageData(idata, 0, 0);
+        ctx.fillStyle = bgMode === "blue" ? PASSPORT_BLUE : "#ffffff";
+        ctx.fillRect(0, 0, 413, 531);
+        ctx.drawImage(tmp, 0, 0);
+      }
+      passportCanvas = cv;
       cv.className = "preview"; out.appendChild(cv);
       var b = await canvasBlob(cv, "image/jpeg", 0.95);
-      out.appendChild(el("p", "Passport size: 35 × 45 mm (413 × 531 px at 300 DPI)"));
+      out.appendChild(el("p", "Passport size: 35 × 45 mm (413 × 531 px at 300 DPI)" + (bgMode !== "keep" ? " — background replaced. If the edges look wrong, adjust the removal strength and make the photo again." : "")));
       out.appendChild(download(URL.createObjectURL(b), "passport-photo.jpg"));
+      status.textContent = "";
     } catch(e){ status.textContent = "That file could not be read as an image."; }
+  });
+  if ($("p-sheet")) $("p-sheet").addEventListener("click", async function(){
+    var status = $("p-status"), out = $("p-result");
+    if (!passportCanvas){ status.textContent = "Make the passport photo first, then the print sheet."; return; }
+    var sheet = document.createElement("canvas"); sheet.width = 1200; sheet.height = 1800;
+    var sctx = sheet.getContext("2d"); sctx.fillStyle = "#fff"; sctx.fillRect(0, 0, 1200, 1800);
+    var xs = [172, 615], ys = [354, 915];
+    for (var r = 0; r < 2; r++) for (var c = 0; c < 2; c++) sctx.drawImage(passportCanvas, xs[c], ys[r]);
+    var b = await canvasBlob(sheet, "image/jpeg", 0.95);
+    out.appendChild(download(URL.createObjectURL(b), "passport-photo-sheet-4x6.jpg"));
   });
 }
 
