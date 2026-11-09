@@ -384,7 +384,9 @@ TOOLS["wedding-invitation-maker"] = _tool(
 <div class="row2">
 <div><label for="w-style">Khulne wala andaaz (opening style)</label>
 <select id="w-style">
-<option value="curtain" selected>Surkh Parda (red curtains)</option>
+<option value="doors2" selected>Darwaza + Parda (do layers — pehle darwaze khulenge, phir parday)</option>
+<option value="tieback">Bandha hua Parda (touch karne par fold ho jata hai)</option>
+<option value="curtain">Surkh Parda (red curtains)</option>
 <option value="doors">Sunahre Darwaze (golden doors)</option>
 <option value="arch">Gulon wala Mehrab (floral arch)</option>
 </select></div>
