@@ -313,14 +313,38 @@ function imglyRemove(img, fileKey, statusEl){
           cctx2.drawImage(cut, 0, 0);
           URL.revokeObjectURL(u);
           /* Solidify the matte: the model sometimes leaves broad skin areas
-             (a bare shoulder at the frame edge) semi-transparent — composited
-             they look like a blue ghost. Lift mid alphas hard toward solid;
-             near-zero alphas (gaps between hair curls, faint halo) stay low,
-             and hair strands, being dark and thin, only get slightly bolder. */
-          var id = cctx2.getImageData(0, 0, cc.width, cc.height), dd = id.data;
-          for (var i = 3; i < dd.length; i += 4){
-            var a = dd[i];
-            if (a > 18 && a < 255) dd[i] = Math.min(255, Math.round((a - 18) * 1.8) + 18);
+             (a bare shoulder) at mid alpha — composited they look like a blue
+             ghost, and a gentle curve cannot rescue alphas that low. Rule:
+             a pixel DEEP inside the person (far from any background pixel)
+             with any real alpha is body — force it solid. Pixels near the
+             boundary keep a soft lift, so hair edges stay natural; genuine
+             gaps (between curls, arm-to-torso) sit at ~0 alpha and stay open. */
+          var W2 = cc.width, H2 = cc.height;
+          var id = cctx2.getImageData(0, 0, W2, H2), dd = id.data;
+          var dist = new Float32Array(W2 * H2), INF = 1e6, xx, yy, qq;
+          for (qq = 0; qq < W2 * H2; qq++) dist[qq] = dd[qq * 4 + 3] <= 24 ? 0 : INF;
+          for (yy = 0; yy < H2; yy++) for (xx = 0; xx < W2; xx++){
+            qq = yy * W2 + xx; if (dist[qq] === 0) continue;
+            var m1 = dist[qq];
+            if (xx > 0) m1 = Math.min(m1, dist[qq - 1] + 1);
+            if (yy > 0) m1 = Math.min(m1, dist[qq - W2] + 1);
+            if (xx > 0 && yy > 0) m1 = Math.min(m1, dist[qq - W2 - 1] + 1.41);
+            if (xx < W2 - 1 && yy > 0) m1 = Math.min(m1, dist[qq - W2 + 1] + 1.41);
+            dist[qq] = m1;
+          }
+          for (yy = H2 - 1; yy >= 0; yy--) for (xx = W2 - 1; xx >= 0; xx--){
+            qq = yy * W2 + xx; if (dist[qq] === 0) continue;
+            var m2 = dist[qq];
+            if (xx < W2 - 1) m2 = Math.min(m2, dist[qq + 1] + 1);
+            if (yy < H2 - 1) m2 = Math.min(m2, dist[qq + W2] + 1);
+            if (xx < W2 - 1 && yy < H2 - 1) m2 = Math.min(m2, dist[qq + W2 + 1] + 1.41);
+            if (xx > 0 && yy < H2 - 1) m2 = Math.min(m2, dist[qq + W2 - 1] + 1.41);
+            dist[qq] = m2;
+          }
+          for (qq = 0; qq < W2 * H2; qq++){
+            var a2 = dd[qq * 4 + 3];
+            if (a2 > 24 && dist[qq] >= 10) dd[qq * 4 + 3] = 255;
+            else if (a2 > 18 && a2 < 255) dd[qq * 4 + 3] = Math.min(255, Math.round((a2 - 18) * 1.8) + 18);
           }
           cctx2.putImageData(id, 0, 0);
           imglyCutout = cc; imglyCutoutKey = fileKey;
