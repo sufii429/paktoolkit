@@ -8,8 +8,23 @@ const log = (...a) => { el.textContent += '\n' + a.join(' '); };
 window.addEventListener('error', e => log('WINDOW ERROR:', e.message));
 window.addEventListener('unhandledrejection', e => log('UNHANDLED:', e.reason && (e.reason.stack || e.reason.message || String(e.reason))));
 try {
-  log('importing module…');
-  const m = await import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/+esm');
+  const CANDIDATES = [
+    'https://esm.sh/@imgly/background-removal@1.4.5',
+    'https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/+esm'
+  ];
+  let m = null;
+  for (const url of CANDIDATES) {
+    try {
+      log('importing:', url);
+      m = await import(url);
+      log('import OK from:', url);
+      break;
+    } catch (e) {
+      log('import failed from', url, '—', e && e.message);
+      m = null;
+    }
+  }
+  if (!m) throw new Error('all import candidates failed');
   log('imported. keys:', Object.keys(m).join(','));
   const fn = m.default || m.removeBackground;
   log('fn type:', typeof fn);
