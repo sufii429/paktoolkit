@@ -284,11 +284,12 @@ function loadSegmenter(){
     return seg;
   });
 }
-function blurAlphaPass(src, w, h){
+function blurAlphaPass(src, w, h, r){
+  r = r || 1;
   var dst = new Float32Array(w * h), x, y, dx, dy;
   for (y = 0; y < h; y++) for (x = 0; x < w; x++){
     var sum = 0, n = 0;
-    for (dy = -1; dy <= 1; dy++) for (dx = -1; dx <= 1; dx++){
+    for (dy = -r; dy <= r; dy++) for (dx = -r; dx <= r; dx++){
       var xx = x + dx, yy = y + dy;
       if (xx >= 0 && xx < w && yy >= 0 && yy < h){ sum += src[yy * w + xx]; n++; }
     }
@@ -392,9 +393,11 @@ function maskToAlpha(maskData, imgData, w, h){
     var a = (v - 30) * 255 / 195;
     raw[q] = a <= 0 ? 0 : a >= 255 ? 255 : a;
   }
-  /* 2) two blur passes smooth the low-res mask's blocky staircase edges */
-  raw = blurAlphaPass(raw, w, h);
-  raw = blurAlphaPass(raw, w, h);
+  /* 2) two WIDE blur passes (5x5) — the model's mask is only ~256px across,
+        so at working size its edges are 3px+ steps; narrow blurs left the
+        staircase visible in the silhouette (Mazeen's selfie test, 2026-11-09) */
+  raw = blurAlphaPass(raw, w, h, 2);
+  raw = blurAlphaPass(raw, w, h, 2);
   /* 3) keep-set: largest blob after bridge-snapping opening, tiny holes filled */
   var bin = new Uint8Array(w * h);
   for (q = 0; q < w * h; q++) bin[q] = raw[q] > 127 ? 1 : 0;
@@ -437,6 +440,13 @@ function maskToAlpha(maskData, imgData, w, h){
       }
     }
   }
+  /* 6) final anti-alias: one light smoothing pass over the finished alpha
+        only (colours untouched), so the silhouette meets the new background
+        as a gradient instead of a hard stair-step */
+  var alphas = new Float32Array(w * h);
+  for (q = 0; q < w * h; q++) alphas[q] = imgData[q * 4 + 3];
+  var sm = blurAlphaPass(alphas, w, h, 1);
+  for (q = 0; q < w * h; q++) imgData[q * 4 + 3] = Math.round(sm[q]);
 }
 function segmentPerson(srcCanvas){
   return loadSegmenter().then(function(seg){
