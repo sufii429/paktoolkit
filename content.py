@@ -365,7 +365,7 @@ TOOLS["age-calculator"] = _tool(
 TOOLS["wedding-invitation-maker"] = _tool(
     "wedding-invitation-maker", "cards-invitations", "Wedding Invitation Maker", "💌",
     "Make a digital wedding invitation with opening curtains, music, countdown and WhatsApp RSVP.",
-    "Create a beautiful digital wedding invitation — dawwat-nama — right on your phone. Fill in the names, dates and venue, choose a curtain, door or floral-arch opening, and share a link on WhatsApp: when your guest taps it, the doors open with music, a scratch card reveals the date, a live countdown runs, and they can RSVP back on WhatsApp. You can also add the couple's photo (its background is removed by the same AI as our passport photo tool) and download a video invitation.",
+    "Create a beautiful digital wedding invitation — dawwat-nama — right on your phone. Fill in the names, dates and venue, choose a curtain, door or floral-arch opening, and share a link on WhatsApp: when your guest taps it, the doors open with music, a scratch card reveals the date, a live countdown runs, and they can RSVP back on WhatsApp. The cover carries one couple photo — your own (its background is removed by the same AI as our passport photo tool, then a small copy travels inside the link itself) or a built-in illustrated couple shot that matches your colour theme.",
     """
 <label for="w-groom">Dulha (groom) — name in English</label>
 <input id="w-groom" type="text" value="Muhammad Ahmed">
@@ -438,13 +438,13 @@ TOOLS["wedding-invitation-maker"] = _tool(
 </div>
 <button class="btn" id="w-makelink" type="button">💌 Invitation ka link banayein</button>
 <div class="result" id="w-linkresult"></div>
-<h3>Apni dhun (sirf apne preview aur video ke liye)</h3>
-<p class="small">Mehman ke link mein built-in dhun chalegi — apni MP3 mehman ke link mein nahi ja sakti. Lekin apne preview mein aur video invitation mein aap apni MP3 istemal kar sakte hain.</p>
+<h3>Apni dhun (sirf apne preview ke liye)</h3>
+<p class="small">Mehman ke link mein built-in dhun chalegi — apni MP3 mehman ke link mein nahi ja sakti. Lekin jab aap "Preview — mehman ki nazar se" kholte hain to wahan apni MP3 sun sakte hain.</p>
 <button class="btn" id="w-mp3btn" type="button">🎵 Apni MP3 chunein</button>
 <input id="w-mp3file" type="file" accept="audio/*" style="display:none">
 <div id="w-mp3name" class="small"></div>
-<h3>Dulha-Dulhan ki photo (video aur poster ke liye)</h3>
-<p class="small">Photo ka background AI se remove hoga — wahi engine jo hamare Passport Photo tool mein hai (~190 MB model pehli dafa download hota hai). Photo mehman ke link mein nahi jati; photo sirf video aur poster image mein aati hai.</p>
+<h3>Cover photo — dulha-dulhan ki Aik photo</h3>
+<p class="small">Har card mein couple ki Aik hi photo lagti hai — main cover par, jahan se invitation khulta hai. Apni photo ka background AI se remove hoga (wahi engine jo hamare Passport Photo tool mein hai — ~190 MB model pehli dafa download hota hai), phir photo ki chhoti compressed copy link ke andar mehman tak jati hai. Photo kisi server par upload nahi hoti.</p>
 <label for="w-photo">Couple ki photo chunein</label>
 <input id="w-photo" type="file" accept="image/*">
 <label for="w-photobg">Photo ka naya background</label>
@@ -457,25 +457,20 @@ TOOLS["wedding-invitation-maker"] = _tool(
 <button class="btn" id="w-photogo" type="button">✂️ Background remove karein</button>
 <div id="w-photostatus" class="small"></div>
 <div class="result" id="w-photoresult"></div>
-<h3>Video invitation (WhatsApp ke liye)</h3>
-<p class="small">Video mein darwaze khulte hain, naam aate hain, photo (agar di ho) zahir hoti hai, program aur venue dikhta hai — dhun ke saath. Taqreeban 15 second ki video banti hai.</p>
-<button class="btn" id="w-videogo" type="button">🎬 Video invitation banayein</button>
-<div id="w-videostatus" class="small"></div>
-<div class="result" id="w-videoresult"></div>
-<p class="small">Poster image chahiye to video wale hisse se hi aik khoobsurat still image bhi ban jati hai:</p>
-<button class="btn" id="w-postergo" type="button">🖼️ Poster image banayein (photo ke saath)</button>
-<div class="result" id="w-posterresult"></div>
+<h3>Ya tayyar couple shot chunein</h3>
+<p class="small">Apni photo istemal nahi karna chahte to template se milta hua aik tayyar couple shot cover par laga dein — jo rang (palette) upar chuna hai, usi ka shot aam taur par sab se acha lagta hai. Agar apni photo tayyar ki hui hai aur yahan koi shot nahi chuna to cover par apni photo lagegi.</p>
+<div id="w-shots"></div>
 """,
     ["Fill in the couple's names, the hosts, the event dates and the venue — the sample names show you exactly what to type.",
      "Choose an opening style (curtains, golden doors or a floral arch), a colour theme and a built-in tune, then press the link button.",
      "Share the link on WhatsApp. Guests tap to open: the doors open with music, they scratch to reveal the date, watch the live countdown and RSVP back to your WhatsApp number.",
-     "Optionally add the couple's photo — the AI removes its background — and download a video invitation or poster image to send as a file."],
-    "Everything happens on your device. Your details travel inside the invitation link itself (compressed into the web address), not to any server — PakToolkit never sees your names, dates or photos. The guest's phone rebuilds the invitation from the link. A photo cannot travel inside a link, so the photo appears only in the video invitation and poster image that you download and send as files. The music in a guest's link is one of the built-in tunes, generated by the phone itself; your own MP3 can be used in your preview and in the video.",
+     "Optionally add the couple's photo as the cover — the AI removes its background — or pick a built-in couple shot that matches your colour theme."],
+    "Everything happens on your device. Your details travel inside the invitation link itself (compressed into the web address), not to any server — PakToolkit never sees your names, dates or photos. The guest's phone rebuilds the invitation from the link. One cover photo can travel inside the link: it is shrunk to a small cover-sized copy and encoded into the link itself, so guests see it on the cover the moment the invitation opens — it is never uploaded anywhere. The music in a guest's link is one of the built-in tunes, generated by the phone itself; your own MP3 can be used in your own preview.",
     "Example: Ahmed and Fatima's invitation opens with red curtains, their names in Nastaleeq, a scratch card revealing 'Saturday, 19 December 2026 — Barat, 7:00 PM', a live countdown, and an RSVP button that messages the host's WhatsApp.",
     [("Is the wedding invitation maker free?", "Yes — completely free, no sign-up and no watermark. Make as many invitations as you like."),
      ("How do guests open the invitation?", "You send them a link on WhatsApp. Tapping it opens the invitation in their browser — curtains or doors open with music, and they can scratch to reveal the date, save it to their calendar and RSVP on WhatsApp."),
-     ("Can I use my own song in the invitation?", "In your own preview and in the downloadable video, yes — pick any MP3 from your phone. In the link you send guests, a built-in tune is used instead, because a song file cannot travel inside a link."),
-     ("Why does the photo not appear in the link?", "A photo is far too large to fit inside a web link. The photo is used in the video invitation and the poster image, which you download and send as files — the link itself carries the names, dates and venue."),
+     ("Can I use my own song in the invitation?", "In your own preview, yes — pick any MP3 from your phone and it plays when you preview the invitation. In the link you send guests, a built-in tune is used instead, because a song file is far too large to travel inside a link."),
+     ("How does the couple's photo reach my guests?", "Your photo sits on the invitation's cover. A small, cover-sized copy of it is encoded into the invitation link itself, so guests see it as soon as the invitation opens — nothing is uploaded to any server. If you prefer not to use a personal photo, pick one of the built-in illustrated couple shots instead."),
      ("Is my data uploaded anywhere?", "No. The maker runs entirely in your browser. Your details are compressed into the link itself, and your photo is processed on your device by the same on-device AI as our passport photo tool."),
      ("Can I change the dates or names later?", "Yes — just edit the form and make a new link. Old links keep showing the old details, so send the new link to your guests.")],
     False)
