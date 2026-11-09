@@ -274,6 +274,10 @@ def main():
     shutil.copy(os.path.join(HERE, "favicon.svg"), os.path.join(DIST, "favicon.svg"))
     shutil.copy(os.path.join(HERE, "og-image.svg"), os.path.join(DIST, "assets", "og-image.svg"))
     shutil.copy(os.path.join(HERE, "robots.txt"), os.path.join(DIST, "robots.txt"))
+    wn = os.path.join(HERE, "wedding-namuna.html")
+    if os.path.exists(wn):  # noindex test page — copied, not a generated page
+        os.makedirs(os.path.join(DIST, "wedding-namuna"), exist_ok=True)
+        shutil.copy(wn, os.path.join(DIST, "wedding-namuna", "index.html"))
     with open(os.path.join(DIST, "sitemap.xml"), "w", encoding="utf-8") as f:
         f.write(sitemap(built))
     print(f"Built {len(built)} pages into dist/")

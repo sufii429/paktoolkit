@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Ahmed weds Fatima — Digital Wedding Invitation (Namuna v2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.cdnfonts.com/css/jameel-noori-nastaleeq" rel="stylesheet">
+<style>
+  :root{--maroon:#5e1220;--maroon2:#7c1d30;--gold:#c9a227;--gold2:#e8cf7a;--cream:#fdf6e9;--ink:#3d2c1e}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{font-family:Georgia,'Times New Roman',serif;background:#2a0a12;color:var(--ink)}
+  .arabic{font-family:'Amiri',serif;direction:rtl}
+  .urdu{font-family:'Jameel Noori Nastaleeq','Noto Nastaliq Urdu',serif;direction:rtl;line-height:2.3}
+  .narr{max-width:430px;margin:0 auto;padding:14px 16px 2px;color:#e8cf7a;font-family:system-ui,Arial,sans-serif;font-size:.92rem}
+  .stage{max-width:430px;margin:0 auto;background:var(--cream);min-height:100vh;position:relative;overflow:hidden;box-shadow:0 0 60px rgba(0,0,0,.5)}
+  /* ---------- main doors ---------- */
+  .doorwrap{position:fixed;inset:0;z-index:50;display:flex;justify-content:center}
+  .doors{position:relative;width:min(430px,100%);height:100%;overflow:hidden}
+  .panel{position:absolute;top:0;width:50.5%;height:100%;transition:transform 1.8s cubic-bezier(.7,0,.25,1);background:
+    repeating-linear-gradient(90deg,#4a0d19 0 16px,#671627 16px 30px,#7c1d30 30px 44px,#671627 44px 58px,#4a0d19 58px 72px);
+    box-shadow:inset 0 0 60px rgba(0,0,0,.55)}
+  .panel.left{left:0;border-right:3px solid var(--gold)}
+  .panel.right{right:0;border-left:3px solid var(--gold)}
+  .doors.open .panel.left{transform:translateX(-104%)}
+  .doors.open .panel.right{transform:translateX(104%)}
+  .doorcenter{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;transition:opacity .6s;color:var(--cream)}
+  .doors.open .doorcenter{opacity:0;pointer-events:none}
+  .bismillah{font-size:1.6rem;color:var(--gold2);margin-bottom:12px;line-height:2}
+  .mono{width:128px;height:128px;border-radius:50%;border:2px solid var(--gold);outline:6px double rgba(201,162,39,.45);outline-offset:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle,#7c1d30,#4a0d19);margin:8px 0 14px}
+  .mono .ini{font-size:1.9rem;letter-spacing:.08em;color:var(--gold2)}
+  .mono .sm{font-size:.62rem;letter-spacing:.34em;color:#f3e2ac;margin-top:4px}
+  .doorcenter h1{font-size:1.28rem;font-weight:normal;margin:4px 0;color:#fff}
+  .doorcenter .names{font-size:1.05rem;color:var(--gold2);letter-spacing:.14em}
+  .doorcenter .unames{font-size:1.3rem;color:#fff;margin-top:6px}
+  .tap{margin-top:24px;background:linear-gradient(180deg,#e8cf7a,#c9a227);color:#43101c;border:0;font-family:inherit;font-size:1.02rem;font-weight:bold;padding:14px 30px;border-radius:999px;cursor:pointer;box-shadow:0 8px 22px rgba(0,0,0,.4);animation:pulse 1.8s infinite}
+  @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+  .mp3btn{margin-top:16px;background:rgba(255,255,255,.12);border:1px solid var(--gold);color:var(--gold2);font-family:system-ui,Arial,sans-serif;font-size:.85rem;padding:9px 16px;border-radius:999px;cursor:pointer}
+  .mp3name{font-family:system-ui,Arial,sans-serif;font-size:.78rem;color:#d9c9a8;margin-top:7px;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .hint{font-size:.8rem;color:#d9c9a8;margin-top:10px;font-family:system-ui,Arial,sans-serif}
+  /* ---------- curtain valance (drape at top of every "page") ---------- */
+  .valance{height:40px;background:
+    radial-gradient(circle at 50% -8px, transparent 25px, var(--gold) 26px, var(--maroon2) 28px, var(--maroon) 44px);
+    background-size:64px 40px;background-repeat:repeat-x;filter:drop-shadow(0 3px 3px rgba(0,0,0,.18))}
+  /* ---------- mini curtains between sections ---------- */
+  .minicurtain{position:relative;height:74px;margin:26px -22px 4px;overflow:hidden}
+  .minicurtain .mp{position:absolute;top:0;width:50.5%;height:100%;z-index:2;transition:transform 1.5s cubic-bezier(.7,0,.25,1);background:
+    repeating-linear-gradient(90deg,#4a0d19 0 10px,#671627 10px 19px,#7c1d30 19px 28px,#671627 28px 37px,#4a0d19 37px 46px)}
+  .minicurtain .mp.l{left:0;border-right:2px solid var(--gold)}
+  .minicurtain .mp.r{right:0;border-left:2px solid var(--gold)}
+  .minicurtain.open .mp.l{transform:translateX(-103%)}
+  .minicurtain.open .mp.r{transform:translateX(103%)}
+  .minicurtain .medal{position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s;color:var(--gold2)}
+  .minicurtain.open .medal{opacity:0}
+  .minicurtain .medal .en{letter-spacing:.3em;font-size:.78rem}
+  .minicurtain .medal .ur{font-size:1.15rem;line-height:1.9}
+  .minicurtain .behind{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:var(--maroon)}
+  /* ---------- reveal on scroll ---------- */
+  .rise{opacity:0;transform:translateY(26px);transition:opacity .8s ease,transform .8s ease}
+  .rise.in{opacity:1;transform:none}
+  /* ---------- invitation body ---------- */
+  .inv{padding:0 22px 8px;text-align:center;background:
+    radial-gradient(circle at 15% 4%,rgba(201,162,39,.13),transparent 42%),
+    radial-gradient(circle at 85% 30%,rgba(201,162,39,.11),transparent 42%),var(--cream)}
+  .frame{border:2px solid var(--gold);outline:1px solid rgba(201,162,39,.5);outline-offset:5px;padding:22px 16px 20px;background:rgba(255,255,255,.55);margin-top:14px}
+  .inv .bismillah{color:var(--maroon);font-size:1.45rem}
+  .host{font-size:.98rem;line-height:1.65;color:#5a4632}
+  .groom,.bride{font-size:2.05rem;color:var(--maroon);margin:10px 0 0;font-style:italic;line-height:1.25}
+  .unames2{font-size:1.45rem;color:#7c5a17;margin-top:8px}
+  .uinvite{font-size:1.12rem;color:#5a4632;margin-top:10px}
+  .weds{color:var(--gold);font-size:1.5rem;margin:2px 0}
+  .dof{font-size:.92rem;color:#5a4632}
+  .rule{width:120px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:16px auto}
+  h2.sec{font-size:1.02rem;letter-spacing:.28em;color:var(--maroon);margin:28px 0 2px;text-transform:uppercase}
+  .secsub{font-size:1.1rem;color:#7c5a17;margin-bottom:10px}
+  .scratchbox{position:relative;width:290px;max-width:88%;margin:0 auto;border-radius:16px;overflow:hidden;border:2px solid var(--gold);background:#fff}
+  .scratchdate{padding:20px 10px 16px}
+  .scratchdate .d1{font-size:1.32rem;color:var(--maroon);font-weight:bold}
+  .scratchdate .d2{font-size:1rem;color:#5a4632;margin-top:4px}
+  #scratch{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:pointer}
+  .scratchhint{font-family:system-ui,Arial,sans-serif;font-size:.82rem;color:#8a6d3b;margin-top:8px}
+  .btn{display:inline-block;margin-top:14px;background:linear-gradient(180deg,#8c2438,#5e1220);color:#fdf6e9;text-decoration:none;border:0;font-family:inherit;font-size:1rem;font-weight:bold;padding:14px 26px;border-radius:999px;cursor:pointer;box-shadow:0 8px 20px rgba(94,18,32,.35)}
+  .btn.gold{background:linear-gradient(180deg,#e8cf7a,#c9a227);color:#43101c}
+  .btn.wa{background:linear-gradient(180deg,#2bb673,#1c9457);color:#fff}
+  .count{display:flex;gap:8px;justify-content:center;margin-top:6px}
+  .count div{background:#5e1220;color:#fdf6e9;border-radius:14px;min-width:64px;padding:10px 4px;border:1px solid var(--gold)}
+  .count b{display:block;font-size:1.35rem;color:var(--gold2)}
+  .count span{font-size:.68rem;letter-spacing:.18em;font-family:system-ui,Arial,sans-serif}
+  .tl{margin:6px auto 0;max-width:320px;text-align:left}
+  .ev{display:flex;gap:12px;padding:10px 0;border-bottom:1px dashed rgba(201,162,39,.55)}
+  .ev:last-child{border-bottom:0}
+  .ev .ic{font-size:1.5rem;width:44px;height:44px;flex:none;border-radius:50%;background:#f7ead0;border:1px solid var(--gold);display:flex;align-items:center;justify-content:center}
+  .ev .et{font-weight:bold;color:var(--maroon);font-size:1.05rem}
+  .ev .ed{font-size:.9rem;color:#5a4632;line-height:1.45}
+  .venue{font-size:1rem;line-height:1.6;color:#5a4632}
+  .dua{font-size:1.3rem;line-height:2.2;color:var(--maroon);margin-top:8px}
+  .brand{margin:26px -22px 0;background:#5e1220;color:#e8cf7a;text-align:center;padding:16px;font-family:system-ui,Arial,sans-serif;font-size:.9rem}
+  .brand a{color:#fff;font-weight:bold}
+  .petal{position:fixed;top:-4vh;z-index:40;font-size:15px;pointer-events:none;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(108vh) rotate(340deg);opacity:.25}}
+  #sndBtn{position:fixed;right:14px;bottom:14px;z-index:60;width:48px;height:48px;border-radius:50%;border:2px solid var(--gold);background:#5e1220;color:#fff;font-size:1.25rem;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.35)}
+  #pickBtn{position:fixed;left:14px;bottom:14px;z-index:60;width:48px;height:48px;border-radius:50%;border:2px solid var(--gold);background:#5e1220;color:#fff;font-size:1.25rem;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.35)}
+  .visuallyhidden{position:absolute!important;width:1px;height:1px;opacity:0;overflow:hidden}
+</style>
+</head>
+<body>
+
+<div class="narr">✦ <b>Namuna v2</b> — aap ki teenon baatein shaamil: (1) har section se pehle <b>parda khulta</b> hai — neeche scroll karte jayein, (2) <b>Arabic (Amiri) + Urdu (Jameel Noori Nastaleeq)</b> fonts, (3) darwaze par hi <b>apni MP3 dhun</b> chun sakte hain — khulte hi bajegi.</div>
+
+<div class="stage">
+
+  <!-- main doors -->
+  <div class="doorwrap" id="doorwrap">
+    <div class="doors" id="doors">
+      <div class="panel left"></div><div class="panel right"></div>
+      <div class="doorcenter">
+        <div class="bismillah arabic">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+        <div class="mono"><div class="ini">A ♥ F</div><div class="sm">WEDDING</div></div>
+        <h1>Assalam-o-Alaikum</h1>
+        <div class="names">AHMED &nbsp;·&nbsp; FATIMA</div>
+        <div class="unames urdu">محمد احمد &nbsp;♥&nbsp; فاطمہ نور</div>
+        <button class="tap" id="openBtn">💌 Tap to Open</button>
+        <button type="button" class="mp3btn" id="mp3btn">🎵 Apni dhun chunein (MP3)</button>
+        <input id="mp3file" class="visuallyhidden" type="file" accept="audio/*">
+        <div class="mp3name" id="mp3name"></div>
+        <div class="hint">Dawwat-nama kholne ke liye dabayein — dhun chuni ho to saath bajegi</div>
+      </div>
+    </div>
+  </div>
+
+  <button id="sndBtn" title="Sound on/off">🔊</button>
+  <button id="pickBtn" title="Dhun chunein / badlein">🎵</button>
+  <audio id="bgm" loop preload="auto"></audio>
+
+  <!-- invitation -->
+  <div class="inv">
+    <div class="valance"></div>
+    <div class="frame">
+      <div class="bismillah arabic">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+      <p class="host"><b>Mr. &amp; Mrs. Muhammad Siddique</b><br>request the honour of your presence<br>at the wedding of their beloved son</p>
+      <div class="groom">Muhammad Ahmed</div>
+      <div class="weds">— ♥ weds ♥ —</div>
+      <div class="bride">Fatima Noor</div>
+      <div class="unames2 urdu">محمد احمد &nbsp;♥&nbsp; فاطمہ نور</div>
+      <p class="dof">daughter of <b>Mr. &amp; Mrs. Tariq Mehmood</b></p>
+      <p class="uinvite urdu">آپ کی شرکت ہمارے لیے باعثِ مسرت و افتخار ہوگی</p>
+
+      <div class="rule"></div>
+      <div class="rise">
+        <h2 class="sec">Save the Date</h2>
+        <div class="secsub urdu">تاریخ محفوظ کر لیں</div>
+        <div class="scratchbox">
+          <div class="scratchdate">
+            <div class="d1">Saturday, 19 December 2026</div>
+            <div class="d2">Barat · 7:00 PM onwards</div>
+          </div>
+          <canvas id="scratch" width="290" height="96"></canvas>
+        </div>
+        <div class="scratchhint">👆 Sunehri hisse ko ungli se raghrein — tareekh zahir hogi</div>
+        <br>
+        <button class="btn gold" id="icsBtn">📅 Save the Date</button>
+      </div>
+
+      <div class="rise">
+        <h2 class="sec">Countdown</h2>
+        <div class="secsub urdu">الٹی گنتی</div>
+        <div class="count">
+          <div><b id="cd">–</b><span>DAYS</span></div>
+          <div><b id="ch">–</b><span>HOURS</span></div>
+          <div><b id="cm">–</b><span>MINUTES</span></div>
+          <div><b id="cs">–</b><span>SECONDS</span></div>
+        </div>
+      </div>
+
+      <div class="minicurtain" data-curtain>
+        <div class="behind">💍</div>
+        <div class="mp l"></div><div class="mp r"></div>
+        <div class="medal"><div class="en">THE PROGRAM</div><div class="ur urdu">پروگرام</div></div>
+      </div>
+      <div class="rise">
+        <div class="tl">
+          <div class="ev"><div class="ic">🌿</div><div><div class="et">Mehndi — <span class="urdu" style="font-size:1.05rem">مہندی</span></div><div class="ed">Friday, 18 December 2026 · 7:00 PM<br>Royal Palm Marquee, Faisalabad</div></div></div>
+          <div class="ev"><div class="ic">💍</div><div><div class="et">Barat — <span class="urdu" style="font-size:1.05rem">برات</span></div><div class="ed">Saturday, 19 December 2026 · 7:00 PM<br>Royal Palm Marquee, Faisalabad</div></div></div>
+          <div class="ev"><div class="ic">🍽️</div><div><div class="et">Walima — <span class="urdu" style="font-size:1.05rem">ولیمہ</span></div><div class="ed">Sunday, 20 December 2026 · 7:00 PM<br>Hosted by the groom's family — same venue</div></div></div>
+        </div>
+      </div>
+
+      <div class="minicurtain" data-curtain>
+        <div class="behind">📍</div>
+        <div class="mp l"></div><div class="mp r"></div>
+        <div class="medal"><div class="en">VENUE &amp; RSVP</div><div class="ur urdu">مقام اور تصدیق</div></div>
+      </div>
+      <div class="rise">
+        <p class="venue"><b>The Royal Palm Marquee</b><br>Main Boulevard, Faisalabad<br>👗 Formal — Maroon &amp; Gold theme</p>
+        <a class="btn" href="https://www.google.com/maps/search/?api=1&query=Royal+Palm+Marquee+Faisalabad" target="_blank" rel="noopener">📍 Open in Google Maps</a>
+        <p class="venue" style="margin-top:22px">Apni shirkat ki tasdeeq kar dein —<br>ye hamare liye khushi ki baat hogi.</p>
+        <p class="urdu" style="font-size:1.12rem;color:#5a4632;margin:2px 0 0">شرکت کی تصدیق کے لیے واٹس ایپ پر پیغام بھیجیں</p>
+        <a class="btn wa" href="https://wa.me/923001234567?text=Assalam-o-Alaikum!%20Main%20Ahmed%20%26%20Fatima%20ki%20shaadi%20mein%20shirkat%20ki%20tasdeeq%20karta%20hoon." target="_blank" rel="noopener">✅ WhatsApp par RSVP</a>
+        <div class="rule"></div>
+        <div class="dua arabic">بَارَكَ اللَّهُ لَكُمَا وَبَارَكَ عَلَيْكُمَا وَجَمَعَ بَيْنَكُمَا فِي خَيْرٍ</div>
+      </div>
+    </div>
+
+    <div class="brand">💌 Ye invitation <a href="https://paktoolkit.top">PakToolkit</a> se banaya gaya — apna muft banayein</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var doors = document.getElementById("doors"), wrap = document.getElementById("doorwrap");
+  var bgm = document.getElementById("bgm"), sndBtn = document.getElementById("sndBtn");
+  var mp3file = document.getElementById("mp3file"), mp3name = document.getElementById("mp3name");
+  var pickBtn = document.getElementById("pickBtn");
+  var mp3url = null;
+
+  document.getElementById("mp3btn").addEventListener("click", function(){ mp3file.click(); });
+  pickBtn.addEventListener("click", function(){ mp3file.click(); });
+
+  mp3file.addEventListener("change", function(){
+    var f = mp3file.files[0];
+    if (!f) return;
+    if (mp3url) URL.revokeObjectURL(mp3url);
+    mp3url = URL.createObjectURL(f);
+    bgm.src = mp3url;
+    mp3name.textContent = "🎵 " + f.name;
+    /* Try to start right away (the picker tap counts as a user gesture on most
+       phones); if the browser refuses, it starts on Tap to Open instead. */
+    bgm.play().then(function(){ sndBtn.style.display = "flex"; sndBtn.textContent = "🔊"; }).catch(function(){});
+  });
+
+  function petals(){
+    var syms = ["🌸","🌺","🤍","✨"], i;
+    for (i = 0; i < 26; i++){
+      var p = document.createElement("div");
+      p.className = "petal"; p.textContent = syms[i % syms.length];
+      p.style.left = (Math.random() * 96) + "vw";
+      p.style.animationDuration = (3.4 + Math.random() * 3.4) + "s";
+      p.style.animationDelay = (Math.random() * 1.6) + "s";
+      document.body.appendChild(p);
+      setTimeout((function(node){ return function(){ node.remove(); }; })(p), 9500);
+    }
+  }
+
+  document.getElementById("openBtn").addEventListener("click", function(){
+    doors.classList.add("open"); petals();
+    if (mp3url && bgm.paused){ bgm.play().then(function(){ sndBtn.style.display = "flex"; sndBtn.textContent = "🔊"; }).catch(function(){}); }
+    setTimeout(function(){ wrap.style.display = "none"; pickBtn.style.display = "flex"; window.scrollTo(0, 0); observeAll(); }, 1950);
+  });
+  sndBtn.addEventListener("click", function(){
+    if (bgm.paused){ bgm.play(); sndBtn.textContent = "🔊"; }
+    else { bgm.pause(); sndBtn.textContent = "🔇"; }
+  });
+
+  /* Section + curtain reveals — only observe AFTER the doors open, so nothing
+     is pre-triggered behind the cover. */
+  var io = null;
+  function observeAll(){
+    io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if (en.isIntersecting){ en.target.classList.add(en.target.hasAttribute("data-curtain") ? "open" : "in"); io.unobserve(en.target); }
+      });
+    }, { threshold: 0.35 });
+    document.querySelectorAll(".rise, [data-curtain]").forEach(function(n){ io.observe(n); });
+  }
+
+  /* Scratch-to-reveal on the date */
+  var sc = document.getElementById("scratch"), ctx = sc.getContext("2d");
+  var g = ctx.createLinearGradient(0, 0, 290, 96);
+  g.addColorStop(0, "#8c2438"); g.addColorStop(.5, "#a93447"); g.addColorStop(1, "#8c2438");
+  ctx.fillStyle = g; ctx.fillRect(0, 0, 290, 96);
+  ctx.strokeStyle = "rgba(232,207,122,.85)";
+  for (var x = 14; x < 290; x += 26){ ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x - 18, 96); ctx.stroke(); }
+  ctx.fillStyle = "#e8cf7a"; ctx.font = "bold 15px Georgia"; ctx.textAlign = "center";
+  ctx.fillText("✦  SCRATCH HERE  ✦", 145, 54);
+  ctx.globalCompositeOperation = "destination-out";
+  var drawing = false, cleared = false;
+  function pos(e){ var r = sc.getBoundingClientRect(); var t = e.touches ? e.touches[0] : e; return { x: (t.clientX - r.left) * (290 / r.width), y: (t.clientY - r.top) * (96 / r.height) }; }
+  function scratchAt(e){
+    if (!drawing) return;
+    var p = pos(e);
+    ctx.beginPath(); ctx.arc(p.x, p.y, 17, 0, Math.PI * 2); ctx.fill();
+    if (!cleared){
+      var d = ctx.getImageData(0, 0, 290, 96).data, clear = 0, total = 0;
+      for (var i = 3; i < d.length; i += 64){ total++; if (d[i] === 0) clear++; }
+      if (clear / total > 0.45){ cleared = true; sc.style.transition = "opacity .7s"; sc.style.opacity = "0"; setTimeout(function(){ sc.remove(); }, 750); }
+    }
+    if (e.cancelable) e.preventDefault();
+  }
+  sc.addEventListener("pointerdown", function(e){ drawing = true; scratchAt(e); });
+  window.addEventListener("pointermove", scratchAt);
+  window.addEventListener("pointerup", function(){ drawing = false; });
+  sc.addEventListener("touchstart", function(e){ drawing = true; scratchAt(e); }, { passive: false });
+  sc.addEventListener("touchmove", scratchAt, { passive: false });
+  sc.addEventListener("touchend", function(){ drawing = false; });
+
+  /* Countdown to the Barat */
+  var target = Date.UTC(2026, 11, 19, 14, 0, 0);
+  function tick(){
+    var diff = target - Date.now();
+    if (diff < 0) diff = 0;
+    var d = Math.floor(diff / 86400000), h = Math.floor(diff / 3600000) % 24, m = Math.floor(diff / 60000) % 60, s = Math.floor(diff / 1000) % 60;
+    document.getElementById("cd").textContent = d;
+    document.getElementById("ch").textContent = ("0" + h).slice(-2);
+    document.getElementById("cm").textContent = ("0" + m).slice(-2);
+    document.getElementById("cs").textContent = ("0" + s).slice(-2);
+  }
+  tick(); setInterval(tick, 1000);
+
+  /* Save the Date (.ics) */
+  document.getElementById("icsBtn").addEventListener("click", function(){
+    var ics = ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//PakToolkit//Wedding Invitation//EN","BEGIN:VEVENT",
+      "UID:ahmed-fatima-20261219@paktoolkit.top","DTSTAMP:20261109T080000Z",
+      "DTSTART:20261219T140000Z","DTEND:20261219T180000Z",
+      "SUMMARY:Barat — Muhammad Ahmed weds Fatima Noor",
+      "LOCATION:The Royal Palm Marquee\\, Main Boulevard\\, Faisalabad",
+      "DESCRIPTION:Wedding Barat of Muhammad Ahmed & Fatima Noor. Dinner 7:00 PM onwards.",
+      "END:VEVENT","END:VCALENDAR"].join("\r\n");
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([ics], { type: "text/calendar" }));
+    a.download = "ahmed-fatima-wedding.ics";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); }, 4000);
+  });
+})();
+</script>
+</body>
+</html>
