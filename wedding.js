@@ -135,9 +135,13 @@ var W_CSS = `
 #wguest .tieband.l{left:20%}#wguest .tieband.r{right:20%}
 #wguest .doors.open .tieband{opacity:1}
 #wguest .doors.settled .panel{transition-duration:.9s}
-#wguest .doors.settled .panel.left{transform:scaleX(.30) translateX(-2%);clip-path:polygon(0 0,100% 0,52% 46%,34% 100%,0 100%)}
-#wguest .doors.settled .panel.right{transform:scaleX(.30) translateX(2%);clip-path:polygon(0 0,100% 0,100% 100%,66% 100%,48% 46%)}
-#wguest .doors.settled .tieband.l{left:10.5%}#wguest .doors.settled .tieband.r{right:10.5%}
+#wguest .doors.settled .panel.left{transform:scaleX(.22) translateX(-2%);clip-path:polygon(0 0,100% 0,58% 46%,42% 100%,0 100%)}
+#wguest .doors.settled .panel.right{transform:scaleX(.22) translateX(2%);clip-path:polygon(0 0,100% 0,100% 100%,58% 100%,42% 46%)}
+#wguest .doors.settled .tieband.l{left:8%}#wguest .doors.settled .tieband.r{right:8%}
+#wguest .inv{transition:padding .9s ease}
+#wguest.has-drapes .inv{padding-left:42px;padding-right:42px}
+#wguest.has-drapes .minicurtain{margin-left:-42px;margin-right:-42px}
+#wguest.has-drapes .brand{margin-left:-42px;margin-right:-42px}
 #wguest .panel.left .knob{right:16px}#wguest .panel.right .knob{left:16px}
 #wguest.sty-arch .panel{width:100%;background:radial-gradient(circle at 20% 15%,rgba(232,207,122,.28) 0 26px,transparent 27px),radial-gradient(circle at 82% 22%,rgba(232,207,122,.22) 0 20px,transparent 21px),radial-gradient(circle at 50% 88%,rgba(232,207,122,.18) 0 30px,transparent 31px),linear-gradient(160deg,var(--deep2),var(--deep) 55%,var(--dark))}
 #wguest.sty-arch .panel.right{display:none}
@@ -409,8 +413,10 @@ function wRenderGuest(d, opts){
       if (d.style === "tieback"){
         /* Tied-back curtains STAY as a frame around the card (like the
            reference photo) — the wrap becomes click-through instead of
-           being removed. */
+           being removed, and the card gains side room so no text or
+           icons ever slide under the drapes. */
         doors.classList.add("settled"); wrap.style.pointerEvents = "none";
+        root.classList.add("has-drapes");
       } else {
         wrap.style.display = "none";
       }
