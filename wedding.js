@@ -46,7 +46,7 @@ async function wDecodePayload(s){
 /* Compact v2 payload: positional array + coded enums + day-numbers, so the
    share link stays as short as possible (long links scare guests off).
    v1 object payloads still decode — old links keep working. */
-var W_STYLES = ["curtain", "doors", "arch", "doors2", "tieback", "ref"];
+var W_STYLES = ["curtain", "doors", "arch", "doors2", "tieback", "ref", "ref2", "ref3"];
 var W_PALS_LIST = ["maroon", "green", "royal"];
 var W_TUNES_LIST = ["strings", "bells", "drone", "none"];
 var W_SHOTS_LIST = ["maroon", "green", "royal"];
@@ -256,6 +256,24 @@ var W_CSS = `
 #wguest.sty-ref .swag{margin:-12px auto -4px;width:min(66%,260px);position:relative;z-index:2;pointer-events:none}
 #wguest.sty-ref .swag img{display:block;width:100%;filter:drop-shadow(0 4px 6px rgba(90,70,20,.25))}
 #wguest.sty-ref .garden svg{filter:url(#wDeck)}
+
+#wguest.sty-ref.v2 .panel{background-color:#6e3438;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150' viewBox='0 0 150 150'%3E%3Cdefs%3E%3ClinearGradient id='bv' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23b98a84'/%3E%3Cstop offset='.55' stop-color='%238c5656'/%3E%3Cstop offset='1' stop-color='%235f2f33'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg transform='translate(0 0) scale(1)'%3E%3Cpath d='M26 126 Q38 76 76 28' stroke='%233d1420' stroke-width='3.4' fill='none' transform='translate(1.6 2)'/%3E%3Cellipse cx='42' cy='90' rx='13' ry='6' transform='rotate(-38 42 90) translate(1.7 2)' fill='%233d1420'/%3E%3Cellipse cx='56' cy='62' rx='14' ry='6.5' transform='rotate(-38 56 62) translate(1.7 2)' fill='%233d1420'/%3E%3Cellipse cx='38' cy='96' rx='12' ry='5.5' transform='rotate(24 38 96) translate(1.7 2)' fill='%233d1420'/%3E%3Cellipse cx='54' cy='70' rx='12' ry='5.5' transform='rotate(24 54 70) translate(1.7 2)' fill='%233d1420'/%3E%3Cellipse cx='74' cy='34' rx='12' ry='5.5' transform='rotate(-30 74 34) translate(1.7 2)' fill='%233d1420'/%3E%3Cpath d='M26 126 Q38 76 76 28' stroke='%237a4453' stroke-width='3' fill='none'/%3E%3Cellipse cx='42' cy='90' rx='13' ry='6' transform='rotate(-38 42 90) translate(-1.5 -1.6)' fill='%23d9a7a0' opacity='.55'/%3E%3Cellipse cx='56' cy='62' rx='14' ry='6.5' transform='rotate(-38 56 62) translate(-1.5 -1.6)' fill='%23d9a7a0' opacity='.55'/%3E%3Cellipse cx='38' cy='96' rx='12' ry='5.5' transform='rotate(24 38 96) translate(-1.5 -1.6)' fill='%23d9a7a0' opacity='.55'/%3E%3Cellipse cx='54' cy='70' rx='12' ry='5.5' transform='rotate(24 54 70) translate(-1.5 -1.6)' fill='%23d9a7a0' opacity='.55'/%3E%3Cellipse cx='74' cy='34' rx='12' ry='5.5' transform='rotate(-30 74 34) translate(-1.5 -1.6)' fill='%23d9a7a0' opacity='.55'/%3E%3Cellipse cx='42' cy='90' rx='13' ry='6' transform='rotate(-38 42 90)' fill='url(%23bv)'/%3E%3Cellipse cx='56' cy='62' rx='14' ry='6.5' transform='rotate(-38 56 62)' fill='url(%23bv)'/%3E%3Cellipse cx='38' cy='96' rx='12' ry='5.5' transform='rotate(24 38 96)' fill='url(%23bv)'/%3E%3Cellipse cx='54' cy='70' rx='12' ry='5.5' transform='rotate(24 54 70)' fill='url(%23bv)'/%3E%3Cellipse cx='74' cy='34' rx='12' ry='5.5' transform='rotate(-30 74 34)' fill='url(%23bv)'/%3E%3C/g%3E%3Cg transform='translate(86 80) scale(0.8)'%3E%3Cpath d='M26 126 Q38 76 76 28' stroke='%233d1420' stroke-width='3.4' fill='none' transform='translate(1.6 2)'/%3E%3Cellipse cx='42' cy='90' rx='13' ry='6' transform='rotate(-38 42 90) translate(1.7 2)' fill='%233d1420'/%3E%3Cellipse cx='56' cy='62' rx='14' ry='6.5' transform='rotate(-38 56 62) translate(1.7 2)' fill='%233d1420'/%3E%3Cellipse cx='38' cy='96' rx='12' ry='5.5' transform='rotate(24 38 96) translate(1.7 2)' fill='%233d1420'/%3E%3Cellipse cx='54' cy='70' rx='12' ry='5.5' transform='rotate(24 54 70) translate(1.7 2)' fill='%233d1420'/%3E%3Cellipse cx='74' cy='34' rx='12' ry='5.5' transform='rotate(-30 74 34) translate(1.7 2)' fill='%233d1420'/%3E%3Cpath d='M26 126 Q38 76 76 28' stroke='%237a4453' stroke-width='3' fill='none'/%3E%3Cellipse cx='42' cy='90' rx='13' ry='6' transform='rotate(-38 42 90) translate(-1.5 -1.6)' fill='%23d9a7a0' opacity='.55'/%3E%3Cellipse cx='56' cy='62' rx='14' ry='6.5' transform='rotate(-38 56 62) translate(-1.5 -1.6)' fill='%23d9a7a0' opacity='.55'/%3E%3Cellipse cx='38' cy='96' rx='12' ry='5.5' transform='rotate(24 38 96) translate(-1.5 -1.6)' fill='%23d9a7a0' opacity='.55'/%3E%3Cellipse cx='54' cy='70' rx='12' ry='5.5' transform='rotate(24 54 70) translate(-1.5 -1.6)' fill='%23d9a7a0' opacity='.55'/%3E%3Cellipse cx='74' cy='34' rx='12' ry='5.5' transform='rotate(-30 74 34) translate(-1.5 -1.6)' fill='%23d9a7a0' opacity='.55'/%3E%3Cellipse cx='42' cy='90' rx='13' ry='6' transform='rotate(-38 42 90)' fill='url(%23bv)'/%3E%3Cellipse cx='56' cy='62' rx='14' ry='6.5' transform='rotate(-38 56 62)' fill='url(%23bv)'/%3E%3Cellipse cx='38' cy='96' rx='12' ry='5.5' transform='rotate(24 38 96)' fill='url(%23bv)'/%3E%3Cellipse cx='54' cy='70' rx='12' ry='5.5' transform='rotate(24 54 70)' fill='url(%23bv)'/%3E%3Cellipse cx='74' cy='34' rx='12' ry='5.5' transform='rotate(-30 74 34)' fill='url(%23bv)'/%3E%3C/g%3E%3C/svg%3E"),linear-gradient(160deg,#8a4a4a,#6e3438 55%,#52262b)}
+#wguest.sty-ref.v3 .panel{background-color:#34486e;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150' viewBox='0 0 150 150'%3E%3Cdefs%3E%3ClinearGradient id='bv' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%238498b9'/%3E%3Cstop offset='.55' stop-color='%23566b8c'/%3E%3Cstop offset='1' stop-color='%232f3f5f'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cg transform='translate(0 0) scale(1)'%3E%3Cpath d='M26 126 Q38 76 76 28' stroke='%2314223d' stroke-width='3.4' fill='none' transform='translate(1.6 2)'/%3E%3Cellipse cx='42' cy='90' rx='13' ry='6' transform='rotate(-38 42 90) translate(1.7 2)' fill='%2314223d'/%3E%3Cellipse cx='56' cy='62' rx='14' ry='6.5' transform='rotate(-38 56 62) translate(1.7 2)' fill='%2314223d'/%3E%3Cellipse cx='38' cy='96' rx='12' ry='5.5' transform='rotate(24 38 96) translate(1.7 2)' fill='%2314223d'/%3E%3Cellipse cx='54' cy='70' rx='12' ry='5.5' transform='rotate(24 54 70) translate(1.7 2)' fill='%2314223d'/%3E%3Cellipse cx='74' cy='34' rx='12' ry='5.5' transform='rotate(-30 74 34) translate(1.7 2)' fill='%2314223d'/%3E%3Cpath d='M26 126 Q38 76 76 28' stroke='%2344597a' stroke-width='3' fill='none'/%3E%3Cellipse cx='42' cy='90' rx='13' ry='6' transform='rotate(-38 42 90) translate(-1.5 -1.6)' fill='%23a0b4d9' opacity='.55'/%3E%3Cellipse cx='56' cy='62' rx='14' ry='6.5' transform='rotate(-38 56 62) translate(-1.5 -1.6)' fill='%23a0b4d9' opacity='.55'/%3E%3Cellipse cx='38' cy='96' rx='12' ry='5.5' transform='rotate(24 38 96) translate(-1.5 -1.6)' fill='%23a0b4d9' opacity='.55'/%3E%3Cellipse cx='54' cy='70' rx='12' ry='5.5' transform='rotate(24 54 70) translate(-1.5 -1.6)' fill='%23a0b4d9' opacity='.55'/%3E%3Cellipse cx='74' cy='34' rx='12' ry='5.5' transform='rotate(-30 74 34) translate(-1.5 -1.6)' fill='%23a0b4d9' opacity='.55'/%3E%3Cellipse cx='42' cy='90' rx='13' ry='6' transform='rotate(-38 42 90)' fill='url(%23bv)'/%3E%3Cellipse cx='56' cy='62' rx='14' ry='6.5' transform='rotate(-38 56 62)' fill='url(%23bv)'/%3E%3Cellipse cx='38' cy='96' rx='12' ry='5.5' transform='rotate(24 38 96)' fill='url(%23bv)'/%3E%3Cellipse cx='54' cy='70' rx='12' ry='5.5' transform='rotate(24 54 70)' fill='url(%23bv)'/%3E%3Cellipse cx='74' cy='34' rx='12' ry='5.5' transform='rotate(-30 74 34)' fill='url(%23bv)'/%3E%3C/g%3E%3Cg transform='translate(86 80) scale(0.8)'%3E%3Cpath d='M26 126 Q38 76 76 28' stroke='%2314223d' stroke-width='3.4' fill='none' transform='translate(1.6 2)'/%3E%3Cellipse cx='42' cy='90' rx='13' ry='6' transform='rotate(-38 42 90) translate(1.7 2)' fill='%2314223d'/%3E%3Cellipse cx='56' cy='62' rx='14' ry='6.5' transform='rotate(-38 56 62) translate(1.7 2)' fill='%2314223d'/%3E%3Cellipse cx='38' cy='96' rx='12' ry='5.5' transform='rotate(24 38 96) translate(1.7 2)' fill='%2314223d'/%3E%3Cellipse cx='54' cy='70' rx='12' ry='5.5' transform='rotate(24 54 70) translate(1.7 2)' fill='%2314223d'/%3E%3Cellipse cx='74' cy='34' rx='12' ry='5.5' transform='rotate(-30 74 34) translate(1.7 2)' fill='%2314223d'/%3E%3Cpath d='M26 126 Q38 76 76 28' stroke='%2344597a' stroke-width='3' fill='none'/%3E%3Cellipse cx='42' cy='90' rx='13' ry='6' transform='rotate(-38 42 90) translate(-1.5 -1.6)' fill='%23a0b4d9' opacity='.55'/%3E%3Cellipse cx='56' cy='62' rx='14' ry='6.5' transform='rotate(-38 56 62) translate(-1.5 -1.6)' fill='%23a0b4d9' opacity='.55'/%3E%3Cellipse cx='38' cy='96' rx='12' ry='5.5' transform='rotate(24 38 96) translate(-1.5 -1.6)' fill='%23a0b4d9' opacity='.55'/%3E%3Cellipse cx='54' cy='70' rx='12' ry='5.5' transform='rotate(24 54 70) translate(-1.5 -1.6)' fill='%23a0b4d9' opacity='.55'/%3E%3Cellipse cx='74' cy='34' rx='12' ry='5.5' transform='rotate(-30 74 34) translate(-1.5 -1.6)' fill='%23a0b4d9' opacity='.55'/%3E%3Cellipse cx='42' cy='90' rx='13' ry='6' transform='rotate(-38 42 90)' fill='url(%23bv)'/%3E%3Cellipse cx='56' cy='62' rx='14' ry='6.5' transform='rotate(-38 56 62)' fill='url(%23bv)'/%3E%3Cellipse cx='38' cy='96' rx='12' ry='5.5' transform='rotate(24 38 96)' fill='url(%23bv)'/%3E%3Cellipse cx='54' cy='70' rx='12' ry='5.5' transform='rotate(24 54 70)' fill='url(%23bv)'/%3E%3Cellipse cx='74' cy='34' rx='12' ry='5.5' transform='rotate(-30 74 34)' fill='url(%23bv)'/%3E%3C/g%3E%3C/svg%3E"),linear-gradient(160deg,#4a5f8a,#34486e 55%,#263452)}
+#wguest.sty-ref.v2 .cpanel{filter:sepia(.5) hue-rotate(-32deg) saturate(1.3) brightness(1.01)}
+#wguest.sty-ref.v3 .cpanel{filter:sepia(.4) hue-rotate(175deg) saturate(.55) brightness(1.07)}
+#wguest.sty-ref.v2 .inv{background:radial-gradient(circle at 15% 4%,rgba(201,120,130,.16),transparent 42%),radial-gradient(circle at 85% 30%,rgba(201,120,130,.12),transparent 42%),#fdf0e9}
+#wguest.sty-ref.v3 .inv{background:radial-gradient(circle at 15% 4%,rgba(110,140,200,.16),transparent 42%),radial-gradient(circle at 85% 30%,rgba(110,140,200,.12),transparent 42%),#edf1fa}
+#wguest.sty-ref.v2 .frame{background:rgba(255,246,242,.62)}
+#wguest.sty-ref.v3 .frame{background:rgba(246,249,255,.62)}
+#wguest.sty-ref.v2 .plaquehalf{width:79px;height:158px}
+#wguest.sty-ref.v2 .plaquefull{width:158px;height:158px;border-radius:50%;background:radial-gradient(circle at 50% 40%,#8c2b3e,#671c2c 72%,#571624);border:2px solid #d9b96a;color:#f7ead0;box-shadow:inset 0 0 0 5px #7c2233,inset 0 0 0 6.5px rgba(217,185,106,.8),0 10px 26px rgba(0,0,0,.35)}
+#wguest.sty-ref.v2 .plaquehalf.r .plaquefull{left:-79px}
+#wguest.sty-ref.v2 .plaquefull .orn{color:#e8cf7a}
+#wguest.sty-ref.v2 .plaquefull .ps{color:#d9b96a}
+#wguest.sty-ref.v3 .plaquefull{background:radial-gradient(ellipse at 50% 42%,#33549e,#22386e 72%,#1a2c58);border:none;border-radius:0;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);color:#eef2ff;box-shadow:none}
+#wguest.sty-ref.v3 .plaquefull::after{content:"";position:absolute;left:50%;top:50%;width:102px;height:102px;transform:translate(-50%,-50%) rotate(45deg);border:1.5px solid rgba(215,224,245,.85);pointer-events:none}
+#wguest.sty-ref.v3 .plaquefull .orn{color:#c9a227}
+#wguest.sty-ref.v3 .plaquefull .ps{color:#b9c8ee}
 #wguest.sty-ref .garden .flimg{position:absolute;bottom:-4px;width:47%;max-width:195px;mix-blend-mode:multiply;pointer-events:none;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 30%,#000 86%,transparent 99%);mask-image:linear-gradient(180deg,transparent 0,#000 30%,#000 86%,transparent 99%)}
 #wguest.sty-ref .garden .flimg.l{left:-8px}
 #wguest.sty-ref .garden .flimg.r{right:-8px;transform:scaleX(-1)}
@@ -294,13 +312,14 @@ var W_GARDEN_SVG = "<svg viewBox='0 0 400 118' xmlns='http://www.w3.org/2000/svg
 
 var W_ORN_SVG = "<svg viewBox='0 0 54 54' xmlns='http://www.w3.org/2000/svg'><path d='M7 47 C7 22 22 7 47 7' fill='none' stroke='currentColor' stroke-width='2.2'/><circle cx='14.5' cy='14.5' r='3.6' fill='none' stroke='currentColor' stroke-width='1.8'/><path d='M24 8.5 q7 -3.5 10 1 q-6 3 -10 -1' fill='currentColor'/><path d='M8.5 24 q-3.5 7 1 10 q3 -6 -1 -10' fill='currentColor'/><circle cx='47' cy='7' r='2.2' fill='currentColor'/><circle cx='7' cy='47' r='2.2' fill='currentColor'/></svg>";
 function wRenderGuest(d, opts){
+  var fam = d.style === "ref" || d.style === "ref2" || d.style === "ref3";
   opts = opts || {};
   wLoadFonts(); wInjectCSS();
   document.body.style.overflow = "hidden";
   var main = (typeof d.main === "number" && d.ev[d.main]) ? d.main : Math.min(1, d.ev.length - 1);
   var mev = d.ev[main];
   var root = el("div"); root.id = "wguest";
-  root.className = "pal-" + (d.pal || "maroon") + " sty-" + (d.style || "curtain");
+  root.className = "pal-" + (d.pal || "maroon") + " sty-" + (fam ? "ref" : (d.style || "curtain")) + (d.style === "ref2" ? " v2" : (d.style === "ref3" ? " v3" : ""));
   var stage = el("div"); stage.className = "stage"; root.appendChild(stage);
   /* ---- cover ---- */
   var wrap = el("div"); wrap.className = "doorwrap";
@@ -308,7 +327,7 @@ function wRenderGuest(d, opts){
   var pl = el("div"); pl.className = "panel left"; var pr = el("div"); pr.className = "panel right";
   if (d.style === "doors"){ var k1 = el("div"); k1.className = "knob"; pl.appendChild(k1); var k2 = el("div"); k2.className = "knob"; pr.appendChild(k2); }
   doors.appendChild(pl); doors.appendChild(pr);
-  if (d.style === "ref"){
+  if (fam){
     /* Reference opening: the TAP TO OPEN plaque lives IN the doors (one
        half per door) so it splits down the middle as they slide apart,
        and a cream pleated curtain waits behind them. */
@@ -350,7 +369,7 @@ function wRenderGuest(d, opts){
     coverSrc = "data:image/" + (hp.charAt(0) === "j" ? "jpeg" : "webp") + ";base64," + wB64UrlToStd(hp.slice(2));
   }
   else if (d.shot && window.W_SHOTS && W_SHOTS[d.shot]) coverSrc = W_SHOTS[d.shot];
-  if (coverSrc && d.style !== "ref"){
+  if (coverSrc && !fam){
     doors.classList.add("withphoto");
     var cimg = document.createElement("img");
     cimg.className = "coverphoto"; cimg.src = coverSrc; cimg.alt = "Couple photo";
@@ -364,13 +383,13 @@ function wRenderGuest(d, opts){
       dcIn.insertBefore(mono2, dcIn.children[1] || null);
     };
     dcIn.appendChild(cimg);
-  } else if (d.style !== "ref") {
+  } else if (!fam) {
     var mono = el("div"); mono.className = "mono";
     var ini = el("div"); ini.className = "ini"; ini.textContent = (d.g || "G").charAt(0).toUpperCase() + " ♥ " + (d.b || "B").charAt(0).toUpperCase(); mono.appendChild(ini);
     var sm = el("div"); sm.className = "sm"; sm.textContent = "WEDDING"; mono.appendChild(sm); dcIn.appendChild(mono);
   }
-  if (d.style !== "ref"){ var h1 = el("h1"); h1.textContent = "Assalam-o-Alaikum"; dcIn.appendChild(h1); }
-  if (d.style !== "ref"){ var dcn = el("div"); dcn.className = "dcnames"; dcn.textContent = (d.g || "").toUpperCase() + "  ·  " + (d.b || "").toUpperCase(); dcIn.appendChild(dcn); }
+  if (!fam){ var h1 = el("h1"); h1.textContent = "Assalam-o-Alaikum"; dcIn.appendChild(h1); }
+  if (!fam){ var dcn = el("div"); dcn.className = "dcnames"; dcn.textContent = (d.g || "").toUpperCase() + "  ·  " + (d.b || "").toUpperCase(); dcIn.appendChild(dcn); }
   if (d.style !== "ref" && (d.gu || d.bu)){ var dcu = el("div"); dcu.className = "dcunames urdu"; dcu.textContent = (d.gu || d.g) + " ♥ " + (d.bu || d.b); dcIn.appendChild(dcu); }
   var tap = el("button", "💌 Tap to Open"); tap.className = "tap"; dcIn.appendChild(tap);
   var hint = el("div"); hint.className = "hint"; hint.textContent = "Dawwat-nama kholne ke liye dabayein" + (d.tune && d.tune !== "none" ? " — dhun saath bajegi" : ""); dcIn.appendChild(hint);
@@ -379,13 +398,13 @@ function wRenderGuest(d, opts){
   /* ---- invitation body ---- */
   var inv = el("div"); inv.className = "inv";
   var val = el("div"); val.className = "valance"; inv.appendChild(val);
-  if (d.style === "ref" && window.W_FLORAL_A){
+  if (fam && window.W_FLORAL_A){
     var sw = el("div"); sw.className = "swag";
     var swi = document.createElement("img"); swi.src = window.W_FLORAL_A; swi.alt = "";
     sw.appendChild(swi); inv.appendChild(sw);
   }
   var frame = el("div"); frame.className = "frame"; inv.appendChild(frame);
-  if (d.style === "ref"){
+  if (fam){
     ["tl", "tr", "bl", "br"].forEach(function(pos){
       var oc = el("i"); oc.className = "ornc " + pos; oc.innerHTML = W_ORN_SVG; frame.appendChild(oc);
     });
@@ -403,13 +422,13 @@ function wRenderGuest(d, opts){
   if (d.bf){ var bf = el("p"); bf.className = "dof"; bf.textContent = d.bf; frame.appendChild(bf); }
   if (d.gu || d.bu){ var un = el("div"); un.className = "unames2 urdu"; un.textContent = (d.gu || d.g) + " ♥ " + (d.bu || d.b); frame.appendChild(un); }
   var ui2 = el("p"); ui2.className = "uinvite urdu"; ui2.textContent = "آپ کی شرکت ہمارے لیے باعثِ مسرت و افتخار ہوگی"; frame.appendChild(ui2);
-  if (d.style === "ref" && coverSrc){
+  if (fam && coverSrc){
     var fimg = document.createElement("img"); fimg.className = "coverphoto"; fimg.src = coverSrc; fimg.alt = "Couple photo";
     fimg.onerror = function(){ fimg.remove(); };
     frame.insertBefore(fimg, frame.children[1] || null);
   }
   var rule = el("div"); rule.className = "rule"; frame.appendChild(rule);
-  if (d.style === "ref"){ var gd = el("div"); gd.className = "garden"; gd.innerHTML = W_GARDEN_SVG;
+  if (fam){ var gd = el("div"); gd.className = "garden"; gd.innerHTML = W_GARDEN_SVG;
     if (window.W_FLORAL){
       var fi1 = document.createElement("img"); fi1.className = "flimg l"; fi1.src = window.W_FLORAL; fi1.alt = "";
       var fi2 = document.createElement("img"); fi2.className = "flimg r"; fi2.src = window.W_FLORAL; fi2.alt = "";
@@ -512,7 +531,7 @@ function wRenderGuest(d, opts){
     root.querySelectorAll(".rise, [data-curtain]").forEach(function(n){ io2.observe(n); });
   }
   tap.addEventListener("click", function(){
-    var useGsap = d.style === "ref" && window.gsap && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var useGsap = fam && window.gsap && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (useGsap) doors.classList.add("gsap");
     else if (d.style === "doors2") doors.classList.add("dopen"); else doors.classList.add("open");
     if (opts.preview && wMp3){
@@ -552,9 +571,9 @@ function wRenderGuest(d, opts){
       return;
     }
     if (d.style === "doors2") setTimeout(function(){ doors.classList.add("copen"); }, 2350);
-    if (d.style === "ref") setTimeout(function(){ doors.classList.add("copen"); }, 1500);
+    if (fam) setTimeout(function(){ doors.classList.add("copen"); }, 1500);
     setTimeout(function(){
-      if (d.style === "tieback" || d.style === "ref"){
+      if (d.style === "tieback" || fam){
         /* Tied-back curtains STAY as a frame around the card (like the
            reference photo) — the wrap becomes click-through instead of
            being removed, and the card gains side room so no text or
@@ -569,7 +588,7 @@ function wRenderGuest(d, opts){
         entries.forEach(function(en){ if (en.isIntersecting){ en.target.classList.add(en.target.hasAttribute("data-curtain") ? "open" : "in"); io.unobserve(en.target); } });
       }, { root: root, threshold: 0.3 });
       root.querySelectorAll(".rise, [data-curtain]").forEach(function(n){ io.observe(n); });
-    }, d.style === "doors2" ? 4600 : (d.style === "ref" ? 3400 : (d.style === "tieback" ? 2500 : (d.style === "doors" ? 2100 : 1950))));
+    }, d.style === "doors2" ? 4600 : (fam ? 3400 : (d.style === "tieback" ? 2500 : (d.style === "doors" ? 2100 : 1950))));
   });
   var sndOn = true;
   snd.addEventListener("click", function(){
