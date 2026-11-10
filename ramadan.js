@@ -360,9 +360,32 @@ function initRamadan(){
   var pngBtn = document.getElementById("r-png");
   if (pngBtn) pngBtn.addEventListener("click", async function(){
     status.className = "result show"; status.textContent = "Tasveer tayyar ho rahi hai…";
+    var node = document.getElementById("r-sheet-inner");
+    var hp = node ? node.querySelector(".hphoto") : null;
+    var hi = hp ? hp.querySelector("img") : null;
+    var origSrc = null, origFit = null;
     try {
       if (!window.html2canvas) await loadScript("https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js");
-      var node = document.getElementById("r-sheet-inner");
+      /* html2canvas ignores object-fit and stretches the header photo flat.
+         Pre-crop the photo to the strip's exact shape on a canvas first,
+         swap it in for the capture, then restore the original. */
+      if (hi && hi.naturalWidth){
+        try {
+          var tw = hp.clientWidth, th = hp.clientHeight;
+          var iw = hi.naturalWidth, ih = hi.naturalHeight;
+          var sc = Math.max(tw / iw, th / ih);
+          var sw = tw / sc, sh = th / sc;
+          var posParts = (currentPhoto.pos || "center 50%").split(" ");
+          var py = parseFloat(posParts[1]) || 50;
+          var sx = (iw - sw) / 2, sy = (ih - sh) * py / 100;
+          var cv = document.createElement("canvas"); cv.width = tw * 2; cv.height = th * 2;
+          cv.getContext("2d").drawImage(hi, sx, sy, sw, sh, 0, 0, cv.width, cv.height);
+          origSrc = hi.getAttribute("src"); origFit = hi.style.objectFit;
+          hi.style.objectFit = "fill";
+          hi.src = cv.toDataURL("image/jpeg", 0.92);
+          await new Promise(function(r){ if (hi.complete) r(); else { hi.onload = r; hi.onerror = r; } });
+        } catch (e2) { origSrc = null; }
+      }
       var canvas = await window.html2canvas(node, { scale: 2, useCORS: true, backgroundColor: "#fdfaf0" });
       var a = document.createElement("a");
       a.download = "ramadan-calendar-" + (R_CITIES[+citySel.value || 0][0] || "calendar").toLowerCase() + ".png";
@@ -371,6 +394,8 @@ function initRamadan(){
       status.textContent = "Tasveer download ho gayi ✓ — WhatsApp par share kar dein.";
     } catch (e) {
       status.textContent = "Tasveer nahi ban saki — Print / PDF wala button istemal kar lein.";
+    } finally {
+      if (hi && origSrc){ hi.src = origSrc; hi.style.objectFit = origFit || ""; }
     }
   });
   var printBtn = document.getElementById("r-print");
