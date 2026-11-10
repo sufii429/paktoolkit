@@ -248,6 +248,18 @@ function initCompress(){
     out.textContent = ""; status.textContent = "";
     if (!f) { status.textContent = "Please choose an image first."; return; }
     var target = (num("c-target") || 200) * 1024;
+    if (f.size <= target){
+      /* Already under the target — hand the original back untouched instead
+         of re-encoding it smaller for no reason (audit follow-up, 2026-11-10:
+         a 9.3 KB photo with a 20 KB target was being squashed to 5 KB). */
+      out.className = "result show";
+      out.appendChild(el("p", "Before: " + fmtN(f.size / 1024, 1) + " KB  →  After: " + fmtN(f.size / 1024, 1) + " KB — your image is already under the target, so it is kept exactly as it is (best quality)."));
+      var pv0 = document.createElement("img"); pv0.className = "preview"; pv0.alt = "Compressed image preview";
+      pv0.src = URL.createObjectURL(f); out.appendChild(pv0);
+      out.appendChild(download(URL.createObjectURL(f), f.name));
+      status.textContent = "";
+      return;
+    }
     status.textContent = "Working on: " + f.name + " (" + fmtN(f.size / 1024, 1) + " KB)";
     try {
       var img = await fileToImage(f);
