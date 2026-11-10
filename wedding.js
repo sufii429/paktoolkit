@@ -221,14 +221,16 @@ var W_CSS = `
 #wguest.sty-ref .cpanel{position:absolute;top:0;width:50.5%;height:100%;z-index:1;background:repeating-linear-gradient(90deg,#e2d0a9 0 13px,#f8eed4 13px 25px,#d9c69c 25px 38px,#f2e4c0 38px 52px);transition:transform 1.7s cubic-bezier(.7,0,.25,1);box-shadow:inset 0 0 46px rgba(120,90,30,.25);will-change:transform}
 #wguest.sty-ref .cpanel.left{left:0}
 #wguest.sty-ref .cpanel.right{right:0}
+#wguest.sty-ref .cpanel::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(120,90,30,.16) 0 5px,transparent 5px 11px,rgba(255,255,255,.22) 11px 16px,transparent 16px 23px);opacity:0;transition:opacity 1.2s ease;pointer-events:none}
+#wguest.sty-ref .doors.settled .cpanel::before{opacity:1}
 #wguest.sty-ref .cpanel::after{content:"";position:absolute;top:0;bottom:0;width:11px;background-image:radial-gradient(circle at 50% 6px,#c9a227 2.1px,rgba(201,162,39,.35) 2.9px,transparent 3.4px);background-size:11px 13px;background-repeat:repeat-y}
 #wguest.sty-ref .cpanel.left::after{right:0;border-left:2px solid rgba(201,162,39,.55)}
 #wguest.sty-ref .cpanel.right::after{left:0;border-right:2px solid rgba(201,162,39,.55)}
 #wguest.sty-ref .doors.copen .cpanel.left{transform:translateX(-86%)}
 #wguest.sty-ref .doors.copen .cpanel.right{transform:translateX(86%)}
 #wguest.sty-ref .doors.settled .cpanel{transition-duration:1s}
-#wguest.sty-ref .doors.settled .cpanel.left{transform:translateX(-89%)}
-#wguest.sty-ref .doors.settled .cpanel.right{transform:translateX(89%)}
+#wguest.sty-ref .doors.settled .cpanel.left{transform:translateX(-82%)}
+#wguest.sty-ref .doors.settled .cpanel.right{transform:translateX(82%)}
 #wguest.sty-ref .plaquehalf{position:absolute;top:50%;width:96px;height:158px;overflow:hidden;transform:translateY(-50%);z-index:2;pointer-events:none}
 #wguest.sty-ref .plaquehalf.l{right:0}
 #wguest.sty-ref .plaquehalf.r{left:0}
