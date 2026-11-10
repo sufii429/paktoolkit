@@ -46,7 +46,7 @@ async function wDecodePayload(s){
 /* Compact v2 payload: positional array + coded enums + day-numbers, so the
    share link stays as short as possible (long links scare guests off).
    v1 object payloads still decode — old links keep working. */
-var W_STYLES = ["curtain", "doors", "arch", "doors2", "tieback"];
+var W_STYLES = ["curtain", "doors", "arch", "doors2", "tieback", "ref"];
 var W_PALS_LIST = ["maroon", "green", "royal"];
 var W_TUNES_LIST = ["strings", "bells", "drone", "none"];
 var W_SHOTS_LIST = ["maroon", "green", "royal"];
@@ -87,7 +87,7 @@ function wDateLong(ev){
 function wLoadFonts(){
   if (document.getElementById("w-fonts")) return;
   var l1 = document.createElement("link"); l1.rel = "stylesheet";
-  l1.href = "https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap";
+  l1.href = "https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Great+Vibes&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap";
   var l2 = document.createElement("link"); l2.rel = "stylesheet"; l2.id = "w-fonts";
   l2.href = "https://fonts.cdnfonts.com/css/jameel-noori-nastaleeq";
   document.head.appendChild(l1); document.head.appendChild(l2);
@@ -175,13 +175,13 @@ var W_CSS = `
 #wguest .frame{border:2px solid var(--gold);outline:1px solid rgba(201,162,39,.5);outline-offset:5px;padding:22px 16px 20px;background:rgba(255,255,255,.55);margin-top:14px}
 #wguest .inv .bismillah{color:var(--deep);font-size:1.42rem}
 #wguest .host{font-size:.97rem;line-height:1.65;color:#5a4632}
-#wguest .big{font-size:2rem;color:var(--deep);margin:10px 0 0;font-style:italic;line-height:1.25}
+#wguest .big{font-family:'Great Vibes',Georgia,serif;font-size:2.85rem;color:var(--deep);margin:8px 0 0;line-height:1.2;font-weight:normal}
 #wguest .unames2{font-size:1.42rem;color:#7c5a17;margin-top:8px}
 #wguest .uinvite{font-size:1.1rem;color:#5a4632;margin-top:10px}
 #wguest .weds{color:var(--gold);font-size:1.45rem;margin:2px 0}
 #wguest .dof{font-size:.92rem;color:#5a4632}
 #wguest .rule{width:120px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:16px auto}
-#wguest h2.sec{font-size:1rem;letter-spacing:.28em;color:var(--deep);margin:26px 0 2px;text-transform:uppercase}
+#wguest h2.sec{font-family:'Great Vibes',Georgia,serif;font-size:2.05rem;font-weight:normal;color:var(--deep);margin:24px 0 0}
 #wguest .secsub{font-size:1.08rem;color:#7c5a17;margin-bottom:10px}
 #wguest .scratchbox{position:relative;width:290px;max-width:88%;margin:0 auto;border-radius:16px;overflow:hidden;border:2px solid var(--gold);background:#fff}
 #wguest .scratchdate{padding:20px 10px 16px}
@@ -209,6 +209,41 @@ var W_CSS = `
 #wguest .petal{position:fixed;top:-4vh;z-index:240;font-size:15px;pointer-events:none;animation:wfall linear forwards}
 @keyframes wfall{to{transform:translateY(108vh) rotate(340deg);opacity:.25}}
 #wguest .sndbtn{position:fixed;right:14px;bottom:14px;z-index:260;width:48px;height:48px;border-radius:50%;border:2px solid var(--gold);background:var(--deep);color:#fff;font-size:1.25rem;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 16px rgba(0,0,0,.35)}
+
+/* ---- sty-ref: the reference-video opening — deep-green botanical doors with a
+   split TAP TO OPEN plaque, a cream pleated curtain behind them that parts and
+   settles as slim side drapes, a cream swag valance and a paper garden hero ---- */
+#wguest.sty-ref .panel{overflow:hidden;z-index:2;background-color:#43563c;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150' viewBox='0 0 150 150'%3E%3Cg fill='%232e4023' opacity='.5'%3E%3Cpath d='M28 128 Q40 78 78 30' stroke='%232e4023' stroke-width='3' fill='none'/%3E%3Cellipse cx='44' cy='92' rx='13' ry='6' transform='rotate(-38 44 92)'/%3E%3Cellipse cx='58' cy='64' rx='14' ry='6.5' transform='rotate(-38 58 64)'/%3E%3Cellipse cx='40' cy='98' rx='12' ry='5.5' transform='rotate(24 40 98)'/%3E%3Cellipse cx='56' cy='72' rx='12' ry='5.5' transform='rotate(24 56 72)'/%3E%3Cellipse cx='76' cy='36' rx='12' ry='5.5' transform='rotate(-30 76 36)'/%3E%3C/g%3E%3Cg fill='%237d9168' opacity='.85'%3E%3Cpath d='M26 126 Q38 76 76 28' stroke='%237d9168' stroke-width='3' fill='none'/%3E%3Cellipse cx='42' cy='90' rx='13' ry='6' transform='rotate(-38 42 90)'/%3E%3Cellipse cx='56' cy='62' rx='14' ry='6.5' transform='rotate(-38 56 62)'/%3E%3Cellipse cx='38' cy='96' rx='12' ry='5.5' transform='rotate(24 38 96)'/%3E%3Cellipse cx='54' cy='70' rx='12' ry='5.5' transform='rotate(24 54 70)'/%3E%3Cellipse cx='74' cy='34' rx='12' ry='5.5' transform='rotate(-30 74 34)'/%3E%3C/g%3E%3C/svg%3E"),linear-gradient(160deg,#5d7052,#43563c 55%,#37482f);transition:transform 1.7s cubic-bezier(.7,0,.25,1);box-shadow:inset 0 0 60px rgba(0,0,0,.45)}
+#wguest.sty-ref .panel.left{border-right:2px solid var(--gold)}
+#wguest.sty-ref .panel.right{border-left:2px solid var(--gold)}
+#wguest.sty-ref .doors.open .panel.left{transform:translateX(-104%)}
+#wguest.sty-ref .doors.open .panel.right{transform:translateX(104%)}
+#wguest.sty-ref .cpanel{position:absolute;top:0;width:50.5%;height:100%;z-index:1;background:repeating-linear-gradient(90deg,#e2d0a9 0 13px,#f8eed4 13px 25px,#d9c69c 25px 38px,#f2e4c0 38px 52px);transition:transform 1.7s cubic-bezier(.7,0,.25,1);box-shadow:inset 0 0 46px rgba(120,90,30,.25);will-change:transform}
+#wguest.sty-ref .cpanel.left{left:0}
+#wguest.sty-ref .cpanel.right{right:0}
+#wguest.sty-ref .cpanel::after{content:"";position:absolute;top:0;bottom:0;width:11px;background-image:radial-gradient(circle at 50% 6px,#c9a227 2.1px,rgba(201,162,39,.35) 2.9px,transparent 3.4px);background-size:11px 13px;background-repeat:repeat-y}
+#wguest.sty-ref .cpanel.left::after{right:0;border-left:2px solid rgba(201,162,39,.55)}
+#wguest.sty-ref .cpanel.right::after{left:0;border-right:2px solid rgba(201,162,39,.55)}
+#wguest.sty-ref .doors.copen .cpanel.left{transform:translateX(-86%)}
+#wguest.sty-ref .doors.copen .cpanel.right{transform:translateX(86%)}
+#wguest.sty-ref .doors.settled .cpanel{transition-duration:1s}
+#wguest.sty-ref .doors.settled .cpanel.left{transform:translateX(-93%)}
+#wguest.sty-ref .doors.settled .cpanel.right{transform:translateX(93%)}
+#wguest.sty-ref .plaquehalf{position:absolute;top:50%;width:96px;height:158px;overflow:hidden;transform:translateY(-50%);z-index:2;pointer-events:none}
+#wguest.sty-ref .plaquehalf.l{right:0}
+#wguest.sty-ref .plaquehalf.r{left:0}
+#wguest.sty-ref .plaquefull{position:absolute;top:0;width:192px;height:158px;background:radial-gradient(ellipse at 50% 42%,#fdf8ea,#f1e3c0 70%,#e6d3a3);border:2px solid #b8912f;border-radius:48% 52% 50% 50%/56% 58% 42% 44%;box-shadow:inset 0 0 0 5px #f7ecd2,inset 0 0 0 6.5px rgba(184,145,47,.75),0 10px 26px rgba(0,0,0,.35);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#5d4a1f;text-align:center}
+#wguest.sty-ref .plaquehalf.l .plaquefull{left:0}
+#wguest.sty-ref .plaquehalf.r .plaquefull{left:-96px}
+#wguest.sty-ref .plaquefull .orn{font-size:.95rem;color:#b8912f;line-height:1}
+#wguest.sty-ref .plaquefull .pt{font-size:1rem;letter-spacing:.22em;margin:7px 0 5px;font-weight:bold;white-space:nowrap}
+#wguest.sty-ref .plaquefull .ps{font-size:.56rem;letter-spacing:.3em;color:#8a6d1c}
+#wguest.sty-ref .doorcenter .bismillah{position:absolute;top:8.5%;left:0;right:0}
+#wguest.sty-ref .tap{width:200px;height:166px;margin-top:0;background:transparent;color:transparent;box-shadow:none;animation:none;border-radius:50%;font-size:.1px}
+#wguest.sty-ref .hint{position:absolute;bottom:9%;left:0;right:0;color:#efe3c2;padding:0 20px}
+#wguest.sty-ref .valance{height:46px;background:radial-gradient(circle at 50% -10px,transparent 27px,rgba(201,162,39,.8) 28.5px,#e9d5ae 31px,#f3e5c8 47px);background-size:72px 46px;background-repeat:repeat-x;filter:drop-shadow(0 3px 3px rgba(0,0,0,.16))}
+#wguest.sty-ref .garden{margin:10px -16px -4px}
+#wguest.sty-ref .garden svg{display:block;width:100%;height:auto}
 @media (prefers-reduced-motion: reduce){#wguest .panel,#wguest .minicurtain .mp{transition-duration:.01s}#wguest .tap{animation:none}}
 `;
 function wInjectCSS(){
@@ -228,6 +263,19 @@ function wPetals(root){
     setTimeout((function(node){ return function(){ node.remove(); }; })(p), 9500);
   }
 }
+
+var W_GARDEN_SVG = "<svg viewBox='0 0 400 118' xmlns='http://www.w3.org/2000/svg' aria-hidden='true'>"
++ "<ellipse cx='200' cy='107' rx='152' ry='8' fill='rgba(90,70,30,.10)'/>"
++ "<g><path d='M70 16 C60 42 55 62 53 84 L87 84 C85 62 80 42 70 16 Z' fill='#3c5c40'/><path d='M70 16 C64 40 61 60 60 84 L70 84 C70 60 70 38 70 16 Z' fill='#4a7050'/><circle cx='70' cy='12' r='5.5' fill='#46694b'/><path d='M55 84 h30 l-5 17 h-20 z' fill='#c2a15c'/><rect x='52' y='82' width='36' height='4' rx='2' fill='#a8863c'/></g>"
++ "<g transform='translate(260 0)'><path d='M70 16 C60 42 55 62 53 84 L87 84 C85 62 80 42 70 16 Z' fill='#3c5c40'/><path d='M70 16 C64 40 61 60 60 84 L70 84 C70 60 70 38 70 16 Z' fill='#4a7050'/><circle cx='70' cy='12' r='5.5' fill='#46694b'/><path d='M55 84 h30 l-5 17 h-20 z' fill='#c2a15c'/><rect x='52' y='82' width='36' height='4' rx='2' fill='#a8863c'/></g>"
++ "<g transform='translate(88 30) scale(.72)'><path d='M70 16 C60 42 55 62 53 84 L87 84 C85 62 80 42 70 16 Z' fill='#44664a'/><path d='M55 84 h30 l-5 17 h-20 z' fill='#cbb26a'/></g>"
++ "<g transform='translate(224 30) scale(.72)'><path d='M70 16 C60 42 55 62 53 84 L87 84 C85 62 80 42 70 16 Z' fill='#44664a'/><path d='M55 84 h30 l-5 17 h-20 z' fill='#cbb26a'/></g>"
++ "<g><rect x='193' y='76' width='14' height='18' fill='#d9c9a3'/><ellipse cx='200' cy='73' rx='27' ry='7.5' fill='#e9dfc0' stroke='#b49b4a' stroke-width='1.6'/><path d='M186 64 Q200 82 214 64' stroke='#9fc2b2' stroke-width='2.4' fill='none'/><circle cx='200' cy='58' r='4.6' fill='#c2a15c'/><ellipse cx='200' cy='99' rx='68' ry='13' fill='#d7e5dc' stroke='#b49b4a' stroke-width='2'/><ellipse cx='200' cy='98' rx='55' ry='9' fill='#a9c8bb'/><ellipse cx='200' cy='97' rx='30' ry='5' fill='#bcd6ca'/></g>"
++ "<g><circle cx='26' cy='94' r='13' fill='#4a7050'/><circle cx='42' cy='100' r='10' fill='#3c5c40'/><circle cx='30' cy='88' r='4.6' fill='#e9b7bd'/><circle cx='20' cy='97' r='3.8' fill='#f2e3c2'/><circle cx='38' cy='93' r='3.4' fill='#dd97a4'/><circle cx='46' cy='103' r='3' fill='#fff'/></g>"
++ "<g><circle cx='374' cy='94' r='13' fill='#4a7050'/><circle cx='358' cy='100' r='10' fill='#3c5c40'/><circle cx='370' cy='88' r='4.6' fill='#e9b7bd'/><circle cx='380' cy='97' r='3.8' fill='#f2e3c2'/><circle cx='362' cy='93' r='3.4' fill='#dd97a4'/><circle cx='354' cy='103' r='3' fill='#fff'/></g>"
++ "<g fill='#557d58'><path d='M120 108 l3 -10 3 10 z'/><path d='M132 109 l3 -8 3 8 z'/><path d='M262 109 l3 -8 3 8 z'/><path d='M274 108 l3 -10 3 10 z'/></g>"
++ "</svg>";
+
 function wRenderGuest(d, opts){
   opts = opts || {};
   wLoadFonts(); wInjectCSS();
@@ -243,6 +291,22 @@ function wRenderGuest(d, opts){
   var pl = el("div"); pl.className = "panel left"; var pr = el("div"); pr.className = "panel right";
   if (d.style === "doors"){ var k1 = el("div"); k1.className = "knob"; pl.appendChild(k1); var k2 = el("div"); k2.className = "knob"; pr.appendChild(k2); }
   doors.appendChild(pl); doors.appendChild(pr);
+  if (d.style === "ref"){
+    /* Reference opening: the TAP TO OPEN plaque lives IN the doors (one
+       half per door) so it splits down the middle as they slide apart,
+       and a cream pleated curtain waits behind them. */
+    ["l", "r"].forEach(function(side){
+      var ph = el("div"); ph.className = "plaquehalf " + side;
+      var pf = el("div"); pf.className = "plaquefull";
+      var orn = el("div", "❧"); orn.className = "orn"; pf.appendChild(orn);
+      var pt = el("div", "TAP TO OPEN"); pt.className = "pt"; pf.appendChild(pt);
+      var ps = el("div", "✦ ✦ ✦"); ps.className = "ps"; pf.appendChild(ps);
+      ph.appendChild(pf);
+      (side === "l" ? pl : pr).appendChild(ph);
+    });
+    var cl = el("div"); cl.className = "cpanel left"; var cr = el("div"); cr.className = "cpanel right";
+    doors.appendChild(cl); doors.appendChild(cr);
+  }
   if (d.style === "doors2"){
     var cmedal = el("div", "✦"); cmedal.className = "cmedal"; doors.appendChild(cmedal);
     var dl = el("div"); dl.className = "dpanel left"; var dr = el("div"); dr.className = "dpanel right";
@@ -264,7 +328,7 @@ function wRenderGuest(d, opts){
     coverSrc = "data:image/" + (hp.charAt(0) === "j" ? "jpeg" : "webp") + ";base64," + wB64UrlToStd(hp.slice(2));
   }
   else if (d.shot && window.W_SHOTS && W_SHOTS[d.shot]) coverSrc = W_SHOTS[d.shot];
-  if (coverSrc){
+  if (coverSrc && d.style !== "ref"){
     doors.classList.add("withphoto");
     var cimg = document.createElement("img");
     cimg.className = "coverphoto"; cimg.src = coverSrc; cimg.alt = "Couple photo";
@@ -278,14 +342,14 @@ function wRenderGuest(d, opts){
       dcIn.insertBefore(mono2, dcIn.children[1] || null);
     };
     dcIn.appendChild(cimg);
-  } else {
+  } else if (d.style !== "ref") {
     var mono = el("div"); mono.className = "mono";
     var ini = el("div"); ini.className = "ini"; ini.textContent = (d.g || "G").charAt(0).toUpperCase() + " ♥ " + (d.b || "B").charAt(0).toUpperCase(); mono.appendChild(ini);
     var sm = el("div"); sm.className = "sm"; sm.textContent = "WEDDING"; mono.appendChild(sm); dcIn.appendChild(mono);
   }
-  var h1 = el("h1"); h1.textContent = "Assalam-o-Alaikum"; dcIn.appendChild(h1);
-  var dcn = el("div"); dcn.className = "dcnames"; dcn.textContent = (d.g || "").toUpperCase() + "  ·  " + (d.b || "").toUpperCase(); dcIn.appendChild(dcn);
-  if (d.gu || d.bu){ var dcu = el("div"); dcu.className = "dcunames urdu"; dcu.textContent = (d.gu || d.g) + " ♥ " + (d.bu || d.b); dcIn.appendChild(dcu); }
+  if (d.style !== "ref"){ var h1 = el("h1"); h1.textContent = "Assalam-o-Alaikum"; dcIn.appendChild(h1); }
+  if (d.style !== "ref"){ var dcn = el("div"); dcn.className = "dcnames"; dcn.textContent = (d.g || "").toUpperCase() + "  ·  " + (d.b || "").toUpperCase(); dcIn.appendChild(dcn); }
+  if (d.style !== "ref" && (d.gu || d.bu)){ var dcu = el("div"); dcu.className = "dcunames urdu"; dcu.textContent = (d.gu || d.g) + " ♥ " + (d.bu || d.b); dcIn.appendChild(dcu); }
   var tap = el("button", "💌 Tap to Open"); tap.className = "tap"; dcIn.appendChild(tap);
   var hint = el("div"); hint.className = "hint"; hint.textContent = "Dawwat-nama kholne ke liye dabayein" + (d.tune && d.tune !== "none" ? " — dhun saath bajegi" : ""); dcIn.appendChild(hint);
   dc.appendChild(dcIn); doors.appendChild(dc); wrap.appendChild(doors); stage.appendChild(wrap);
@@ -307,7 +371,13 @@ function wRenderGuest(d, opts){
   if (d.bf){ var bf = el("p"); bf.className = "dof"; bf.textContent = d.bf; frame.appendChild(bf); }
   if (d.gu || d.bu){ var un = el("div"); un.className = "unames2 urdu"; un.textContent = (d.gu || d.g) + " ♥ " + (d.bu || d.b); frame.appendChild(un); }
   var ui2 = el("p"); ui2.className = "uinvite urdu"; ui2.textContent = "آپ کی شرکت ہمارے لیے باعثِ مسرت و افتخار ہوگی"; frame.appendChild(ui2);
+  if (d.style === "ref" && coverSrc){
+    var fimg = document.createElement("img"); fimg.className = "coverphoto"; fimg.src = coverSrc; fimg.alt = "Couple photo";
+    fimg.onerror = function(){ fimg.remove(); };
+    frame.insertBefore(fimg, frame.children[1] || null);
+  }
   var rule = el("div"); rule.className = "rule"; frame.appendChild(rule);
+  if (d.style === "ref"){ var gd = el("div"); gd.className = "garden"; gd.innerHTML = W_GARDEN_SVG; frame.appendChild(gd); }
   /* save the date */
   var r1 = el("div"); r1.className = "rise";
   var sh = el("h2", "Save the Date"); sh.className = "sec"; r1.appendChild(sh);
@@ -404,8 +474,9 @@ function wRenderGuest(d, opts){
       if (tune) { snd.style.display = "flex"; }
     }
     if (d.style === "doors2") setTimeout(function(){ doors.classList.add("copen"); wPetals(root); }, 2350);
+    if (d.style === "ref") setTimeout(function(){ doors.classList.add("copen"); wPetals(root); }, 1500);
     setTimeout(function(){
-      if (d.style === "tieback"){
+      if (d.style === "tieback" || d.style === "ref"){
         /* Tied-back curtains STAY as a frame around the card (like the
            reference photo) — the wrap becomes click-through instead of
            being removed, and the card gains side room so no text or
@@ -420,7 +491,7 @@ function wRenderGuest(d, opts){
         entries.forEach(function(en){ if (en.isIntersecting){ en.target.classList.add(en.target.hasAttribute("data-curtain") ? "open" : "in"); io.unobserve(en.target); } });
       }, { root: root, threshold: 0.3 });
       root.querySelectorAll(".rise, [data-curtain]").forEach(function(n){ io.observe(n); });
-    }, d.style === "doors2" ? 4600 : (d.style === "tieback" ? 2500 : (d.style === "doors" ? 2100 : 1950)));
+    }, d.style === "doors2" ? 4600 : (d.style === "ref" ? 3400 : (d.style === "tieback" ? 2500 : (d.style === "doors" ? 2100 : 1950))));
   });
   var sndOn = true;
   snd.addEventListener("click", function(){
