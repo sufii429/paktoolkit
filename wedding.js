@@ -515,7 +515,6 @@ function wRenderGuest(d, opts){
     var useGsap = d.style === "ref" && window.gsap && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (useGsap) doors.classList.add("gsap");
     else if (d.style === "doors2") doors.classList.add("dopen"); else doors.classList.add("open");
-    wPetals(root);
     if (opts.preview && wMp3){
       pvAudio = new Audio(wMp3.url); pvAudio.loop = true;
       pvAudio.play().then(function(){ snd.style.display = "flex"; }).catch(function(){});
@@ -532,6 +531,8 @@ function wRenderGuest(d, opts){
          the class/timeout path below runs instead — unchanged. */
       var heroEls = [];
       frame.childNodes.forEach(function(n){ if (n.nodeType === 1 && !n.classList.contains("rise") && !n.hasAttribute("data-curtain") && !n.classList.contains("ornc")) heroEls.push(n); });
+      gsap.set(pl, { transformOrigin: "left center", transformPerspective: 1200 });
+      gsap.set(pr, { transformOrigin: "right center", transformPerspective: 1200 });
       gsap.set(cl, { transformOrigin: "left center" });
       gsap.set(cr, { transformOrigin: "right center" });
       var tl = gsap.timeline({ defaults: { ease: "power2.inOut" }, onComplete: function(){
@@ -545,14 +546,13 @@ function wRenderGuest(d, opts){
         .to(cl, { xPercent: -44, scaleX: .44, duration: 2.3 }, 1.5)
         .to(cr, { xPercent: 44, scaleX: .44, duration: 2.3 }, 1.5)
         .to([cl, cr], { "--pl": 1, duration: 2.3 }, 1.5)
-        .call(function(){ wPetals(root); }, null, 1.6)
         .to(cl, { xPercent: -36, scaleX: .52, duration: 1.3, ease: "power1.out" }, "-=0.1")
         .to(cr, { xPercent: 36, scaleX: .52, duration: 1.3, ease: "power1.out" }, "<")
         .from(heroEls, { opacity: 0, y: 26, duration: .9, ease: "power2.out", stagger: 0.09 }, 2.4);
       return;
     }
-    if (d.style === "doors2") setTimeout(function(){ doors.classList.add("copen"); wPetals(root); }, 2350);
-    if (d.style === "ref") setTimeout(function(){ doors.classList.add("copen"); wPetals(root); }, 1500);
+    if (d.style === "doors2") setTimeout(function(){ doors.classList.add("copen"); }, 2350);
+    if (d.style === "ref") setTimeout(function(){ doors.classList.add("copen"); }, 1500);
     setTimeout(function(){
       if (d.style === "tieback" || d.style === "ref"){
         /* Tied-back curtains STAY as a frame around the card (like the
@@ -629,7 +629,8 @@ function wInitScratch(sc, d){
     if (!cleared){
       var dd = ctx.getImageData(0, 0, 290, 96).data, clear = 0, total = 0, i;
       for (i = 3; i < dd.length; i += 64){ total++; if (dd[i] === 0) clear++; }
-      if (clear / total > 0.45){ cleared = true; sc.style.transition = "opacity .7s"; sc.style.opacity = "0"; setTimeout(function(){ if (sc.parentNode) sc.remove(); }, 750); }
+      if (clear / total > 0.45){ cleared = true; sc.style.transition = "opacity .7s"; sc.style.opacity = "0"; setTimeout(function(){ if (sc.parentNode) sc.remove(); }, 750);
+        var rt = sc.closest("#wguest"); if (rt) wPetals(rt); }
     }
     if (e.cancelable) e.preventDefault();
   }
