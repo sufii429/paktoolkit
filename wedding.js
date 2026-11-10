@@ -1088,6 +1088,13 @@ function initWedding(){
   }
   if (!hasMaker) return;
   wLoadFonts();
+  /* Special designs carry their own colour world — keep the maker's Rang
+     (palette) in step when a Special style is picked; the maker can still
+     change it back by hand afterwards. */
+  var wPalMatch = { ref: "green", ref2: "maroon", ref3: "royal" };
+  function wMatchPal(){ var p = wPalMatch[$("w-style").value]; if (p) $("w-pal").value = p; }
+  $("w-style").addEventListener("change", wMatchPal);
+  wMatchPal();
   $("w-makelink").addEventListener("click", async function(){
     var out = $("w-linkresult"); out.className = "result show"; out.textContent = "";
     var status = el("p", "Link ban raha hai…"); out.appendChild(status);
