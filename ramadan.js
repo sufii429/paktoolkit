@@ -1,0 +1,321 @@
+/* PakToolkit — Ramadan Calendar Maker (loaded only on the ramadan tool page).
+   Defines initRamadan; tools.js calls it from its dispatch under a window guard.
+
+   A printable Ramadan calendar in the local printing-press style: a ready
+   design with a "patti" (band) in the middle where the user puts their own
+   shop / business / personal name, phones and address. Sehri & Iftar times
+   are computed on-device for the chosen city with the University of Islamic
+   Sciences, Karachi method (Fajr 18°, Iftar at sunset) — PrayTimes math.
+   Nothing is uploaded anywhere. */
+
+var R_CITIES = [
+  ["Karachi", 24.8608, 67.0011], ["Lahore", 31.5497, 74.3436],
+  ["Islamabad", 33.7294, 73.0931], ["Rawalpindi", 33.5651, 73.0169],
+  ["Faisalabad", 31.4504, 73.1350], ["Multan", 30.1575, 71.5249],
+  ["Peshawar", 34.0151, 71.5785], ["Quetta", 30.1798, 66.9750],
+  ["Hyderabad", 25.3960, 68.3578], ["Sialkot", 32.4945, 74.5229],
+  ["Gujranwala", 32.1877, 74.1945], ["Bahawalpur", 29.4000, 71.6833],
+  ["Sargodha", 32.0836, 72.6711], ["Sukkur", 27.7246, 68.8484],
+  ["Larkana", 27.5570, 68.2028], ["Sheikhupura", 31.7131, 73.9783],
+  ["Rahim Yar Khan", 28.4212, 70.2989], ["Jhang", 31.2681, 72.3181],
+  ["Dera Ghazi Khan", 30.0489, 70.6455], ["Mardan", 34.1989, 72.0400],
+  ["Abbottabad", 34.1688, 73.2215], ["Muzaffarabad", 34.3700, 73.4708],
+  ["Kasur", 31.1165, 74.4500], ["Okara", 30.8138, 73.4534],
+  ["Gujrat", 32.5742, 74.0754], ["Chakwal", 32.9300, 72.8500]
+];
+
+/* ---- prayer-time engine (Karachi method) ---- */
+var R_D2R = Math.PI / 180, R_R2D = 180 / Math.PI;
+function rFixAngle(a){ return a - 360 * Math.floor(a / 360); }
+function rFixHour(a){ return a - 24 * Math.floor(a / 24); }
+function rJulian(y, m, d){
+  if (m <= 2){ y -= 1; m += 12; }
+  var A = Math.floor(y / 100), B = 2 - A + Math.floor(A / 4);
+  return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + B - 1524.5;
+}
+function rSunPos(jd){
+  var D = jd - 2451545.0;
+  var g = rFixAngle(357.529 + 0.98560028 * D);
+  var q = rFixAngle(280.459 + 0.98564736 * D);
+  var L = rFixAngle(q + 1.915 * Math.sin(g * R_D2R) + 0.020 * Math.sin(2 * g * R_D2R));
+  var e = 23.439 - 0.00000036 * D;
+  var RA = rFixHour(Math.atan2(Math.cos(e * R_D2R) * Math.sin(L * R_D2R), Math.cos(L * R_D2R)) * R_R2D / 15);
+  var decl = Math.asin(Math.sin(e * R_D2R) * Math.sin(L * R_D2R)) * R_R2D;
+  return { decl: decl, eqt: q / 15 - RA };
+}
+function rAngleTime(jd, lat, angle, dir){
+  var sp = rSunPos(jd), noon = rFixHour(12 - sp.eqt);
+  var cosT = (-Math.sin(angle * R_D2R) - Math.sin(sp.decl * R_D2R) * Math.sin(lat * R_D2R)) /
+             (Math.cos(sp.decl * R_D2R) * Math.cos(lat * R_D2R));
+  var T = Math.acos(cosT) * R_R2D / 15;
+  return noon + (dir === "ccw" ? -T : T);
+}
+function rFmt(t){
+  t = rFixHour(t); var h = Math.floor(t), m = Math.floor((t - h) * 60 + 0.5);
+  if (m === 60){ m = 0; h += 1; }
+  var ap = h >= 12 ? "PM" : "AM", h12 = h % 12; if (h12 === 0) h12 = 12;
+  return h12 + ":" + ("0" + m).slice(-2) + " " + ap;
+}
+function rDayTimes(lat, lng, y, mo, da){
+  var jd = rJulian(y, mo, da);
+  var fajr = rFixHour(rAngleTime(jd, lat, 18, "ccw") - lng / 15 + 5);
+  var magh = rFixHour(rAngleTime(jd, lat, 0.833, "cw") - lng / 15 + 5);
+  return { sehri: rFmt(fajr), iftar: rFmt(magh) };
+}
+
+/* ---- Urdu helpers ---- */
+var R_UD = ["۰","۱","۲","۳","۴","۵","۶","۷","۸","۹"];
+function rUrduNum(n){ return String(n).split("").map(function(c){ return R_UD[+c]; }).join(""); }
+var R_WDU = ["اتوار","پیر","منگل","بدھ","جمعرات","جمعہ","ہفتہ"];
+var R_MONU = ["جنوری","فروری","مارچ","اپریل","مئی","جون","جولائی","اگست","ستمبر","اکتوبر","نومبر","دسمبر"];
+var R_MONE = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+var R_CSS = `
+.rsheet{background:#fdfaf0;border-radius:14px;overflow:hidden;box-shadow:0 14px 40px rgba(0,0,0,.28);max-width:840px;margin:14px auto 0;text-align:left}
+.rsheet .hdr{background:linear-gradient(180deg,#bfe3f2 0%,#eaf6fb 55%,#fdfaf0 100%);text-align:center;padding:20px 14px 0}
+.rsheet .verse{font-family:'Amiri',serif;font-size:1.35rem;color:#0b5136;line-height:2.1}
+.rsheet .title{font-family:'Jameel Noori Nastaleeq','Noto Nastaliq Urdu',serif;font-size:2rem;line-height:2;color:#08331d}
+.rsheet .title small{display:block;font-size:1rem;color:#5c7355;font-family:Georgia,serif}
+.rsheet .sky{width:100%;height:auto;display:block}
+.rsheet .band{background:linear-gradient(160deg,#0e4d2e,#08331d);color:#ffeeb8;text-align:center;padding:16px 14px 14px;border-top:4px solid #c9a227;border-bottom:4px solid #c9a227}
+.rsheet .band .shop{font-family:'Jameel Noori Nastaleeq','Noto Nastaliq Urdu',serif;font-size:2.3rem;line-height:1.9;color:#ffd968}
+.rsheet .band .svc{font-family:'Jameel Noori Nastaleeq','Noto Nastaliq Urdu',serif;font-size:1.02rem;line-height:2;color:#e9f5e4}
+.rsheet .band .contact{margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;font-family:system-ui,Arial,sans-serif}
+.rsheet .band .contact span{background:rgba(255,255,255,.12);border:1.5px solid #c9a227;border-radius:999px;padding:5px 14px;font-size:1rem;color:#ffeeb8}
+.rsheet .band .contact .ph{font-weight:bold;font-size:1.08rem}
+.rsheet .cityline{text-align:center;padding:10px 10px 0;font-size:1rem;color:#0e4d2e;letter-spacing:.14em;text-transform:uppercase;font-family:Georgia,serif}
+.rsheet .cols{display:flex;gap:12px;padding:12px 14px 4px;direction:rtl}
+.rsheet .blk{flex:1;min-width:0;border:1.5px solid #cfc48f;border-radius:10px;overflow:hidden;background:#fffdf4}
+.rsheet .blkhd{background:#0e4d2e;color:#ffd968;font-family:'Jameel Noori Nastaleeq','Noto Nastaliq Urdu',serif;font-size:1.06rem;line-height:2;text-align:center;padding:2px 4px}
+.rsheet .blk.b2 .blkhd{background:#7c4a12}.rsheet .blk.b3 .blkhd{background:#5e1220}
+.rsheet .blkdua{font-family:'Amiri',serif;font-size:.86rem;line-height:1.9;text-align:center;color:#4a5738;padding:5px 6px;border-bottom:1px solid #e4dcc2}
+.rsheet table{width:100%;border-collapse:collapse;font-size:.8rem}
+.rsheet th{background:#efe8c8;color:#5b4a12;padding:5px 2px;font-family:'Jameel Noori Nastaleeq','Noto Nastaliq Urdu',serif;font-size:.82rem;line-height:1.8;font-weight:normal}
+.rsheet td{padding:4px 2px;text-align:center;border-bottom:1px solid #eee5c8;color:#26331f;font-family:'Jameel Noori Nastaleeq','Noto Nastaliq Urdu',serif;font-size:.84rem;line-height:1.7}
+.rsheet td.tm{font-family:Georgia,serif;font-variant-numeric:tabular-nums;white-space:nowrap;font-size:.8rem}
+.rsheet td.rz{font-weight:bold;color:#0e4d2e;font-size:.95rem}
+.rsheet tr.fri td{background:#fdf3cd;font-weight:bold}
+.rsheet .star{color:#b8860b;font-size:.75rem}
+.rsheet .duas{display:flex;gap:12px;padding:12px 14px 4px}
+.rsheet .dua{flex:1;background:#f4efdb;border:1px solid #ddd2a4;border-radius:10px;padding:9px 10px;text-align:center}
+.rsheet .dua h3{font-size:.76rem;letter-spacing:.16em;color:#0e4d2e;text-transform:uppercase;margin-bottom:4px;font-family:Georgia,serif}
+.rsheet .dua .ar{font-family:'Amiri',serif;font-size:1.08rem;line-height:2;color:#20301f;direction:rtl}
+.rsheet .dua .ur{font-family:'Jameel Noori Nastaleeq','Noto Nastaliq Urdu',serif;font-size:.82rem;line-height:2;color:#4a5738}
+.rsheet .foot{padding:10px 16px 16px;text-align:center;font-family:system-ui,Arial,sans-serif;font-size:.76rem;line-height:1.6;color:#67755c}
+.rsheet .foot .brand{margin-top:5px;color:#0e4d2e;font-weight:bold}
+@media (max-width:680px){.rsheet .cols{flex-direction:column}.rsheet .duas{flex-direction:column}.rsheet table{font-size:.9rem}.rsheet td{font-size:.92rem}.rsheet .band .shop{font-size:1.8rem}}
+.rdesigns{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:6px 0 4px}
+.rdesign{border:2px solid #d8d2b8;border-radius:12px;padding:10px;text-align:center;cursor:pointer;background:#fffdf4}
+.rdesign.sel{border-color:#0e4d2e;box-shadow:0 4px 14px rgba(14,77,46,.18)}
+.rdesign .sw{height:44px;border-radius:8px;margin-bottom:6px}
+.rdesign .nm{font-weight:bold;color:#20301f}
+.rdesign .tag{font-size:.78rem;color:#67755c}
+.rdesign.locked{cursor:not-allowed;opacity:.92}
+`;
+
+var R_SKY = '<svg class="sky" viewBox="0 0 840 150" aria-hidden="true"><defs><linearGradient id="rdusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7d774"/><stop offset="1" stop-color="#fdfaf0"/></linearGradient></defs><rect x="0" y="0" width="840" height="150" fill="url(#rdusk)" opacity="0.55"/><circle cx="740" cy="30" r="16" fill="none" stroke="#c9a227" stroke-width="5"/><circle cx="748" cy="26" r="13" fill="#f7e9bd"/><g fill="#0e4d2e"><rect x="120" y="60" width="14" height="90"/><path d="M112 62 Q127 30 142 62 Z"/><rect x="124" y="22" width="6" height="16"/><rect x="706" y="60" width="14" height="90"/><path d="M698 62 Q713 30 728 62 Z"/><rect x="710" y="22" width="6" height="16"/><path d="M330 150 L330 96 Q420 40 510 96 L510 150 Z" fill="#0b5136"/><path d="M408 44 L420 26 L432 44 Z" fill="#c9a227"/><rect x="240" y="110" width="360" height="40"/><path d="M240 110 Q270 84 300 110 Q330 84 360 110 Q390 84 420 110 Q450 84 480 110 Q510 84 540 110 Q570 84 600 110 L600 118 L240 118 Z" fill="#0b5136"/></g><rect x="0" y="146" width="840" height="4" fill="#c9a227"/></svg>';
+
+function rLoadFonts(){
+  if (document.getElementById("r-fonts")) return;
+  var l1 = document.createElement("link"); l1.rel = "stylesheet";
+  l1.href = "https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap";
+  var l2 = document.createElement("link"); l2.rel = "stylesheet"; l2.id = "r-fonts";
+  l2.href = "https://fonts.cdnfonts.com/css/jameel-noori-nastaleeq";
+  document.head.appendChild(l1); document.head.appendChild(l2);
+}
+
+function initRamadan(){
+  var citySel = document.getElementById("r-city");
+  if (!citySel) return;
+  rLoadFonts();
+  if (!document.getElementById("r-css")){
+    var st = document.createElement("style"); st.id = "r-css"; st.textContent = R_CSS;
+    document.head.appendChild(st);
+  }
+  R_CITIES.forEach(function(c, i){
+    var o = document.createElement("option"); o.value = i; o.textContent = c[0];
+    if (c[0] === "Faisalabad") o.selected = true;
+    citySel.appendChild(o);
+  });
+  var startIn = document.getElementById("r-start");
+  var nameIn = document.getElementById("r-name");
+  var svcIn = document.getElementById("r-svc");
+  var ph1In = document.getElementById("r-ph1");
+  var ph2In = document.getElementById("r-ph2");
+  var addrIn = document.getElementById("r-addr");
+  var sheetBox = document.getElementById("r-sheet");
+  var designsBox = document.getElementById("r-designs");
+  var status = document.getElementById("r-status");
+  var PREMIUM_WA = "https://wa.me/923181746809?text=" + encodeURIComponent("Assalam-o-Alaikum! Mujhe PakToolkit Ramadan Calendar ka premium design chahiye.");
+
+  /* design picker: 1 free + 2 locked premium (WhatsApp manual model) */
+  var designs = [
+    { id: "emerald", nm: "Sabz (Emerald)", tag: "Muft — free design", free: true,
+      sw: "linear-gradient(160deg,#0e4d2e,#08331d)" },
+    { id: "royal", nm: "Shahi Neela (Royal)", tag: "Premium — Rs 20", free: false,
+      sw: "linear-gradient(160deg,#21397a,#0f1c40)" },
+    { id: "wine", nm: "Mehroon Sunehra (Wine & Gold)", tag: "Premium — Rs 20", free: false,
+      sw: "linear-gradient(160deg,#7c1d30,#4a0d19)" }
+  ];
+  designs.forEach(function(dz){
+    var card = document.createElement("div");
+    card.className = "rdesign" + (dz.free ? " sel" : " locked");
+    var sw = document.createElement("div"); sw.className = "sw"; sw.style.background = dz.sw; card.appendChild(sw);
+    var nm = document.createElement("div"); nm.className = "nm"; nm.textContent = (dz.free ? "" : "🔒 ") + dz.nm; card.appendChild(nm);
+    var tg = document.createElement("div"); tg.className = "tag"; tg.textContent = dz.tag; card.appendChild(tg);
+    if (!dz.free){
+      card.addEventListener("click", function(){
+        status.className = "result show";
+        status.textContent = "";
+        var p = document.createElement("p");
+        p.textContent = "Ye premium design hai (Rs 20). WhatsApp par order karein — design aap ke naam ke saath tayyar karke bhej diya jayega: ";
+        var a = document.createElement("a"); a.href = PREMIUM_WA; a.target = "_blank"; a.rel = "noopener";
+        a.textContent = "WhatsApp par order karein";
+        p.appendChild(a); status.appendChild(p);
+      });
+    }
+    designsBox.appendChild(card);
+  });
+
+  function el(tag, txt){ var e = document.createElement(tag); if (txt != null) e.textContent = txt; return e; }
+
+  function buildSheet(){
+    var c = R_CITIES[+citySel.value || 0];
+    var sVal = startIn.value || "2027-02-08";
+    var parts = sVal.split("-");
+    var start = new Date(Date.UTC(+parts[0], +parts[1] - 1, +parts[2]));
+    var rows = [];
+    for (var i = 0; i < 30; i++){
+      var dt = new Date(start.getTime() + i * 86400000);
+      var t = rDayTimes(c[1], c[2], dt.getUTCFullYear(), dt.getUTCMonth() + 1, dt.getUTCDate());
+      rows.push({ roza: i + 1, wd: R_WDU[dt.getUTCDay()], fri: dt.getUTCDay() === 5,
+        date: rUrduNum(dt.getUTCDate()) + " " + R_MONU[dt.getUTCMonth()],
+        sehri: t.sehri, iftar: t.iftar, qadr: [21, 23, 25, 27, 29].indexOf(i + 1) >= 0 });
+    }
+    var end = new Date(start.getTime() + 29 * 86400000);
+    var rangeEn = R_MONE[start.getUTCMonth()] + " — " + R_MONE[end.getUTCMonth()] + " " + end.getUTCFullYear();
+
+    var sheet = el("div"); sheet.className = "rsheet"; sheet.id = "r-sheet-inner";
+    var hdr = el("div"); hdr.className = "hdr";
+    var verse = el("div", "شَهْرُ رَمَضَانَ الَّذِيْٓ اُنْزِلَ فِيْهِ الْقُرْاٰنُ"); verse.className = "verse"; hdr.appendChild(verse);
+    var title = el("div"); title.className = "title"; title.textContent = "کیلنڈر رمضان المبارک ۱۴۴۸ھ";
+    var small = el("small", "Ramadan Calendar 1448 AH · " + c[0] + " · " + rangeEn); title.appendChild(small);
+    hdr.appendChild(title);
+    var sky = el("div"); sky.innerHTML = R_SKY; hdr.appendChild(sky.firstChild);
+    sheet.appendChild(hdr);
+
+    var band = el("div"); band.className = "band";
+    var shop = el("div", nameIn.value.trim() || "آپ کا نام یہاں"); shop.className = "shop"; band.appendChild(shop);
+    if (svcIn.value.trim()){ var svc = el("div", svcIn.value.trim()); svc.className = "svc"; band.appendChild(svc); }
+    var contact = el("div"); contact.className = "contact";
+    [ph1In.value.trim(), ph2In.value.trim()].forEach(function(ph){
+      if (!ph) return;
+      var s = el("span", "📞 " + ph); s.className = "ph"; contact.appendChild(s);
+    });
+    if (addrIn.value.trim()) contact.appendChild(el("span", "📍 " + addrIn.value.trim()));
+    if (contact.childNodes.length) band.appendChild(contact);
+    sheet.appendChild(band);
+
+    var cl = el("div", "Sehri & Iftar Timings — " + c[0]); cl.className = "cityline"; sheet.appendChild(cl);
+
+    var cols = el("div"); cols.className = "cols";
+    var ashras = [
+      { rows: rows.slice(0, 10), hd: "پہلا عشرہ — رحمت", dua: "رَبِّ اغْفِرْ وَارْحَمْ وَاَنْتَ خَيْرُ الرّٰحِمِيْنَ", cls: "blk b1" },
+      { rows: rows.slice(10, 20), hd: "دوسرا عشرہ — مغفرت", dua: "اَسْتَغْفِرُ اللّٰهَ رَبِّيْ مِنْ كُلِّ ذَنْبٍ وَّاَتُوْبُ اِلَيْهِ", cls: "blk b2" },
+      { rows: rows.slice(20, 30), hd: "تیسرا عشرہ — نجات", dua: "اَللّٰهُمَّ اَجِرْنِيْ مِنَ النَّارِ", cls: "blk b3" }
+    ];
+    ashras.forEach(function(a){
+      var blk = el("div"); blk.className = a.cls;
+      var hd = el("div", a.hd); hd.className = "blkhd"; blk.appendChild(hd);
+      var du = el("div", a.dua); du.className = "blkdua"; blk.appendChild(du);
+      var tb = el("table"); tb.setAttribute("dir", "rtl");
+      var hr = el("tr");
+      ["تاریخ", "دن", "روزہ", "سحری", "افطار"].forEach(function(h){ hr.appendChild(el("th", h)); });
+      tb.appendChild(hr);
+      a.rows.forEach(function(r){
+        var tr = el("tr"); if (r.fri) tr.className = "fri";
+        tr.appendChild(el("td", r.date));
+        tr.appendChild(el("td", r.wd));
+        var rz = el("td", rUrduNum(r.roza)); rz.className = "rz";
+        if (r.qadr){ var star = el("span", " ★"); star.className = "star"; rz.appendChild(star); }
+        tr.appendChild(rz);
+        var s1 = el("td", r.sehri); s1.className = "tm"; tr.appendChild(s1);
+        var s2 = el("td", r.iftar); s2.className = "tm"; tr.appendChild(s2);
+        tb.appendChild(tr);
+      });
+      blk.appendChild(tb); cols.appendChild(blk);
+    });
+    sheet.appendChild(cols);
+
+    var duas = el("div"); duas.className = "duas";
+    [["SEHRI KI DUA", "وَبِصَوْمِ غَدٍ نَّوَيْتُ مِنْ شَهْرِ رَمَضَانَ", "اور میں نے رمضان کے کل کے روزے کی نیت کی"],
+     ["IFTAR KI DUA", "اللَّهُمَّ اِنِّیْ لَکَ صُمْتُ وَبِکَ اٰمَنْتُ وَعَلَیْکَ تَوَکَّلْتُ وَعَلٰی رِزْقِکَ اَفْطَرْتُ", "اے اللہ! میں نے تیرے لیے روزہ رکھا، تجھ پر ایمان لایا، تجھ پر بھروسا کیا اور تیرے رزق سے افطار کیا"]].forEach(function(x){
+      var d = el("div"); d.className = "dua";
+      d.appendChild(el("h3", x[0]));
+      var ar = el("div", x[1]); ar.className = "ar"; d.appendChild(ar);
+      var ur = el("div", x[2]); ur.className = "ur"; d.appendChild(ur);
+      duas.appendChild(d);
+    });
+    sheet.appendChild(duas);
+
+    var foot = el("div"); foot.className = "foot";
+    foot.appendChild(document.createTextNode("★ = تیسرے عشرے کی طاق راتیں (شبِ قدر کی تلاش) · جمعہ کی سطریں نمایاں ہیں"));
+    foot.appendChild(document.createElement("br"));
+    foot.appendChild(document.createTextNode("اوقات یونیورسٹی آف اسلامک سائنسز کراچی کے طریقے سے کمپیوٹ شدہ ہیں۔ پہلے روزے کی تاریخ چاند نظر آنے پر ایک دن آگے/پیچھے ہو سکتی ہے — مقامی اعلان کی تصدیق کر لیں۔ فقیہ جعفریہ کے لیے سحری تقریباً ۱۰ منٹ پہلے اور افطار تقریباً ۱۰ منٹ بعد ہے۔"));
+    var br2 = el("div", "💌 PakToolkit — Ramadan Calendar Maker (muft banayein: paktoolkit.top)"); br2.className = "brand"; foot.appendChild(br2);
+    sheet.appendChild(foot);
+
+    sheetBox.textContent = "";
+    sheetBox.appendChild(sheet);
+  }
+
+  [citySel, startIn, nameIn, svcIn, ph1In, ph2In, addrIn].forEach(function(inp){
+    inp.addEventListener("input", buildSheet);
+    inp.addEventListener("change", buildSheet);
+  });
+  buildSheet();
+
+  /* ---- downloads ---- */
+  function loadScript(src){
+    return new Promise(function(res, rej){
+      var s = document.createElement("script"); s.src = src;
+      s.onload = res; s.onerror = rej; document.head.appendChild(s);
+    });
+  }
+  var pngBtn = document.getElementById("r-png");
+  if (pngBtn) pngBtn.addEventListener("click", async function(){
+    status.className = "result show"; status.textContent = "Tasveer tayyar ho rahi hai…";
+    try {
+      if (!window.html2canvas) await loadScript("https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js");
+      var node = document.getElementById("r-sheet-inner");
+      var canvas = await window.html2canvas(node, { scale: 2, useCORS: true, backgroundColor: "#fdfaf0" });
+      var a = document.createElement("a");
+      a.download = "ramadan-calendar-" + (R_CITIES[+citySel.value || 0][0] || "calendar").toLowerCase() + ".png";
+      a.href = canvas.toDataURL("image/png");
+      a.click();
+      status.textContent = "Tasveer download ho gayi ✓ — WhatsApp par share kar dein.";
+    } catch (e) {
+      status.textContent = "Tasveer nahi ban saki — Print / PDF wala button istemal kar lein.";
+    }
+  });
+  var printBtn = document.getElementById("r-print");
+  if (printBtn) printBtn.addEventListener("click", function(){
+    var node = document.getElementById("r-sheet-inner");
+    if (!node) return;
+    var ifr = document.createElement("iframe");
+    ifr.style.position = "fixed"; ifr.style.right = "0"; ifr.style.bottom = "0";
+    ifr.style.width = "0"; ifr.style.height = "0"; ifr.style.border = "0";
+    document.body.appendChild(ifr);
+    var doc = ifr.contentWindow.document;
+    doc.open();
+    doc.write("<!DOCTYPE html><html><head><meta charset='utf-8'><title>Ramadan Calendar</title>" +
+      "<link href='https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap' rel='stylesheet'>" +
+      "<style>*{box-sizing:border-box;margin:0;padding:0}body{background:#fff}" + R_CSS + ".rsheet{box-shadow:none;margin:0 auto}</style></head><body>" +
+      node.outerHTML + "</body></html>");
+    doc.close();
+    setTimeout(function(){
+      try { ifr.contentWindow.focus(); ifr.contentWindow.print(); } catch (e) {}
+      setTimeout(function(){ ifr.remove(); }, 4000);
+    }, 900);
+  });
+}
