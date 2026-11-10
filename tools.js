@@ -921,4 +921,5 @@ document.addEventListener("DOMContentLoaded", function(){
   initCompress(); initPassport(); initConvert();
   initMerge(); initSplit(); initJpgPdf(); initAge();
   if (window.initWedding) initWedding();
+  if (window.initRamadan) initRamadan();
 });
