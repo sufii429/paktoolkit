@@ -387,11 +387,9 @@ TOOLS["wedding-invitation-maker"] = _tool(
 <option value="ref" selected>⭐ Sabz Darwaza — PakToolkit Special</option>
 <option value="ref2">⭐ Mehroon Darwaza — PakToolkit Special</option>
 <option value="ref3">⭐ Neela Darwaza — PakToolkit Special</option>
-<option value="doors2">Darwaza + Parda</option>
 <option value="tieback">Bandha Parda</option>
 <option value="curtain">Surkh Parda</option>
 <option value="doors">Sunahre Darwaze</option>
-<option value="arch">Gul Mehrab</option>
 </select></div>
 <div><label for="w-pal">Rang (colour theme)</label>
 <select id="w-pal">
