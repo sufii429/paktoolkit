@@ -498,6 +498,9 @@ TOOLS["ramadan-calendar-maker"] = _tool(
 </div>
 <label for="r-addr">Pata / area (optional)</label>
 <input id="r-addr" type="text" value="مین بازار، فیصل آباد">
+<h3>Header ki tasveer chunein</h3>
+<div id="r-photos" class="rphotos"></div>
+<p class="small">Tasaveer Wikimedia Commons se, muft license ke saath: Roza-e-Rasool ﷺ — TheHadiRahim (CC0) · Khana Kaaba — Adli Wahid (CC BY-SA 4.0) · Badshahi Masjid — Zapata1000 (CC BY-SA 4.0) · Data Darbar — Guilhem Vellut (CC BY 2.0).</p>
 <h3>Design chunein</h3>
 <div id="r-designs" class="rdesigns"></div>
 <div class="row2">
