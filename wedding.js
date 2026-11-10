@@ -213,7 +213,7 @@ var W_CSS = `
 /* ---- sty-ref: the reference-video opening — deep-green botanical doors with a
    split TAP TO OPEN plaque, a cream pleated curtain behind them that parts and
    settles as slim side drapes, a cream swag valance and a paper garden hero ---- */
-#wguest.sty-ref .panel{overflow:hidden;z-index:2;background-color:#43563c;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150' viewBox='0 0 150 150'%3E%3Cg fill='%232e4023' opacity='.5'%3E%3Cpath d='M28 128 Q40 78 78 30' stroke='%232e4023' stroke-width='3' fill='none'/%3E%3Cellipse cx='44' cy='92' rx='13' ry='6' transform='rotate(-38 44 92)'/%3E%3Cellipse cx='58' cy='64' rx='14' ry='6.5' transform='rotate(-38 58 64)'/%3E%3Cellipse cx='40' cy='98' rx='12' ry='5.5' transform='rotate(24 40 98)'/%3E%3Cellipse cx='56' cy='72' rx='12' ry='5.5' transform='rotate(24 56 72)'/%3E%3Cellipse cx='76' cy='36' rx='12' ry='5.5' transform='rotate(-30 76 36)'/%3E%3C/g%3E%3Cg fill='%237d9168' opacity='.85'%3E%3Cpath d='M26 126 Q38 76 76 28' stroke='%237d9168' stroke-width='3' fill='none'/%3E%3Cellipse cx='42' cy='90' rx='13' ry='6' transform='rotate(-38 42 90)'/%3E%3Cellipse cx='56' cy='62' rx='14' ry='6.5' transform='rotate(-38 56 62)'/%3E%3Cellipse cx='38' cy='96' rx='12' ry='5.5' transform='rotate(24 38 96)'/%3E%3Cellipse cx='54' cy='70' rx='12' ry='5.5' transform='rotate(24 54 70)'/%3E%3Cellipse cx='74' cy='34' rx='12' ry='5.5' transform='rotate(-30 74 34)'/%3E%3C/g%3E%3C/svg%3E"),linear-gradient(160deg,#5d7052,#43563c 55%,#37482f);transition:transform 1.7s cubic-bezier(.7,0,.25,1);box-shadow:inset 0 0 60px rgba(0,0,0,.45)}
+#wguest.sty-ref .panel{overflow:hidden;z-index:2;background-color:#43563c;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150' viewBox='0 0 150 150'%3E%3Cdefs%3E%3Cfilter id='e' x='0' y='0' width='100%25' height='100%25'%3E%3CfeDiffuseLighting in='SourceAlpha' surfaceScale='1.7' diffuseConstant='1.2' lighting-color='%23ffffff' result='l'%3E%3CfeDistantLight azimuth='235' elevation='54'/%3E%3C/feDiffuseLighting%3E%3CfeComposite in='l' in2='SourceAlpha' operator='in'/%3E%3C/filter%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .05 0'/%3E%3C/filter%3E%3C/defs%3E%3Crect width='150' height='150' filter='url(%23n)'/%3E%3Cg filter='url(%23e)'%3E%3Cpath d='M26 126 Q38 76 76 28' stroke='%23000' stroke-width='3' fill='none'/%3E%3Cellipse cx='42' cy='90' rx='13' ry='6' transform='rotate(-38 42 90)' fill='%23000'/%3E%3Cellipse cx='56' cy='62' rx='14' ry='6.5' transform='rotate(-38 56 62)' fill='%23000'/%3E%3Cellipse cx='38' cy='96' rx='12' ry='5.5' transform='rotate(24 38 96)' fill='%23000'/%3E%3Cellipse cx='54' cy='70' rx='12' ry='5.5' transform='rotate(24 54 70)' fill='%23000'/%3E%3Cellipse cx='74' cy='34' rx='12' ry='5.5' transform='rotate(-30 74 34)' fill='%23000'/%3E%3C/g%3E%3C/svg%3E"),url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150' viewBox='0 0 150 150'%3E%3Cg fill='%232e4023' opacity='.5'%3E%3Cpath d='M28 128 Q40 78 78 30' stroke='%232e4023' stroke-width='3' fill='none'/%3E%3Cellipse cx='44' cy='92' rx='13' ry='6' transform='rotate(-38 44 92)'/%3E%3Cellipse cx='58' cy='64' rx='14' ry='6.5' transform='rotate(-38 58 64)'/%3E%3Cellipse cx='40' cy='98' rx='12' ry='5.5' transform='rotate(24 40 98)'/%3E%3Cellipse cx='56' cy='72' rx='12' ry='5.5' transform='rotate(24 56 72)'/%3E%3Cellipse cx='76' cy='36' rx='12' ry='5.5' transform='rotate(-30 76 36)'/%3E%3C/g%3E%3Cg fill='%237d9168' opacity='.85'%3E%3Cpath d='M26 126 Q38 76 76 28' stroke='%237d9168' stroke-width='3' fill='none'/%3E%3Cellipse cx='42' cy='90' rx='13' ry='6' transform='rotate(-38 42 90)'/%3E%3Cellipse cx='56' cy='62' rx='14' ry='6.5' transform='rotate(-38 56 62)'/%3E%3Cellipse cx='38' cy='96' rx='12' ry='5.5' transform='rotate(24 38 96)'/%3E%3Cellipse cx='54' cy='70' rx='12' ry='5.5' transform='rotate(24 54 70)'/%3E%3Cellipse cx='74' cy='34' rx='12' ry='5.5' transform='rotate(-30 74 34)'/%3E%3C/g%3E%3C/svg%3E"),linear-gradient(160deg,#5d7052,#43563c 55%,#37482f);background-blend-mode:soft-light,normal,normal;transition:transform 1.7s cubic-bezier(.7,0,.25,1);box-shadow:inset 0 0 60px rgba(0,0,0,.45)}
 #wguest.sty-ref .panel.left{border-right:2px solid var(--gold)}
 #wguest.sty-ref .panel.right{border-left:2px solid var(--gold)}
 #wguest.sty-ref .doors.open .panel.left{transform:translateX(-104%)}
@@ -242,7 +242,10 @@ var W_CSS = `
 #wguest.sty-ref .tap{width:200px;height:166px;margin-top:0;background:transparent;color:transparent;box-shadow:none;animation:none;border-radius:50%;font-size:.1px}
 #wguest.sty-ref .hint{position:absolute;bottom:9%;left:0;right:0;color:#efe3c2;padding:0 20px}
 #wguest.sty-ref .valance{height:46px;background:radial-gradient(circle at 50% -10px,transparent 27px,rgba(201,162,39,.8) 28.5px,#e9d5ae 31px,#f3e5c8 47px);background-size:72px 46px;background-repeat:repeat-x;filter:drop-shadow(0 3px 3px rgba(0,0,0,.16))}
-#wguest.sty-ref .garden{margin:10px -16px -4px}
+#wguest.sty-ref .garden{margin:10px -16px -4px;position:relative}
+#wguest.sty-ref .garden .flimg{position:absolute;bottom:-4px;width:47%;max-width:195px;mix-blend-mode:multiply;pointer-events:none;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 30%);mask-image:linear-gradient(180deg,transparent 0,#000 30%)}
+#wguest.sty-ref .garden .flimg.l{left:-8px}
+#wguest.sty-ref .garden .flimg.r{right:-8px;transform:scaleX(-1)}
 #wguest.sty-ref .garden svg{display:block;width:100%;height:auto}
 @media (prefers-reduced-motion: reduce){#wguest .panel,#wguest .minicurtain .mp{transition-duration:.01s}#wguest .tap{animation:none}}
 `;
@@ -305,6 +308,11 @@ function wRenderGuest(d, opts){
       (side === "l" ? pl : pr).appendChild(ph);
     });
     var cl = el("div"); cl.className = "cpanel left"; var cr = el("div"); cr.className = "cpanel right";
+    if (window.W_FABRIC){
+      /* Real fabric photo instead of CSS pleats (fabricdata.js, lazy on this page only) */
+      cl.style.backgroundImage = "url(" + window.W_FABRIC + ")"; cl.style.backgroundSize = "cover"; cl.style.backgroundPosition = "left center";
+      cr.style.backgroundImage = "url(" + window.W_FABRIC + ")"; cr.style.backgroundSize = "cover"; cr.style.backgroundPosition = "right center";
+    }
     doors.appendChild(cl); doors.appendChild(cr);
   }
   if (d.style === "doors2"){
@@ -377,7 +385,13 @@ function wRenderGuest(d, opts){
     frame.insertBefore(fimg, frame.children[1] || null);
   }
   var rule = el("div"); rule.className = "rule"; frame.appendChild(rule);
-  if (d.style === "ref"){ var gd = el("div"); gd.className = "garden"; gd.innerHTML = W_GARDEN_SVG; frame.appendChild(gd); }
+  if (d.style === "ref"){ var gd = el("div"); gd.className = "garden"; gd.innerHTML = W_GARDEN_SVG;
+    if (window.W_FLORAL){
+      var fi1 = document.createElement("img"); fi1.className = "flimg l"; fi1.src = window.W_FLORAL; fi1.alt = "";
+      var fi2 = document.createElement("img"); fi2.className = "flimg r"; fi2.src = window.W_FLORAL; fi2.alt = "";
+      gd.appendChild(fi1); gd.appendChild(fi2);
+    }
+    frame.appendChild(gd); }
   /* save the date */
   var r1 = el("div"); r1.className = "rise";
   var sh = el("h2", "Save the Date"); sh.className = "sec"; r1.appendChild(sh);
