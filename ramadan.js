@@ -129,6 +129,11 @@ var R_CSS = `
 .rsheet.theme-wine .cityline{color:#7c1d30}
 .rsheet.theme-wine td.rz{color:#7c1d30}
 .rsheet.theme-wine .foot .brand{color:#7c1d30}
+.for-export .rsheet .cols{flex-direction:row !important}
+.for-export .rsheet .duas{flex-direction:row !important}
+.for-export .rsheet table{font-size:.8rem !important}
+.for-export .rsheet td{font-size:.84rem !important}
+.for-export .rsheet .band .shop{font-size:2.3rem !important}
 `;
 
 /* Header photos — freely licensed on Wikimedia Commons (credits shown on the
@@ -360,42 +365,61 @@ function initRamadan(){
   var pngBtn = document.getElementById("r-png");
   if (pngBtn) pngBtn.addEventListener("click", async function(){
     status.className = "result show"; status.textContent = "Tasveer tayyar ho rahi hai…";
-    var node = document.getElementById("r-sheet-inner");
-    var hp = node ? node.querySelector(".hphoto") : null;
-    var hi = hp ? hp.querySelector("img") : null;
-    var origSrc = null, origFit = null;
+    var holder = null;
     try {
       if (!window.html2canvas) await loadScript("https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js");
-      /* html2canvas ignores object-fit and stretches the header photo flat.
-         Pre-crop the photo to the strip's exact shape on a canvas first,
-         swap it in for the capture, then restore the original. */
-      if (hi && hi.naturalWidth){
+      /* Always export the DESKTOP sheet layout (840px, three ashra columns
+         side by side) from an off-screen clone — even on a phone, where the
+         live sheet stacks into a tall, unreadable ribbon. */
+      var srcNode = document.getElementById("r-sheet-inner");
+      holder = document.createElement("div");
+      holder.className = "for-export";
+      holder.style.cssText = "position:fixed;left:-12000px;top:0;width:860px;z-index:-1";
+      var clone = srcNode.cloneNode(true);
+      clone.removeAttribute("id");
+      holder.appendChild(clone);
+      document.body.appendChild(holder);
+      var chp = clone.querySelector(".hphoto");
+      var chi = chp ? chp.querySelector("img") : null;
+      if (chi) await new Promise(function(r){
+        if (chi.complete && chi.naturalWidth) r();
+        else { chi.onload = r; chi.onerror = r; setTimeout(r, 4000); }
+      });
+      /* html2canvas ignores object-fit and would stretch the header photo
+         flat — pre-crop the clone's photo to the strip's exact shape. */
+      if (chi && chi.naturalWidth){
         try {
-          var tw = hp.clientWidth, th = hp.clientHeight;
-          var iw = hi.naturalWidth, ih = hi.naturalHeight;
+          var tw = chp.clientWidth, th = chp.clientHeight;
+          var iw = chi.naturalWidth, ih = chi.naturalHeight;
           var sc = Math.max(tw / iw, th / ih);
           var sw = tw / sc, sh = th / sc;
           var posParts = (currentPhoto.pos || "center 50%").split(" ");
           var py = parseFloat(posParts[1]) || 50;
           var sx = (iw - sw) / 2, sy = (ih - sh) * py / 100;
           var cv = document.createElement("canvas"); cv.width = tw * 2; cv.height = th * 2;
-          cv.getContext("2d").drawImage(hi, sx, sy, sw, sh, 0, 0, cv.width, cv.height);
-          origSrc = hi.getAttribute("src"); origFit = hi.style.objectFit;
-          hi.style.objectFit = "fill";
-          hi.src = cv.toDataURL("image/jpeg", 0.92);
-          await new Promise(function(r){ if (hi.complete) r(); else { hi.onload = r; hi.onerror = r; } });
-        } catch (e2) { origSrc = null; }
+          cv.getContext("2d").drawImage(chi, sx, sy, sw, sh, 0, 0, cv.width, cv.height);
+          chi.style.objectFit = "fill";
+          chi.src = cv.toDataURL("image/jpeg", 0.92);
+          await new Promise(function(r){ if (chi.complete) r(); else { chi.onload = r; chi.onerror = r; } });
+        } catch (e2) {}
       }
-      var canvas = await window.html2canvas(node, { scale: 2, useCORS: true, backgroundColor: "#fdfaf0" });
-      var a = document.createElement("a");
-      a.download = "ramadan-calendar-" + (R_CITIES[+citySel.value || 0][0] || "calendar").toLowerCase() + ".png";
-      a.href = canvas.toDataURL("image/png");
-      a.click();
-      status.textContent = "Tasveer download ho gayi ✓ — WhatsApp par share kar dein.";
+      var canvas = await window.html2canvas(clone, { scale: 2, useCORS: true, backgroundColor: "#fdfaf0" });
+      var fname = "ramadan-calendar-" + (R_CITIES[+citySel.value || 0][0] || "calendar").toLowerCase() + ".png";
+      var done = function(href){
+        var a = document.createElement("a");
+        a.download = fname; a.href = href; a.click();
+        status.textContent = "Tasveer download ho gayi ✓ — WhatsApp par share kar dein.";
+      };
+      if (canvas.toBlob) {
+        canvas.toBlob(function(b){
+          if (b) done(URL.createObjectURL(b));
+          else done(canvas.toDataURL("image/png"));
+        }, "image/png");
+      } else done(canvas.toDataURL("image/png"));
     } catch (e) {
       status.textContent = "Tasveer nahi ban saki — Print / PDF wala button istemal kar lein.";
     } finally {
-      if (hi && origSrc){ hi.src = origSrc; hi.style.objectFit = origFit || ""; }
+      if (holder) holder.remove();
     }
   });
   var printBtn = document.getElementById("r-print");
@@ -410,8 +434,8 @@ function initRamadan(){
     doc.open();
     doc.write("<!DOCTYPE html><html><head><meta charset='utf-8'><title>Ramadan Calendar</title>" +
       "<link href='https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap' rel='stylesheet'>" +
-      "<style>*{box-sizing:border-box;margin:0;padding:0}body{background:#fff}" + R_CSS + ".rsheet{box-shadow:none;margin:0 auto}</style></head><body>" +
-      node.outerHTML + "</body></html>");
+      "<style>*{box-sizing:border-box;margin:0;padding:0}body{background:#fff;width:840px;margin:0 auto}" + R_CSS + ".rsheet{box-shadow:none;margin:0 auto}</style></head><body>" +
+      "<div class='for-export'>" + node.outerHTML + "</div></body></html>");
     doc.close();
     setTimeout(function(){
       try { ifr.contentWindow.focus(); ifr.contentWindow.print(); } catch (e) {}
