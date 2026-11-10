@@ -203,9 +203,9 @@ function initRamadan(){
   var designs = [
     { id: "emerald", nm: "Sabz (Emerald)", tag: "Muft — free design", free: true,
       sw: "linear-gradient(160deg,#0e4d2e,#08331d)" },
-    { id: "royal", nm: "Shahi Neela (Royal)", tag: "Premium — Rs 20", free: false,
+    { id: "royal", nm: "Shahi Neela (Royal)", tag: "Muft — free design", free: true,
       sw: "linear-gradient(160deg,#21397a,#0f1c40)" },
-    { id: "wine", nm: "Mehroon Sunehra (Wine & Gold)", tag: "Premium — Rs 20", free: false,
+    { id: "wine", nm: "Mehroon Sunehra (Wine & Gold)", tag: "Muft — free design", free: true,
       sw: "linear-gradient(160deg,#7c1d30,#4a0d19)" }
   ];
   designs.forEach(function(dz){
