@@ -76,7 +76,7 @@ var R_CSS = `
 .rsheet .verse{font-family:'Amiri',serif;font-size:1.35rem;color:#0b5136;line-height:2.1}
 .rsheet .title{font-family:'Jameel Noori Nastaleeq','Noto Nastaliq Urdu',serif;font-size:2rem;line-height:2;color:#08331d}
 .rsheet .title small{display:block;font-size:1rem;color:#5c7355;font-family:Georgia,serif}
-.rsheet .hphoto{margin-top:8px;border:2px solid #c9a227;border-radius:10px;overflow:hidden;height:172px;background:#e8e2cf}
+.rsheet .hphoto{margin-top:8px;border:2px solid #c9a227;border-radius:10px;overflow:hidden;height:200px;background:#e8e2cf}
 .rsheet .hphoto img{width:100%;height:100%;object-fit:cover;display:block}
 .rphotos{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 4px}
 .rphoto{width:104px;border:2px solid #d8d2c0;border-radius:10px;overflow:hidden;cursor:pointer;background:#fff;padding:0}
@@ -135,7 +135,7 @@ var R_CSS = `
    tool page): Nabawi CC0 (TheHadiRahim) · Kaaba CC BY-SA 4.0 (Adli Wahid) ·
    Badshahi CC BY-SA 4.0 (Zapata1000) · Data Darbar CC BY 2.0 (Guilhem Vellut). */
 var R_PHOTOS = [
-  { id: "nabawi", nm: "Roza-e-Rasool ﷺ", sub: "Madina", pos: "center 38%",
+  { id: "nabawi", nm: "Roza-e-Rasool ﷺ", sub: "Madina", pos: "center 75%",
     full: "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/44/Wide_shot_of_the_Green_Dome_at_The_Prophet%27s_Mosque_%28Al_Masjid-e-Nabawi%29.jpg/1280px-Wide_shot_of_the_Green_Dome_at_The_Prophet%27s_Mosque_%28Al_Masjid-e-Nabawi%29.jpg",
     thumb: "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/44/Wide_shot_of_the_Green_Dome_at_The_Prophet%27s_Mosque_%28Al_Masjid-e-Nabawi%29.jpg/500px-Wide_shot_of_the_Green_Dome_at_The_Prophet%27s_Mosque_%28Al_Masjid-e-Nabawi%29.jpg" },
   { id: "kaaba", nm: "Khana Kaaba", sub: "Makkah", pos: "center 30%",
