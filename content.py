@@ -25,8 +25,8 @@ CATEGORIES = {
     },
     "cards-invitations": {
         "name": "Cards & Invitations",
-        "intro": "Beautiful digital cards and invitations that you make in your browser and share on WhatsApp — starting with a full wedding invitation maker with opening curtains, music, a live countdown and RSVP. Free, no sign-up, and everything is created on your own device.",
-        "tools": ["wedding-invitation-maker"],
+        "intro": "Beautiful digital cards and invitations that you make in your browser and share on WhatsApp — a full wedding invitation maker with opening curtains, music, a live countdown and RSVP, and a Ramadan calendar maker in the local printing-press style with your own name band. Free, no sign-up, and everything is created on your own device.",
+        "tools": ["wedding-invitation-maker", "ramadan-calendar-maker"],
     },
 }
 
@@ -475,6 +475,51 @@ TOOLS["wedding-invitation-maker"] = _tool(
      ("How does the couple's photo reach my guests?", "Your photo sits on the invitation's cover. A small, cover-sized copy of it is encoded into the invitation link itself, so guests see it as soon as the invitation opens — nothing is uploaded to any server. If you prefer not to use a personal photo, pick one of the built-in illustrated couple shots instead."),
      ("Is my data uploaded anywhere?", "No. The maker runs entirely in your browser. Your details are compressed into the link itself, and your photo is processed on your device by the same on-device AI as our passport photo tool."),
      ("Can I change the dates or names later?", "Yes — just edit the form and make a new link. Old links keep showing the old details, so send the new link to your guests.")],
+    False)
+
+TOOLS["ramadan-calendar-maker"] = _tool(
+    "ramadan-calendar-maker", "cards-invitations", "Ramadan Calendar Maker", "🌙",
+    "Make a printable Ramadan calendar with your city Sehri & Iftar times and your own shop or name band — free design included.",
+    "Use this Ramadan calendar maker to create a beautiful Ramadan calendar for your city in the style of the printed calendars every Pakistani home and shop knows: a ready design with a band — a patti — in the middle for your own shop, business or family name, phone numbers and address. Pick your city, set the first day of Ramadan, fill your band, and the maker computes all 30 days of Sehri and Iftar times on your device using the University of Islamic Sciences, Karachi method, arranged in the three ashras (Rahmat, Maghfirat, Najaat) with each ashra's dua. Download it as a picture for WhatsApp or print it on A4. The green design is free; premium designs are just PKR 20 on WhatsApp.",
+    """
+<label for="r-city">Sheher (city) — auqaat is sheher ke honge</label>
+<select id="r-city"></select>
+<label for="r-start">Pehla Roza (first day of Ramadan)</label>
+<input id="r-start" type="date" value="2027-02-08">
+<p class="small">Ramadan 1448 ka pehla roza mutawaqqa tor par 8 February 2027 hai. Chaand ke elan ke baad tareekh aik din badalna ho to yahan badal dein — puri table khud dobara ban jayegi.</p>
+<h3>Aap ki patti (your name band)</h3>
+<label for="r-name">Naam — dukaan / business / shakhs</label>
+<input id="r-name" type="text" value="صدیق برادرز جنرل سٹور">
+<label for="r-svc">Kaam / services ki line (optional)</label>
+<input id="r-svc" type="text" value="کریانہ، روزمرہ اشیاء اور رمضان پیکج کی خصوصی سہولت">
+<div class="row2">
+<div><label for="r-ph1">Phone / mobile 1</label><input id="r-ph1" type="text" value="0300-1234567"></div>
+<div><label for="r-ph2">Phone / mobile 2 (optional)</label><input id="r-ph2" type="text" value="0321-7654321"></div>
+</div>
+<label for="r-addr">Pata / area (optional)</label>
+<input id="r-addr" type="text" value="مین بازار، فیصل آباد">
+<h3>Design chunein</h3>
+<div id="r-designs" class="rdesigns"></div>
+<div class="row2">
+<button id="r-png" class="btn" type="button">🖼️ Tasveer (PNG) download</button>
+<button id="r-print" class="btn" type="button">🖨️ Print / PDF</button>
+</div>
+<div id="r-status" class="result" role="status"></div>
+<h3>Calendar — live preview</h3>
+<div id="r-sheet"></div>
+""",
+    ["Pick your city and check the first day of Ramadan — 8 February 2027 is the expected date for 1448, and you can shift it by a day after the moon announcement.",
+     "Fill your patti: your shop, business or family name in big letters, an optional line about your work, up to two phone numbers and your area.",
+     "Choose the free green design, or order a premium design on WhatsApp for PKR 20.",
+     "Download the calendar as a picture and share it on WhatsApp, or print it on A4 and put it on the wall — just like the press-printed calendars, without the press."],
+    "Everything is computed inside your browser. The maker uses the standard solar calculation behind the University of Islamic Sciences, Karachi method (Fajr at 18 degrees, Iftar at sunset) for the latitude and longitude of your chosen city, so all 30 days update instantly when you change the city or the start date. Your name, numbers and address are typed straight into the design on your own device — nothing is uploaded or stored anywhere.",
+    "Example: a Faisalabad general store makes a calendar headed 'Siddique Brothers General Store' with its two mobile numbers and 'Main Bazaar, Faisalabad' on the band; the table shows 1 Ramadan on Monday 8 February 2027 with Sehri 5:33 AM and Iftar 5:48 PM, and the shop sends the picture to all its customers on WhatsApp before Ramadan begins.",
+    [("Is the Ramadan calendar maker free?", "Yes — the green (Sabz) design is completely free, with no sign-up and no watermark. Two premium designs are available for PKR 20 each, ordered on WhatsApp and prepared with your name on them."),
+     ("How accurate are the Sehri and Iftar times?", "They are computed with the University of Islamic Sciences, Karachi method — the same basis as most printed Pakistani calendars — for your city's exact location. They match published Faisalabad timetables to the minute. Still, treat your local mosque's announcement as final, especially for the first and last fasts."),
+     ("What if Ramadan starts a day earlier or later?", "Just change the 'Pehla Roza' date — the whole 30-day table, the weekdays and the ashra blocks rebuild instantly around the new start date."),
+     ("I follow Fiqh Jafria. Are these times for me?", "The printed times follow the Hanafi (Karachi) method. For Fiqh Jafria, Sehri ends about 10 minutes earlier and Iftar is about 10 minutes after the shown Maghrib time — the calendar's footer notes this too."),
+     ("Can I put my shop's name and phone number on the calendar?", "That is exactly what the patti (band) is for — your name in big Nastaleeq letters, your work line, two phone numbers and your area, just like the calendars printing presses make. Type them in and the preview updates as you type."),
+     ("Is my information uploaded anywhere?", "No. The maker runs entirely in your browser; your name, numbers and address never leave your device.")],
     False)
 
 HOME_FAQS = [
