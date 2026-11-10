@@ -26,7 +26,7 @@ CATEGORIES = {
     "cards-invitations": {
         "name": "Cards & Invitations",
         "intro": "Beautiful digital cards and invitations that you make in your browser and share on WhatsApp — a full wedding invitation maker with opening curtains, music, a live countdown and RSVP, and a Ramadan calendar maker in the local printing-press style with your own name band. Free, no sign-up, and everything is created on your own device.",
-        "tools": ["wedding-invitation-maker", "ramadan-calendar-maker"],
+        "tools": ["ramadan-calendar-maker", "wedding-invitation-maker"],
     },
 }
 
