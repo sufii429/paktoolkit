@@ -177,7 +177,7 @@ def tool_page(path, row):
 <div class="grid">{rel_cards}</div>
 {disclaimer}
 </main>
-{footer(TAB_FOR_CAT[t['cat']], '<script src="/assets/shotdata-maroon.js" defer></script><script src="/assets/shotdata-green.js" defer></script><script src="/assets/shotdata-royal.js" defer></script><script src="/assets/wedding.js?v=8" defer></script>' if slug == "wedding-invitation-maker" else ('<script src="/assets/ramadan.js?v=7" defer></script>' if slug == "ramadan-calendar-maker" else ""))}"""
+{footer(TAB_FOR_CAT[t['cat']], '<script src="/assets/shotdata-maroon.js" defer></script><script src="/assets/shotdata-green.js" defer></script><script src="/assets/shotdata-royal.js" defer></script><script src="/assets/fabricdata.js" defer></script><script src="/assets/floraldata.js" defer></script><script src="/assets/wedding.js?v=9" defer></script>' if slug == "wedding-invitation-maker" else ('<script src="/assets/ramadan.js?v=7" defer></script>' if slug == "ramadan-calendar-maker" else ""))}"""
     return body
 
 def category_page(path, row):
@@ -282,6 +282,10 @@ def main():
         _sp = os.path.join(HERE, "shotdata-" + _sn + ".js")
         if os.path.exists(_sp):
             shutil.copy(_sp, os.path.join(DIST, "assets", "shotdata-" + _sn + ".js"))
+    for _an in ("fabricdata", "floraldata"):
+        _ap = os.path.join(HERE, _an + ".js")
+        if os.path.exists(_ap):
+            shutil.copy(_ap, os.path.join(DIST, "assets", _an + ".js"))
     shutil.copy(os.path.join(HERE, "favicon.svg"), os.path.join(DIST, "favicon.svg"))
     shutil.copy(os.path.join(HERE, "og-image.svg"), os.path.join(DIST, "assets", "og-image.svg"))
     shutil.copy(os.path.join(HERE, "robots.txt"), os.path.join(DIST, "robots.txt"))
