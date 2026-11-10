@@ -256,7 +256,7 @@ var W_CSS = `
 #wguest.sty-ref .swag{margin:-12px auto -4px;width:min(66%,260px);position:relative;z-index:2;pointer-events:none}
 #wguest.sty-ref .swag img{display:block;width:100%;filter:drop-shadow(0 4px 6px rgba(90,70,20,.25))}
 #wguest.sty-ref .garden svg{filter:url(#wDeck)}
-#wguest.sty-ref .garden .flimg{position:absolute;bottom:-4px;width:47%;max-width:195px;mix-blend-mode:multiply;pointer-events:none;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 30%);mask-image:linear-gradient(180deg,transparent 0,#000 30%)}
+#wguest.sty-ref .garden .flimg{position:absolute;bottom:-4px;width:47%;max-width:195px;mix-blend-mode:multiply;pointer-events:none;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 30%,#000 86%,transparent 99%);mask-image:linear-gradient(180deg,transparent 0,#000 30%,#000 86%,transparent 99%)}
 #wguest.sty-ref .garden .flimg.l{left:-8px}
 #wguest.sty-ref .garden .flimg.r{right:-8px;transform:scaleX(-1)}
 #wguest.sty-ref .garden svg{display:block;width:100%;height:auto}
@@ -488,7 +488,7 @@ function wRenderGuest(d, opts){
   inv.appendChild(brand); stage.appendChild(inv);
   var wdefs = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   wdefs.setAttribute("width", "0"); wdefs.setAttribute("height", "0"); wdefs.style.position = "absolute";
-  wdefs.innerHTML = '<defs><filter id="wDeck" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.012 0.09" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="5"/></filter></defs>';
+  wdefs.innerHTML = '<defs><filter id="wDeck" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.012 0.09" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="6.5"/></filter></defs>';
   root.appendChild(wdefs);
   document.body.appendChild(root);
   /* ---- interactions ---- */
@@ -542,12 +542,12 @@ function wRenderGuest(d, opts){
         .to(pl, { rotationY: -104, duration: 2.2 }, 0.15)
         .to(pr, { rotationY: 104, duration: 2.2 }, 0.15)
         .to([pl, pr], { filter: "brightness(.86)", duration: 2.2 }, 0.15)
-        .to(cl, { xPercent: -38, scaleX: .5, duration: 2.3 }, 1.5)
-        .to(cr, { xPercent: 38, scaleX: .5, duration: 2.3 }, 1.5)
+        .to(cl, { xPercent: -44, scaleX: .44, duration: 2.3 }, 1.5)
+        .to(cr, { xPercent: 44, scaleX: .44, duration: 2.3 }, 1.5)
         .to([cl, cr], { "--pl": 1, duration: 2.3 }, 1.5)
         .call(function(){ wPetals(root); }, null, 1.6)
-        .to(cl, { xPercent: -36, scaleX: .52, duration: 1.15, ease: "power1.out" }, "-=0.1")
-        .to(cr, { xPercent: 36, scaleX: .52, duration: 1.15, ease: "power1.out" }, "<")
+        .to(cl, { xPercent: -36, scaleX: .52, duration: 1.3, ease: "power1.out" }, "-=0.1")
+        .to(cr, { xPercent: 36, scaleX: .52, duration: 1.3, ease: "power1.out" }, "<")
         .from(heroEls, { opacity: 0, y: 26, duration: .9, ease: "power2.out", stagger: 0.09 }, 2.4);
       return;
     }
