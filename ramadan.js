@@ -111,6 +111,18 @@ var R_CSS = `
 .rdesign .nm{font-weight:bold;color:#20301f}
 .rdesign .tag{font-size:.78rem;color:#67755c}
 .rdesign.locked{cursor:not-allowed;opacity:.92}
+.rsheet.theme-royal .band{background:linear-gradient(160deg,#21397a,#0f1c40)}
+.rsheet.theme-royal .blk .blkhd{background:#21397a}
+.rsheet.theme-royal .title{color:#16295c}
+.rsheet.theme-royal .cityline{color:#21397a}
+.rsheet.theme-royal td.rz{color:#21397a}
+.rsheet.theme-royal .foot .brand{color:#21397a}
+.rsheet.theme-wine .band{background:linear-gradient(160deg,#7c1d30,#4a0d19)}
+.rsheet.theme-wine .blk .blkhd{background:#7c1d30}
+.rsheet.theme-wine .title{color:#5e1220}
+.rsheet.theme-wine .cityline{color:#7c1d30}
+.rsheet.theme-wine td.rz{color:#7c1d30}
+.rsheet.theme-wine .foot .brand{color:#7c1d30}
 `;
 
 var R_SKY = '<svg class="sky" viewBox="0 0 840 150" aria-hidden="true"><defs><linearGradient id="rdusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7d774"/><stop offset="1" stop-color="#fdfaf0"/></linearGradient></defs><rect x="0" y="0" width="840" height="150" fill="url(#rdusk)" opacity="0.55"/><circle cx="740" cy="30" r="16" fill="none" stroke="#c9a227" stroke-width="5"/><circle cx="748" cy="26" r="13" fill="#f7e9bd"/><g fill="#0e4d2e"><rect x="120" y="60" width="14" height="90"/><path d="M112 62 Q127 30 142 62 Z"/><rect x="124" y="22" width="6" height="16"/><rect x="706" y="60" width="14" height="90"/><path d="M698 62 Q713 30 728 62 Z"/><rect x="710" y="22" width="6" height="16"/><path d="M330 150 L330 96 Q420 40 510 96 L510 150 Z" fill="#0b5136"/><path d="M408 44 L420 26 L432 44 Z" fill="#c9a227"/><rect x="240" y="110" width="360" height="40"/><path d="M240 110 Q270 84 300 110 Q330 84 360 110 Q390 84 420 110 Q450 84 480 110 Q510 84 540 110 Q570 84 600 110 L600 118 L240 118 Z" fill="#0b5136"/></g><rect x="0" y="146" width="840" height="4" fill="#c9a227"/></svg>';
@@ -148,7 +160,19 @@ function initRamadan(){
   var status = document.getElementById("r-status");
   var PREMIUM_WA = "https://wa.me/923181746809?text=" + encodeURIComponent("Assalam-o-Alaikum! Mujhe PakToolkit Ramadan Calendar ka premium design chahiye.");
 
-  /* design picker: 1 free + 2 locked premium (WhatsApp manual model) */
+  /* Owner unlock: opening the tool once with ?unlock=premium unlocks the
+     premium designs on THIS device only (localStorage). ?unlock=off locks
+     them again. Ordinary visitors always see them locked. */
+  var unlocked = false;
+  try {
+    var uq = new URLSearchParams(location.search).get("unlock");
+    if (uq === "premium") localStorage.setItem("r-premium", "1");
+    if (uq === "off") localStorage.removeItem("r-premium");
+    unlocked = localStorage.getItem("r-premium") === "1";
+  } catch (e) {}
+  var currentDesign = "emerald";
+
+  /* design picker: 1 free + 2 premium (WhatsApp manual model; owner-unlockable) */
   var designs = [
     { id: "emerald", nm: "Sabz (Emerald)", tag: "Muft — free design", free: true,
       sw: "linear-gradient(160deg,#0e4d2e,#08331d)" },
@@ -158,12 +182,20 @@ function initRamadan(){
       sw: "linear-gradient(160deg,#7c1d30,#4a0d19)" }
   ];
   designs.forEach(function(dz){
+    var usable = dz.free || unlocked;
     var card = document.createElement("div");
-    card.className = "rdesign" + (dz.free ? " sel" : " locked");
+    card.className = "rdesign" + (dz.id === currentDesign ? " sel" : "") + (usable ? "" : " locked");
     var sw = document.createElement("div"); sw.className = "sw"; sw.style.background = dz.sw; card.appendChild(sw);
-    var nm = document.createElement("div"); nm.className = "nm"; nm.textContent = (dz.free ? "" : "🔒 ") + dz.nm; card.appendChild(nm);
-    var tg = document.createElement("div"); tg.className = "tag"; tg.textContent = dz.tag; card.appendChild(tg);
-    if (!dz.free){
+    var nm = document.createElement("div"); nm.className = "nm"; nm.textContent = (usable ? "" : "🔒 ") + dz.nm; card.appendChild(nm);
+    var tg = document.createElement("div"); tg.className = "tag"; tg.textContent = usable && !dz.free ? "Premium — unlocked ✓" : dz.tag; card.appendChild(tg);
+    if (usable){
+      card.addEventListener("click", function(){
+        currentDesign = dz.id;
+        designsBox.querySelectorAll(".rdesign").forEach(function(c){ c.classList.remove("sel"); });
+        card.classList.add("sel");
+        buildSheet();
+      });
+    } else {
       card.addEventListener("click", function(){
         status.className = "result show";
         status.textContent = "";
@@ -195,7 +227,7 @@ function initRamadan(){
     var end = new Date(start.getTime() + 29 * 86400000);
     var rangeEn = R_MONE[start.getUTCMonth()] + " — " + R_MONE[end.getUTCMonth()] + " " + end.getUTCFullYear();
 
-    var sheet = el("div"); sheet.className = "rsheet"; sheet.id = "r-sheet-inner";
+    var sheet = el("div"); sheet.className = "rsheet" + (currentDesign !== "emerald" ? " theme-" + currentDesign : ""); sheet.id = "r-sheet-inner";
     var hdr = el("div"); hdr.className = "hdr";
     var verse = el("div", "شَهْرُ رَمَضَانَ الَّذِيْٓ اُنْزِلَ فِيْهِ الْقُرْاٰنُ"); verse.className = "verse"; hdr.appendChild(verse);
     var title = el("div"); title.className = "title"; title.textContent = "کیلنڈر رمضان المبارک ۱۴۴۸ھ";
