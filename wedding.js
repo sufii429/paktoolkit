@@ -221,7 +221,7 @@ var W_CSS = `
 #wguest.sty-ref .cpanel{position:absolute;top:0;width:50.5%;height:100%;z-index:1;background:repeating-linear-gradient(90deg,#e2d0a9 0 13px,#f8eed4 13px 25px,#d9c69c 25px 38px,#f2e4c0 38px 52px);transition:transform 1.7s cubic-bezier(.7,0,.25,1);box-shadow:inset 0 0 46px rgba(120,90,30,.25);will-change:transform}
 #wguest.sty-ref .cpanel.left{left:0}
 #wguest.sty-ref .cpanel.right{right:0}
-#wguest.sty-ref .cpanel::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(120,90,30,.16) 0 5px,transparent 5px 11px,rgba(255,255,255,.22) 11px 16px,transparent 16px 23px);opacity:0;transition:opacity 1.2s ease;pointer-events:none}
+#wguest.sty-ref .cpanel::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,rgba(120,90,30,.16) 0 5px,transparent 5px 11px,rgba(255,255,255,.22) 11px 16px,transparent 16px 23px);opacity:var(--pl,0);transition:opacity 1.2s ease;pointer-events:none}
 #wguest.sty-ref .doors.settled .cpanel::before{opacity:1}
 #wguest.sty-ref .cpanel::after{content:"";position:absolute;top:0;bottom:0;width:11px;background-image:radial-gradient(circle at 50% 6px,#c9a227 2.1px,rgba(201,162,39,.35) 2.9px,transparent 3.4px);background-size:11px 13px;background-repeat:repeat-y}
 #wguest.sty-ref .cpanel.left::after{right:0;border-left:2px solid rgba(201,162,39,.55)}
@@ -245,6 +245,17 @@ var W_CSS = `
 #wguest.sty-ref .hint{position:absolute;bottom:9%;left:0;right:0;color:#efe3c2;padding:0 20px}
 #wguest.sty-ref .valance{height:46px;background:radial-gradient(circle at 50% -10px,transparent 27px,rgba(201,162,39,.8) 28.5px,#e9d5ae 31px,#f3e5c8 47px);background-size:72px 46px;background-repeat:repeat-x;filter:drop-shadow(0 3px 3px rgba(0,0,0,.16))}
 #wguest.sty-ref .garden{margin:10px -16px -4px;position:relative}
+#wguest.sty-ref .doors.gsap .panel,#wguest.sty-ref .doors.gsap .cpanel,#wguest.sty-ref .doors.gsap .doorcenter{transition:none!important}
+#wguest.sty-ref .frame{position:relative}
+#wguest.sty-ref .ornc{position:absolute;width:54px;height:54px;color:var(--gold);opacity:.85;pointer-events:none;z-index:2}
+#wguest.sty-ref .ornc svg{display:block;width:100%;height:100%}
+#wguest.sty-ref .ornc.tl{top:-7px;left:-7px}
+#wguest.sty-ref .ornc.tr{top:-7px;right:-7px;transform:scaleX(-1)}
+#wguest.sty-ref .ornc.bl{bottom:-7px;left:-7px;transform:scaleY(-1)}
+#wguest.sty-ref .ornc.br{bottom:-7px;right:-7px;transform:scale(-1)}
+#wguest.sty-ref .swag{margin:-12px auto -4px;width:min(66%,260px);position:relative;z-index:2;pointer-events:none}
+#wguest.sty-ref .swag img{display:block;width:100%;filter:drop-shadow(0 4px 6px rgba(90,70,20,.25))}
+#wguest.sty-ref .garden svg{filter:url(#wDeck)}
 #wguest.sty-ref .garden .flimg{position:absolute;bottom:-4px;width:47%;max-width:195px;mix-blend-mode:multiply;pointer-events:none;-webkit-mask-image:linear-gradient(180deg,transparent 0,#000 30%);mask-image:linear-gradient(180deg,transparent 0,#000 30%)}
 #wguest.sty-ref .garden .flimg.l{left:-8px}
 #wguest.sty-ref .garden .flimg.r{right:-8px;transform:scaleX(-1)}
@@ -281,6 +292,7 @@ var W_GARDEN_SVG = "<svg viewBox='0 0 400 118' xmlns='http://www.w3.org/2000/svg
 + "<g fill='#557d58'><path d='M120 108 l3 -10 3 10 z'/><path d='M132 109 l3 -8 3 8 z'/><path d='M262 109 l3 -8 3 8 z'/><path d='M274 108 l3 -10 3 10 z'/></g>"
 + "</svg>";
 
+var W_ORN_SVG = "<svg viewBox='0 0 54 54' xmlns='http://www.w3.org/2000/svg'><path d='M7 47 C7 22 22 7 47 7' fill='none' stroke='currentColor' stroke-width='2.2'/><circle cx='14.5' cy='14.5' r='3.6' fill='none' stroke='currentColor' stroke-width='1.8'/><path d='M24 8.5 q7 -3.5 10 1 q-6 3 -10 -1' fill='currentColor'/><path d='M8.5 24 q-3.5 7 1 10 q3 -6 -1 -10' fill='currentColor'/><circle cx='47' cy='7' r='2.2' fill='currentColor'/><circle cx='7' cy='47' r='2.2' fill='currentColor'/></svg>";
 function wRenderGuest(d, opts){
   opts = opts || {};
   wLoadFonts(); wInjectCSS();
@@ -367,7 +379,17 @@ function wRenderGuest(d, opts){
   /* ---- invitation body ---- */
   var inv = el("div"); inv.className = "inv";
   var val = el("div"); val.className = "valance"; inv.appendChild(val);
+  if (d.style === "ref" && window.W_FLORAL_A){
+    var sw = el("div"); sw.className = "swag";
+    var swi = document.createElement("img"); swi.src = window.W_FLORAL_A; swi.alt = "";
+    sw.appendChild(swi); inv.appendChild(sw);
+  }
   var frame = el("div"); frame.className = "frame"; inv.appendChild(frame);
+  if (d.style === "ref"){
+    ["tl", "tr", "bl", "br"].forEach(function(pos){
+      var oc = el("i"); oc.className = "ornc " + pos; oc.innerHTML = W_ORN_SVG; frame.appendChild(oc);
+    });
+  }
   var bis2 = el("div"); bis2.className = "bismillah arabic"; bis2.textContent = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"; frame.appendChild(bis2);
   var host = el("p"); host.className = "host";
   var hb = el("b"); hb.textContent = d.host || ""; host.appendChild(hb);
@@ -464,6 +486,10 @@ function wRenderGuest(d, opts){
   var ba = el("a", "PakToolkit"); ba.href = "https://paktoolkit.top/wedding-invitation-maker/"; brand.appendChild(ba);
   brand.appendChild(document.createTextNode(" se banaya gaya — apna muft banayein"));
   inv.appendChild(brand); stage.appendChild(inv);
+  var wdefs = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  wdefs.setAttribute("width", "0"); wdefs.setAttribute("height", "0"); wdefs.style.position = "absolute";
+  wdefs.innerHTML = '<defs><filter id="wDeck" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.012 0.09" numOctaves="2" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="5"/></filter></defs>';
+  root.appendChild(wdefs);
   document.body.appendChild(root);
   /* ---- interactions ---- */
   var tune = null, pvAudio = null;
@@ -478,8 +504,17 @@ function wRenderGuest(d, opts){
     });
     stage.appendChild(closeB);
   }
+  function wArmScroll(){
+    root.scrollTop = 0;
+    var io2 = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){ if (en.isIntersecting){ en.target.classList.add(en.target.hasAttribute("data-curtain") ? "open" : "in"); io2.unobserve(en.target); } });
+    }, { root: root, threshold: 0.3 });
+    root.querySelectorAll(".rise, [data-curtain]").forEach(function(n){ io2.observe(n); });
+  }
   tap.addEventListener("click", function(){
-    if (d.style === "doors2") doors.classList.add("dopen"); else doors.classList.add("open");
+    var useGsap = d.style === "ref" && window.gsap && !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (useGsap) doors.classList.add("gsap");
+    else if (d.style === "doors2") doors.classList.add("dopen"); else doors.classList.add("open");
     wPetals(root);
     if (opts.preview && wMp3){
       pvAudio = new Audio(wMp3.url); pvAudio.loop = true;
@@ -488,6 +523,33 @@ function wRenderGuest(d, opts){
     } else if (d.tune && d.tune !== "none"){
       tune = wTuneStart(d.tune, null);
       if (tune) { snd.style.display = "flex"; }
+    }
+    if (useGsap){
+      /* GSAP choreography (reference style only): the doors swing with a
+         light dip, the curtain GATHERS toward its edges (folds narrow,
+         pleat shading rises), eases back a touch as it settles into the
+         frame, and the hero lines rise in stagger. If GSAP is missing,
+         the class/timeout path below runs instead — unchanged. */
+      var heroEls = [];
+      frame.childNodes.forEach(function(n){ if (n.nodeType === 1 && !n.classList.contains("rise") && !n.hasAttribute("data-curtain") && !n.classList.contains("ornc")) heroEls.push(n); });
+      gsap.set(cl, { transformOrigin: "left center" });
+      gsap.set(cr, { transformOrigin: "right center" });
+      var tl = gsap.timeline({ defaults: { ease: "power2.inOut" }, onComplete: function(){
+        doors.classList.add("settled"); wrap.style.pointerEvents = "none";
+        root.classList.add("has-drapes"); wArmScroll();
+      } });
+      tl.to(dc, { autoAlpha: 0, duration: .5, ease: "power1.out" }, 0)
+        .to(pl, { rotationY: -104, duration: 2.2 }, 0.15)
+        .to(pr, { rotationY: 104, duration: 2.2 }, 0.15)
+        .to([pl, pr], { filter: "brightness(.86)", duration: 2.2 }, 0.15)
+        .to(cl, { xPercent: -38, scaleX: .5, duration: 2.3 }, 1.5)
+        .to(cr, { xPercent: 38, scaleX: .5, duration: 2.3 }, 1.5)
+        .to([cl, cr], { "--pl": 1, duration: 2.3 }, 1.5)
+        .call(function(){ wPetals(root); }, null, 1.6)
+        .to(cl, { xPercent: -36, scaleX: .52, duration: 1.15, ease: "power1.out" }, "-=0.1")
+        .to(cr, { xPercent: 36, scaleX: .52, duration: 1.15, ease: "power1.out" }, "<")
+        .from(heroEls, { opacity: 0, y: 26, duration: .9, ease: "power2.out", stagger: 0.09 }, 2.4);
+      return;
     }
     if (d.style === "doors2") setTimeout(function(){ doors.classList.add("copen"); wPetals(root); }, 2350);
     if (d.style === "ref") setTimeout(function(){ doors.classList.add("copen"); wPetals(root); }, 1500);
