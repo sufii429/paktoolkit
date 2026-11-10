@@ -76,7 +76,13 @@ var R_CSS = `
 .rsheet .verse{font-family:'Amiri',serif;font-size:1.35rem;color:#0b5136;line-height:2.1}
 .rsheet .title{font-family:'Jameel Noori Nastaleeq','Noto Nastaliq Urdu',serif;font-size:2rem;line-height:2;color:#08331d}
 .rsheet .title small{display:block;font-size:1rem;color:#5c7355;font-family:Georgia,serif}
-.rsheet .sky{width:100%;height:auto;display:block}
+.rsheet .hphoto{margin-top:8px;border:2px solid #c9a227;border-radius:10px;overflow:hidden;height:172px;background:#e8e2cf}
+.rsheet .hphoto img{width:100%;height:100%;object-fit:cover;display:block}
+.rphotos{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 4px}
+.rphoto{width:104px;border:2px solid #d8d2c0;border-radius:10px;overflow:hidden;cursor:pointer;background:#fff;padding:0}
+.rphoto.sel{border-color:#b8860b;box-shadow:0 0 0 2px #f3d67b}
+.rphoto img{width:100%;height:56px;object-fit:cover;display:block}
+.rphoto .pn{font-size:.7rem;text-align:center;padding:3px 2px;color:#4a463c;line-height:1.25}
 .rsheet .band{background:linear-gradient(160deg,#0e4d2e,#08331d);color:#ffeeb8;text-align:center;padding:16px 14px 14px;border-top:4px solid #c9a227;border-bottom:4px solid #c9a227}
 .rsheet .band .shop{font-family:'Jameel Noori Nastaleeq','Noto Nastaliq Urdu',serif;font-size:2.3rem;line-height:1.9;color:#ffd968}
 .rsheet .band .svc{font-family:'Jameel Noori Nastaleeq','Noto Nastaliq Urdu',serif;font-size:1.02rem;line-height:2;color:#e9f5e4}
@@ -125,7 +131,23 @@ var R_CSS = `
 .rsheet.theme-wine .foot .brand{color:#7c1d30}
 `;
 
-var R_SKY = '<svg class="sky" viewBox="0 0 840 150" aria-hidden="true"><defs><linearGradient id="rdusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7d774"/><stop offset="1" stop-color="#fdfaf0"/></linearGradient></defs><rect x="0" y="0" width="840" height="150" fill="url(#rdusk)" opacity="0.55"/><circle cx="740" cy="30" r="16" fill="none" stroke="#c9a227" stroke-width="5"/><circle cx="748" cy="26" r="13" fill="#f7e9bd"/><g fill="#0e4d2e"><rect x="120" y="60" width="14" height="90"/><path d="M112 62 Q127 30 142 62 Z"/><rect x="124" y="22" width="6" height="16"/><rect x="706" y="60" width="14" height="90"/><path d="M698 62 Q713 30 728 62 Z"/><rect x="710" y="22" width="6" height="16"/><path d="M330 150 L330 96 Q420 40 510 96 L510 150 Z" fill="#0b5136"/><path d="M408 44 L420 26 L432 44 Z" fill="#c9a227"/><rect x="240" y="110" width="360" height="40"/><path d="M240 110 Q270 84 300 110 Q330 84 360 110 Q390 84 420 110 Q450 84 480 110 Q510 84 540 110 Q570 84 600 110 L600 118 L240 118 Z" fill="#0b5136"/></g><rect x="0" y="146" width="840" height="4" fill="#c9a227"/></svg>';
+/* Header photos — freely licensed on Wikimedia Commons (credits shown on the
+   tool page): Nabawi CC0 (TheHadiRahim) · Kaaba CC BY-SA 4.0 (Adli Wahid) ·
+   Badshahi CC BY-SA 4.0 (Zapata1000) · Data Darbar CC BY 2.0 (Guilhem Vellut). */
+var R_PHOTOS = [
+  { id: "nabawi", nm: "Roza-e-Rasool ﷺ", sub: "Madina", pos: "center 38%",
+    full: "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/44/Wide_shot_of_the_Green_Dome_at_The_Prophet%27s_Mosque_%28Al_Masjid-e-Nabawi%29.jpg/1280px-Wide_shot_of_the_Green_Dome_at_The_Prophet%27s_Mosque_%28Al_Masjid-e-Nabawi%29.jpg",
+    thumb: "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/44/Wide_shot_of_the_Green_Dome_at_The_Prophet%27s_Mosque_%28Al_Masjid-e-Nabawi%29.jpg/500px-Wide_shot_of_the_Green_Dome_at_The_Prophet%27s_Mosque_%28Al_Masjid-e-Nabawi%29.jpg" },
+  { id: "kaaba", nm: "Khana Kaaba", sub: "Makkah", pos: "center 30%",
+    full: "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b3/The_Kaaba_during_Hajj_-_edited.jpg/1280px-The_Kaaba_during_Hajj_-_edited.jpg",
+    thumb: "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b3/The_Kaaba_during_Hajj_-_edited.jpg/500px-The_Kaaba_during_Hajj_-_edited.jpg" },
+  { id: "badshahi", nm: "Badshahi Masjid", sub: "Lahore", pos: "center 18%",
+    full: "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/de/Badshahi_mosque_of_Lahore%2C_Pakistan.jpg/1280px-Badshahi_mosque_of_Lahore%2C_Pakistan.jpg",
+    thumb: "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/de/Badshahi_mosque_of_Lahore%2C_Pakistan.jpg/500px-Badshahi_mosque_of_Lahore%2C_Pakistan.jpg" },
+  { id: "data", nm: "Data Darbar", sub: "Lahore", pos: "center 26%",
+    full: "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/12/Data_Darbar_Shrine_%40_Lahore_%2815284918880%29.jpg/1280px-Data_Darbar_Shrine_%40_Lahore_%2815284918880%29.jpg",
+    thumb: "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/12/Data_Darbar_Shrine_%40_Lahore_%2815284918880%29.jpg/500px-Data_Darbar_Shrine_%40_Lahore_%2815284918880%29.jpg" }
+];
 
 function rLoadFonts(){
   if (document.getElementById("r-fonts")) return;
@@ -209,6 +231,23 @@ function initRamadan(){
     designsBox.appendChild(card);
   });
 
+  /* Header photo picker — freely licensed photos (Wikimedia Commons). */
+  var currentPhoto = R_PHOTOS[0];
+  var photosBox = document.getElementById("r-photos");
+  if (photosBox) R_PHOTOS.forEach(function(ph){
+    var b = document.createElement("button"); b.type = "button";
+    b.className = "rphoto" + (ph === currentPhoto ? " sel" : "");
+    var im = document.createElement("img"); im.src = ph.thumb; im.alt = ph.nm; im.loading = "lazy"; b.appendChild(im);
+    var pn = document.createElement("div"); pn.className = "pn"; pn.textContent = ph.nm + " · " + ph.sub; b.appendChild(pn);
+    b.addEventListener("click", function(){
+      currentPhoto = ph;
+      photosBox.querySelectorAll(".rphoto").forEach(function(x){ x.classList.remove("sel"); });
+      b.classList.add("sel");
+      buildSheet();
+    });
+    photosBox.appendChild(b);
+  });
+
   function el(tag, txt){ var e = document.createElement(tag); if (txt != null) e.textContent = txt; return e; }
 
   function buildSheet(){
@@ -233,7 +272,11 @@ function initRamadan(){
     var title = el("div"); title.className = "title"; title.textContent = "کیلنڈر رمضان المبارک ۱۴۴۸ھ";
     var small = el("small", "Ramadan Calendar 1448 AH · " + c[0] + " · " + rangeEn); title.appendChild(small);
     hdr.appendChild(title);
-    var sky = el("div"); sky.innerHTML = R_SKY; hdr.appendChild(sky.firstChild);
+    var photo = el("div"); photo.className = "hphoto";
+    var himg = document.createElement("img");
+    himg.src = currentPhoto.full; himg.alt = currentPhoto.nm; himg.crossOrigin = "anonymous";
+    himg.style.objectPosition = currentPhoto.pos;
+    photo.appendChild(himg); hdr.appendChild(photo);
     sheet.appendChild(hdr);
 
     var band = el("div"); band.className = "band";
