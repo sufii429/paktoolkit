@@ -196,8 +196,11 @@ def category_page(path, row):
 </main>
 {footer(TAB_FOR_CAT[slug])}"""
 
+STAR_TOOLS = ["passport-size-photo-maker", "ramadan-calendar-maker", "wedding-invitation-maker"]  # Mazeen's star tools — always on top of the homepage; add "eid-card-maker" here when it ships.
+
 def home_page(path, row):
-    sections = []
+    star_cards = "\n".join(card(s) for s in STAR_TOOLS if s in TOOLS)
+    sections = [f'<section class="cat-section star-section"><h2>⭐ Star Tools</h2><div class="grid">{star_cards}</div></section>']
     for cslug, cat in CATEGORIES.items():
         cards = "\n".join(card(s) for s in cat["tools"])
         sections.append(f'<section class="cat-section"><h2><a href="/{cslug}/">{esc(cat["name"])}</a></h2><div class="grid">{cards}</div></section>')
