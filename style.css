@@ -102,3 +102,5 @@ canvas.preview, img.preview{max-width:100%;border:1px solid var(--line);border-r
   .tabbar a.on{color:var(--green-dark)}
   .tabbar a.on .ic{background:var(--green-light);border-radius:999px;padding:2px 14px}
 }
+
+.star-section .card{border:2px solid #c9a227;background:linear-gradient(180deg,#fffdf4,#fdf3cd)}
