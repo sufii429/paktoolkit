@@ -141,11 +141,12 @@ def faq_html(faqs):
 
 def related(slug):
     tool = TOOLS[slug]
-    rel = [s for s in CATEGORIES[tool["cat"]]["tools"] if s != slug]
-    for s in TOOLS:
-        if s != slug and s not in rel:
-            rel.append(s)
-    return rel[:3]
+    order = list(TOOLS)
+    k = order.index(slug)
+    rot = order[k + 1:] + order[:k]
+    same = [s for s in rot if TOOLS[s]["cat"] == tool["cat"]]
+    rest = [s for s in rot if TOOLS[s]["cat"] != tool["cat"]]
+    return (same + rest)[:3]
 
 CROSS_NOTES = {
     "passport-size-photo-maker": '<p class="note">Applying for a job? A correct-size photo is only step one — see today\'s vacancies across Pakistan on <a href="https://mrjobs.top/">MrJobs</a>, our sister project for job seekers.</p>',
@@ -296,14 +297,6 @@ def main():
     shutil.copy(os.path.join(HERE, "favicon.svg"), os.path.join(DIST, "favicon.svg"))
     shutil.copy(os.path.join(HERE, "og-image.svg"), os.path.join(DIST, "assets", "og-image.svg"))
     shutil.copy(os.path.join(HERE, "robots.txt"), os.path.join(DIST, "robots.txt"))
-    wn = os.path.join(HERE, "wedding-namuna.html")
-    if os.path.exists(wn):  # noindex test page — copied, not a generated page
-        os.makedirs(os.path.join(DIST, "wedding-namuna"), exist_ok=True)
-        shutil.copy(wn, os.path.join(DIST, "wedding-namuna", "index.html"))
-    rn = os.path.join(HERE, "ramadan-namuna.html")
-    if os.path.exists(rn):  # noindex sample page — copied, not a generated page
-        os.makedirs(os.path.join(DIST, "ramadan-namuna"), exist_ok=True)
-        shutil.copy(rn, os.path.join(DIST, "ramadan-namuna", "index.html"))
     # engine-test.html and imgly-test.html stay in the repo as dormant diagnostics (not copied to dist).
     # Engine comparison concluded 2026-11-09: BiRefNet-lite 512 (WASM + fp32) won and is integrated in tools.js.
     with open(os.path.join(DIST, "sitemap.xml"), "w", encoding="utf-8") as f:
