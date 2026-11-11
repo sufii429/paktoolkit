@@ -120,6 +120,7 @@ def footer(active="", extra=""):
     return """<footer class="site"><div class="wrap">
 <p><strong>PakToolkit</strong> — free online tools for Pakistan. Every tool runs in your browser; your files never leave your device.</p>
 <p><a href="/about/">About</a> <a href="/contact/">Contact</a> <a href="/privacy-policy/">Privacy Policy</a> <a href="/terms/">Terms of Use</a> <a href="/disclaimer/">Disclaimer</a></p>
+<p>Our other projects: <a href="https://mrjobs.top/">MrJobs — Jobs in Pakistan</a> · <a href="https://kitaabcha.blogspot.com/">Kitaabcha — Urdu Film Reviews</a></p>
 <p><a href="/pakistan-calculators/">Pakistan Calculators</a> <a href="/image-tools/">Image Tools</a> <a href="/pdf-tools/">PDF Tools</a> <a href="/everyday-calculators/">Everyday Calculators</a> <a href="/cards-invitations/">Cards &amp; Invitations</a></p>
 </div></footer>
 """ + tabbar(active) + """
@@ -146,6 +147,11 @@ def related(slug):
             rel.append(s)
     return rel[:3]
 
+CROSS_NOTES = {
+    "passport-size-photo-maker": '<p class="note">Applying for a job? A correct-size photo is only step one — see today\'s vacancies across Pakistan on <a href="https://mrjobs.top/">MrJobs</a>, our sister project for job seekers.</p>',
+    "image-compressor-to-kb": '<p class="note">Making a photo or document small enough for an online job application? When it is ready, see today\'s vacancies across Pakistan on <a href="https://mrjobs.top/">MrJobs</a>, our sister project for job seekers.</p>',
+}
+
 def tool_page(path, row):
     slug = path.strip("/")
     t = TOOLS[slug]
@@ -170,6 +176,7 @@ def tool_page(path, row):
 <h2>How it works</h2>
 <p>{esc(t['works'])}</p>
 <p><strong>Worked example:</strong> {esc(t['example'])}</p>
+{CROSS_NOTES.get(slug, '')}
 {t['extra']}
 <h2>Frequently asked questions</h2>
 {faq_html(t['faqs'])}
