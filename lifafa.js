@@ -18,7 +18,7 @@ var W_LIFAFA_CSS = `
 #wguest.sty-lifafa .lf-envbody:before,#wguest.sty-lifafa .lf-envbody:after{content:"";position:absolute;top:0;bottom:0;width:52%;background:linear-gradient(105deg,rgba(201,162,75,.16),rgba(201,162,75,0) 60%);z-index:1}
 #wguest.sty-lifafa .lf-envbody:before{left:0;clip-path:polygon(0 0,100% 50%,0 100%)}
 #wguest.sty-lifafa .lf-envbody:after{right:0;clip-path:polygon(100% 0,0 50%,100% 100%)}
-#wguest.sty-lifafa .lf-envcard{position:absolute;left:14px;right:14px;top:10px;height:150px;background:#fffdf8;border:1px solid var(--lf-gold2);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:transform 1s ease .45s}
+#wguest.sty-lifafa .lf-envcard{position:absolute;left:14px;right:14px;top:10px;height:170px;background:#fffdf8;border:1px solid var(--lf-gold2);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:16px;gap:2px;transition:transform 1s ease .45s}
 #wguest.sty-lifafa .lf-envcard .lf-script{font-size:1.6rem;color:var(--lf-maroon)}
 #wguest.sty-lifafa .lf-envcard span{font-size:.62rem;letter-spacing:.24em;text-transform:uppercase;color:#8a6d3b}
 #wguest.sty-lifafa .lf-flap{position:absolute;left:0;right:0;top:0;height:118px;background:linear-gradient(180deg,#f6ecd7,#ecd9b8);clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top center;transition:transform .85s ease;z-index:3}
@@ -133,7 +133,6 @@ function wRenderLifafa(d, opts){
   var envCard = el("div"); envCard.className = "lf-envcard";
   var ec1 = el("span", "The Wedding Of"); envCard.appendChild(ec1);
   var ec2 = el("div"); ec2.className = "lf-script"; ec2.textContent = (d.g || "") + " & " + (d.b || ""); envCard.appendChild(ec2);
-  var ec3 = el("span", wDateLong(mev)); envCard.appendChild(ec3);
   envBox.appendChild(envCard);
   var flap = el("div"); flap.className = "lf-flap"; envBox.appendChild(flap);
   var seal = el("div"); seal.className = "lf-seal";
@@ -240,7 +239,7 @@ function wRenderLifafa(d, opts){
       var sd1 = el("div"); sd1.className = "d1"; sd1.textContent = wDateLong(ev); sdate.appendChild(sd1);
       var sd2 = el("div"); sd2.className = "d2"; sd2.textContent = ev.n + " · " + (ev.t || "") + " onwards"; sdate.appendChild(sd2);
       sbox.appendChild(sdate);
-      scratchCanvas = document.createElement("canvas"); scratchCanvas.width = 290; scratchCanvas.height = 96;
+      scratchCanvas = document.createElement("canvas"); scratchCanvas.id = "wscratch"; scratchCanvas.width = 290; scratchCanvas.height = 96;
       sbox.appendChild(scratchCanvas); card.appendChild(sbox);
       var sh = el("div", "👆 Ungli se raghrein — tareekh zahir hogi"); sh.className = "lf-scratchlbl"; card.appendChild(sh);
     }
