@@ -387,6 +387,7 @@ TOOLS["wedding-invitation-maker"] = _tool(
 <option value="ref" selected>⭐ Sabz Darwaza — PakToolkit Special</option>
 <option value="ref2">⭐ Mehroon Darwaza — PakToolkit Special</option>
 <option value="ref3">⭐ Neela Darwaza — PakToolkit Special</option>
+<option value="lifafa">⭐ Mehroon Lifafa — PakToolkit Special</option>
 <option value="tieback">Bandha Parda</option>
 <option value="curtain">Surkh Parda</option>
 <option value="doors">Sunahre Darwaze</option>
@@ -430,7 +431,23 @@ TOOLS["wedding-invitation-maker"] = _tool(
 <div><label for="w-ev3-t">Time</label><input id="w-ev3-t" type="text" value="7:00 PM"></div>
 <div><label for="w-ev3-v">Jagah / note</label><input id="w-ev3-v" type="text" value="Royal Palm Marquee, Faisalabad"></div>
 </div>
-<p class="small">The Barat (event 2) is treated as the main event — the scratch card, countdown and calendar file use its date. Leave event 3's name empty to skip it.</p>
+<div class="row2">
+<div><label for="w-ev4-n">Event 4 (optional)</label><input id="w-ev4-n" type="text" placeholder="e.g. Dholki"></div>
+<div><label for="w-ev4-d">Date</label><input id="w-ev4-d" type="date"></div>
+</div>
+<div class="row2">
+<div><label for="w-ev4-t">Time</label><input id="w-ev4-t" type="text" placeholder="7:00 PM"></div>
+<div><label for="w-ev4-v">Jagah / note</label><input id="w-ev4-v" type="text" placeholder="Jagah"></div>
+</div>
+<div class="row2">
+<div><label for="w-ev5-n">Event 5 (optional)</label><input id="w-ev5-n" type="text" placeholder="e.g. Nikah function"></div>
+<div><label for="w-ev5-d">Date</label><input id="w-ev5-d" type="date"></div>
+</div>
+<div class="row2">
+<div><label for="w-ev5-t">Time</label><input id="w-ev5-t" type="text" placeholder="5:00 PM"></div>
+<div><label for="w-ev5-v">Jagah / note</label><input id="w-ev5-v" type="text" placeholder="Jagah"></div>
+</div>
+<p class="small">The Barat (event 2) is treated as the main event — the scratch card, countdown and calendar file use its date. Events 3, 4 and 5 are optional — leave the name empty to skip one. Events show in the order you fill them, so chronological order mein bharein.</p>
 <label for="w-venue">Venue (main jagah)</label>
 <input id="w-venue" type="text" value="The Royal Palm Marquee">
 <label for="w-addr">Venue ka pata (address)</label>
@@ -439,6 +456,26 @@ TOOLS["wedding-invitation-maker"] = _tool(
 <div><label for="w-dress">Dress code (optional)</label><input id="w-dress" type="text" value="Formal"></div>
 <div><label for="w-rsvp">RSVP WhatsApp number</label><input id="w-rsvp" type="text" value="0300 1234567"></div>
 </div>
+<h3>Mehroon Lifafa ke khaas hisse (optional)</h3>
+<p class="small">Ye hisse sirf <b>Mehroon Lifafa</b> style mein nazar aate hain — families wala hissa aur mehmanon ke aam sawalat. Baqi styles mein ye istemal nahi hote.</p>
+<div class="row2">
+<div><label for="w-fam-gp">Dulha ke walidain (groom's parents)</label><input id="w-fam-gp" type="text" value="Mr. &amp; Mrs. Muhammad Siddique"></div>
+<div><label for="w-fam-bp">Dulhan ke walidain (bride's parents)</label><input id="w-fam-bp" type="text" value="Mr. &amp; Mrs. Tariq Mehmood"></div>
+</div>
+<div class="row2">
+<div><label for="w-fam-c1n">Rabta 1 — naam / rishta</label><input id="w-fam-c1n" type="text" value="Bilal — dulha ke bhai"></div>
+<div><label for="w-fam-c1p">Rabta 1 — mobile number</label><input id="w-fam-c1p" type="text" value="0300 1234567"></div>
+</div>
+<div class="row2">
+<div><label for="w-fam-c2n">Rabta 2 — naam / rishta</label><input id="w-fam-c2n" type="text" value="Hassan — dulhan ke bhai"></div>
+<div><label for="w-fam-c2p">Rabta 2 — mobile number</label><input id="w-fam-c2p" type="text" value="0321 7654321"></div>
+</div>
+<label for="w-faq-1a">Sawal 1: What should I wear? — jawab</label>
+<input id="w-faq-1a" type="text" value="Whatever makes you feel festive. Mehndi is colourful, the Baraat is formal — shalwar kameez, sherwani, lehenga or a suit are all perfect.">
+<label for="w-faq-2a">Sawal 2: Can I bring my family? — jawab</label>
+<input id="w-faq-2a" type="text" value="Of course — your family is our family. Children are warmly welcome at every gathering.">
+<label for="w-faq-3a">Sawal 3: Where do I park? — jawab</label>
+<input id="w-faq-3a" type="text" value="Free parking is available at the venue. Just mention the wedding at the gate.">
 <button class="btn" id="w-makelink" type="button">💌 Invitation ka link banayein</button>
 <div class="result" id="w-linkresult"></div>
 <h3>Apni dhun (sirf apne preview ke liye)</h3>
