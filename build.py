@@ -185,7 +185,7 @@ def tool_page(path, row):
 <div class="grid">{rel_cards}</div>
 {disclaimer}
 </main>
-{footer(TAB_FOR_CAT[t['cat']], '<script src="/assets/shotdata-maroon.js" defer></script><script src="/assets/shotdata-green.js" defer></script><script src="/assets/shotdata-royal.js" defer></script><script src="/assets/fabricdata.js" defer></script><script src="/assets/floraldata.js" defer></script><script src="/assets/floralalphadata.js" defer></script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script><script src="/assets/wedding.js?v=17" defer></script>' if slug == "wedding-invitation-maker" else ('<script src="/assets/ramadan.js?v=7" defer></script>' if slug == "ramadan-calendar-maker" else ""))}"""
+{footer(TAB_FOR_CAT[t['cat']], '<script src="/assets/shotdata-maroon.js" defer></script><script src="/assets/shotdata-green.js" defer></script><script src="/assets/shotdata-royal.js" defer></script><script src="/assets/fabricdata.js" defer></script><script src="/assets/floraldata.js" defer></script><script src="/assets/floralalphadata.js" defer></script><script src="/assets/lifafadata.js" defer></script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script><script src="/assets/wedding.js?v=18" defer></script><script src="/assets/lifafa.js?v=1" defer></script>' if slug == "wedding-invitation-maker" else ('<script src="/assets/ramadan.js?v=7" defer></script>' if slug == "ramadan-calendar-maker" else ""))}"""
     return body
 
 def category_page(path, row):
@@ -285,12 +285,13 @@ def main():
     shutil.copy(os.path.join(HERE, "style.css"), os.path.join(DIST, "assets", "style.css"))
     shutil.copy(os.path.join(HERE, "tools.js"), os.path.join(DIST, "assets", "tools.js"))
     shutil.copy(os.path.join(HERE, "wedding.js"), os.path.join(DIST, "assets", "wedding.js"))
+    shutil.copy(os.path.join(HERE, "lifafa.js"), os.path.join(DIST, "assets", "lifafa.js"))
     shutil.copy(os.path.join(HERE, "ramadan.js"), os.path.join(DIST, "assets", "ramadan.js"))
     for _sn in ("maroon", "green", "royal"):
         _sp = os.path.join(HERE, "shotdata-" + _sn + ".js")
         if os.path.exists(_sp):
             shutil.copy(_sp, os.path.join(DIST, "assets", "shotdata-" + _sn + ".js"))
-    for _an in ("fabricdata", "floraldata", "floralalphadata"):
+    for _an in ("fabricdata", "floraldata", "floralalphadata", "lifafadata"):
         _ap = os.path.join(HERE, _an + ".js")
         if os.path.exists(_ap):
             shutil.copy(_ap, os.path.join(DIST, "assets", _an + ".js"))
