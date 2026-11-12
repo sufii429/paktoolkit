@@ -185,7 +185,7 @@ def tool_page(path, row):
 <div class="grid">{rel_cards}</div>
 {disclaimer}
 </main>
-{footer(TAB_FOR_CAT[t['cat']], '<script src="/assets/shotdata-maroon.js" defer></script><script src="/assets/shotdata-green.js" defer></script><script src="/assets/shotdata-royal.js" defer></script><script src="/assets/fabricdata.js" defer></script><script src="/assets/floraldata.js" defer></script><script src="/assets/floralalphadata.js" defer></script><script src="/assets/lifafadata.js" defer></script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script><script src="/assets/wedding.js?v=18" defer></script><script src="/assets/lifafa.js?v=1" defer></script>' if slug == "wedding-invitation-maker" else ('<script src="/assets/ramadan.js?v=7" defer></script>' if slug == "ramadan-calendar-maker" else ""))}"""
+{footer(TAB_FOR_CAT[t['cat']], '<script src="/assets/shotdata-maroon.js" defer></script><script src="/assets/shotdata-green.js" defer></script><script src="/assets/shotdata-royal.js" defer></script><script src="/assets/fabricdata.js" defer></script><script src="/assets/floraldata.js" defer></script><script src="/assets/floralalphadata.js" defer></script><script src="/assets/lifafadata.js" defer></script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script><script src="/assets/wedding.js?v=18" defer></script><script src="/assets/lifafa.js?v=2" defer></script>' if slug == "wedding-invitation-maker" else ('<script src="/assets/ramadan.js?v=7" defer></script>' if slug == "ramadan-calendar-maker" else ""))}"""
     return body
 
 def category_page(path, row):
