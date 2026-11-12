@@ -46,7 +46,7 @@ async function wDecodePayload(s){
 /* Compact v2 payload: positional array + coded enums + day-numbers, so the
    share link stays as short as possible (long links scare guests off).
    v1 object payloads still decode — old links keep working. */
-var W_STYLES = ["curtain", "doors", "arch", "doors2", "tieback", "ref", "ref2", "ref3"];
+var W_STYLES = ["curtain", "doors", "arch", "doors2", "tieback", "ref", "ref2", "ref3", "lifafa"];
 var W_PALS_LIST = ["maroon", "green", "royal"];
 var W_TUNES_LIST = ["strings", "bells", "drone", "none"];
 var W_SHOTS_LIST = ["maroon", "green", "royal"];
@@ -60,18 +60,23 @@ function wDayStr(n){
   return dt.getUTCFullYear() + "-" + p2(dt.getUTCMonth() + 1) + "-" + p2(dt.getUTCDate());
 }
 function wToCompact(d){
-  return [2, d.g, d.b, d.gu, d.bu, d.host, d.gf, d.bf,
+  var a = [2, d.g, d.b, d.gu, d.bu, d.host, d.gf, d.bf,
     W_STYLES.indexOf(d.style), W_PALS_LIST.indexOf(d.pal), W_TUNES_LIST.indexOf(d.tune),
     (d.ev || []).map(function(e){ return [e.n, wDayNum(e.d), e.t, e.vn]; }),
     d.main, d.venue, d.addr, d.dress, d.rsvp,
     d.shot ? W_SHOTS_LIST.indexOf(d.shot) + 1 : 0];
+  /* Lifafa extras ride at the END of the array (indices 18/19) so older
+     links and decoders keep reading the fields they know, untouched. */
+  if (d.fam) a[18] = d.fam;
+  if (d.faq) a[19] = d.faq;
+  return a;
 }
 function wFromCompact(a){
   return { v: 2, g: a[1], b: a[2], gu: a[3], bu: a[4], host: a[5], gf: a[6], bf: a[7],
     style: W_STYLES[a[8]] || "doors2", pal: W_PALS_LIST[a[9]] || "maroon", tune: W_TUNES_LIST[a[10]] || "strings",
     ev: (a[11] || []).map(function(e){ return { n: e[0], d: wDayStr(e[1]), t: e[2], vn: e[3] }; }),
     main: a[12] || 0, venue: a[13], addr: a[14], dress: a[15], rsvp: a[16],
-    shot: a[17] ? W_SHOTS_LIST[a[17] - 1] : "" };
+    shot: a[17] ? W_SHOTS_LIST[a[17] - 1] : "", fam: a[18] || null, faq: a[19] || null };
 }
 function wEventDate(ev){
   var d = (ev.d || "").split("-"), y = +d[0] || 2026, mo = (+d[1] || 1) - 1, da = +d[2] || 1;
@@ -278,7 +283,7 @@ var W_CSS = `
 #wguest.sty-ref .garden .flimg.l{left:-8px}
 #wguest.sty-ref .garden .flimg.r{right:-8px;transform:scaleX(-1)}
 #wguest.sty-ref .garden svg{display:block;width:100%;height:auto}
-@media (prefers-reduced-motion: reduce){#wguest .panel,#wguest .minicurtain .mp{transition-duration:.01s}#wguest .tap{animation:none}}
+@media (prefers-reduced-motion: reduce){#wguest .panel,#wguest .minicurtain .mp{transition-duration:.01s}#wguest .tap{animation:none}#wguest.sty-lifafa .lf-flap,#wguest.sty-lifafa .lf-seal,#wguest.sty-lifafa .lf-envcard,#wguest.sty-lifafa.nogsap .lf-rise{transition-duration:.01s}#wguest.sty-lifafa .lf-taphint{animation:none}}
 `;
 function wInjectCSS(){
   if (document.getElementById("w-css")) return;
@@ -312,6 +317,7 @@ var W_GARDEN_SVG = "<svg viewBox='0 0 400 118' xmlns='http://www.w3.org/2000/svg
 
 var W_ORN_SVG = "<svg viewBox='0 0 54 54' xmlns='http://www.w3.org/2000/svg'><path d='M7 47 C7 22 22 7 47 7' fill='none' stroke='currentColor' stroke-width='2.2'/><circle cx='14.5' cy='14.5' r='3.6' fill='none' stroke='currentColor' stroke-width='1.8'/><path d='M24 8.5 q7 -3.5 10 1 q-6 3 -10 -1' fill='currentColor'/><path d='M8.5 24 q-3.5 7 1 10 q3 -6 -1 -10' fill='currentColor'/><circle cx='47' cy='7' r='2.2' fill='currentColor'/><circle cx='7' cy='47' r='2.2' fill='currentColor'/></svg>";
 function wRenderGuest(d, opts){
+  if (d.style === "lifafa") return wRenderLifafa(d, opts);
   var fam = d.style === "ref" || d.style === "ref2" || d.style === "ref3";
   opts = opts || {};
   wLoadFonts(); wInjectCSS();
@@ -1062,11 +1068,21 @@ function wBuildGuest(){
 }
 function wReadPayloadFromForm(){
   function evRow(n){
-    return { n: $("w-ev" + n + "-n").value.trim(), d: $("w-ev" + n + "-d").value, t: $("w-ev" + n + "-t").value.trim(), vn: $("w-ev" + n + "-v").value.trim() };
+    var nEl = $("w-ev" + n + "-n"); if (!nEl) return { n: "", d: "", t: "", vn: "" };
+    return { n: nEl.value.trim(), d: $("w-ev" + n + "-d").value, t: $("w-ev" + n + "-t").value.trim(), vn: $("w-ev" + n + "-v").value.trim() };
   }
-  var rows = [evRow(1), evRow(2), evRow(3)], evs = [], main = 0;
+  function wVal(id){ var n = $(id); return n ? n.value.trim() : ""; }
+  function wPhone(v){ return v.replace(/\D/g, "").replace(/^0/, "92"); }
+  var rows = [evRow(1), evRow(2), evRow(3), evRow(4), evRow(5)], evs = [], main = 0;
   rows.forEach(function(r, i){ if (r.n){ if (i === 1) main = evs.length; evs.push(r); } });
   if (!evs.length) evs.push(rows[1]);
+  /* Lifafa extras — families + guest FAQ (other styles simply ignore them) */
+  var famArr = [wVal("w-fam-gp"), wVal("w-fam-bp"), wVal("w-fam-c1n"), wPhone(wVal("w-fam-c1p")), wVal("w-fam-c2n"), wPhone(wVal("w-fam-c2p"))];
+  var W_FAQ_QS = ["What should I wear?", "Can I bring my family?", "Where do I park?"];
+  var faqArr = [];
+  [1, 2, 3].forEach(function(i){
+    var ans = wVal("w-faq-" + i + "a"); if (ans) faqArr.push([W_FAQ_QS[i - 1], ans]);
+  });
   return {
     v: 1,
     g: $("w-groom").value.trim(), b: $("w-bride").value.trim(),
@@ -1076,7 +1092,9 @@ function wReadPayloadFromForm(){
     ev: evs, main: main,
     venue: $("w-venue").value.trim(), addr: $("w-addr").value.trim(),
     dress: $("w-dress").value.trim(),
-    rsvp: $("w-rsvp").value.replace(/\D/g, "").replace(/^0/, "92")
+    rsvp: wPhone($("w-rsvp").value),
+    fam: famArr.some(function(x){ return !!x; }) ? famArr : null,
+    faq: faqArr.length ? faqArr : null
   };
 }
 function initWedding(){
@@ -1091,7 +1109,7 @@ function initWedding(){
   /* Special designs carry their own colour world — keep the maker's Rang
      (palette) in step when a Special style is picked; the maker can still
      change it back by hand afterwards. */
-  var wPalMatch = { ref: "green", ref2: "maroon", ref3: "royal" };
+  var wPalMatch = { ref: "green", ref2: "maroon", ref3: "royal", lifafa: "maroon" };
   function wMatchPal(){ var p = wPalMatch[$("w-style").value]; if (p) $("w-pal").value = p; }
   $("w-style").addEventListener("change", wMatchPal);
   wMatchPal();
