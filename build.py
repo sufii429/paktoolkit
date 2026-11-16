@@ -39,7 +39,7 @@ def schema_for(path, row, extra=None):
     if "WebSite" in types:
         out.append(ld({"@context": "https://schema.org", "@type": "WebSite", "name": "PakToolkit", "url": BASE + "/"}))
         out.append(ld({"@context": "https://schema.org", "@type": "Organization", "name": "PakToolkit",
-                       "url": BASE + "/", "logo": BASE + "/favicon.svg",
+                       "url": BASE + "/", "logo": BASE + "/assets/icon-192.png",
                        "description": "Free online tools for Pakistan — calculators, image and PDF tools that run in your browser."}))
     if "WebApplication" in types:
         slug = path.strip("/")
@@ -56,6 +56,9 @@ def schema_for(path, row, extra=None):
             faqs = tool["faqs"]
             out.append(ld({"@context": "https://schema.org", "@type": "FAQPage",
                            "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faqs]}))
+        if tool.get("steps"):
+            out.append(ld({"@context": "https://schema.org", "@type": "HowTo", "name": "How to use " + tool["name"],
+                           "step": [{"@type": "HowToStep", "position": i + 1, "text": s} for i, s in enumerate(tool["steps"])]}))
     if "ItemList" in types:
         cat = CATEGORIES[path.strip("/")]
         items = []
@@ -84,18 +87,24 @@ def head(row, path):
 <meta property="og:title" content="{esc(title)}">
 <meta property="og:description" content="{esc(desc)}">
 <meta property="og:url" content="{esc(url)}">
-<meta property="og:image" content="{BASE}/assets/og-image.svg">
+<meta property="og:image" content="{BASE}/assets/og-image.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{esc(title)}">
 <meta name="twitter:description" content="{esc(desc)}">
-<meta name="twitter:image" content="{BASE}/assets/og-image.svg">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="twitter:image" content="{BASE}/assets/og-image.jpg">
+<meta name="theme-color" content="#065e32">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="stylesheet" href="/assets/style.css">
 {schema_for(path, row)}
 </head>"""
 
 HEADER = """<header class="site"><div class="wrap header-in">
-<a class="logo" href="/">Pak<span>Toolkit</span></a>
+<a class="logo" href="/"><img class="logo-mark" src="/assets/logo-mark.png" alt="PakToolkit logo" width="38" height="38">Pak<span>Toolkit</span></a>
 <nav class="mainnav">
 <a href="/pakistan-calculators/">Pakistan Calculators</a>
 <a href="/image-tools/">Image Tools</a>
@@ -211,7 +220,7 @@ def home_page(path, row):
     sections = [f'<section class="cat-section star-section"><h2>⭐ Star Tools</h2><div class="grid">{star_cards}</div></section>']
     for cslug, cat in CATEGORIES.items():
         cards = "\n".join(card(s) for s in cat["tools"])
-        sections.append(f'<section class="cat-section"><h2><a href="/{cslug}/">{esc(cat["name"])}</a></h2><div class="grid">{cards}</div></section>')
+        sections.append(f'<section class="cat-section"><h2><span class="cat-ic">{cat.get("icon", "")}</span> <a href="/{cslug}/">{esc(cat["name"])}</a></h2><div class="grid">{cards}</div></section>')
     return f"""{head(row, path)}
 <body>
 {HEADER}
@@ -295,8 +304,20 @@ def main():
         _ap = os.path.join(HERE, _an + ".js")
         if os.path.exists(_ap):
             shutil.copy(_ap, os.path.join(DIST, "assets", _an + ".js"))
-    shutil.copy(os.path.join(HERE, "favicon.svg"), os.path.join(DIST, "favicon.svg"))
-    shutil.copy(os.path.join(HERE, "og-image.svg"), os.path.join(DIST, "assets", "og-image.svg"))
+    # Brand binaries live in the repo as base64 JSON (text-pushable); decode them into dist.
+    import base64 as _b64
+    _brandmap = {"favicon.ico": os.path.join(DIST, "favicon.ico"),
+                 "apple-touch-icon.png": os.path.join(DIST, "apple-touch-icon.png"),
+                 "icon-192.png": os.path.join(DIST, "assets", "icon-192.png"),
+                 "logo-mark.png": os.path.join(DIST, "assets", "logo-mark.png"),
+                 "og-image.jpg": os.path.join(DIST, "assets", "og-image.jpg")}
+    _b64dir = os.path.join(HERE, "assets-src", "brand-b64")
+    for _jf in sorted(os.listdir(_b64dir)):
+        if _jf.endswith(".json"):
+            with open(os.path.join(_b64dir, _jf), encoding="utf-8") as _fh:
+                for _name, _data in json.load(_fh).items():
+                    with open(_brandmap[_name], "wb") as _out:
+                        _out.write(_b64.b64decode(_data))
     shutil.copy(os.path.join(HERE, "robots.txt"), os.path.join(DIST, "robots.txt"))
     # engine-test.html and imgly-test.html stay in the repo as dormant diagnostics (not copied to dist).
     # Engine comparison concluded 2026-11-09: BiRefNet-lite 512 (WASM + fp32) won and is integrated in tools.js.
