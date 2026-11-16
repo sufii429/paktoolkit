@@ -5,26 +5,31 @@ Titles / meta / H1 come from seo-meta.csv in build.py — not repeated here."""
 CATEGORIES = {
     "pakistan-calculators": {
         "name": "Pakistan Calculators",
+        "icon": "🧮",
         "intro": "These calculators are built only for Pakistan: the bijli bill calculator Pakistan users search for every month, salary tax for 2025-26, the MDCAT aggregate formula, zakat with the government-notified nisab, and the Marla/Kanal land converter. Every figure is calculated on your own phone or computer — nothing is sent anywhere.",
         "tools": ["bijli-bill-calculator", "marla-kanal-converter", "salary-tax-calculator-pakistan", "mdcat-aggregate-calculator", "zakat-calculator"],
     },
     "image-tools": {
         "name": "Image Tools",
+        "icon": "🖼️",
         "intro": "Free image tools that run entirely in your browser: compress an image to an exact KB size for online forms, make a correct passport-size photo, or convert between JPG, PNG and WebP. Your images are never uploaded — the work happens on your device.",
         "tools": ["image-compressor-to-kb", "passport-size-photo-maker", "image-converter"],
     },
     "pdf-tools": {
         "name": "PDF Tools",
+        "icon": "📄",
         "intro": "Merge, split and convert PDFs without uploading them anywhere. Most PDF websites send your documents to their servers; PakToolkit processes every PDF inside your browser, so private documents stay private.",
         "tools": ["merge-pdf", "split-pdf", "jpg-to-pdf"],
     },
     "everyday-calculators": {
         "name": "Everyday Calculators",
+        "icon": "🔢",
         "intro": "Small calculators for everyday questions — starting with an exact age and date difference calculator that gives your age in years, months and days, plus totals in days and weeks.",
         "tools": ["age-calculator"],
     },
     "cards-invitations": {
         "name": "Cards & Invitations",
+        "icon": "💌",
         "intro": "Beautiful digital cards and invitations that you make in your browser and share on WhatsApp — a full wedding invitation maker with opening curtains, music, a live countdown and RSVP, and a Ramadan calendar maker in the local printing-press style with your own name band. Free, no sign-up, and everything is created on your own device.",
         "tools": ["ramadan-calendar-maker", "wedding-invitation-maker"],
     },
