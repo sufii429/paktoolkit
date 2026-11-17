@@ -96,6 +96,7 @@ def head(row, path):
 <meta name="twitter:description" content="{esc(desc)}">
 <meta name="twitter:image" content="{BASE}/assets/og-image.jpg">
 <meta name="theme-color" content="#065e32">
+<meta name="p:domain_verify" content="7ae647abf07bf072976110be1bf1a763"/>
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
