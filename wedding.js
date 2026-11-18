@@ -48,7 +48,7 @@ async function wDecodePayload(s){
    v1 object payloads still decode — old links keep working. */
 var W_STYLES = ["curtain", "doors", "arch", "doors2", "tieback", "ref", "ref2", "ref3", "lifafa"];
 var W_PALS_LIST = ["maroon", "green", "royal"];
-var W_TUNES_LIST = ["strings", "bells", "drone", "none"];
+var W_TUNES_LIST = ["strings", "bells", "drone", "none", "celebration", "mumbai", "mehndi", "bhangra", "punjabi"];
 var W_SHOTS_LIST = ["maroon", "green", "royal"];
 function wDayNum(ds){
   var p = (ds || "").split("-"); if (p.length < 3) return 0;
@@ -985,8 +985,42 @@ function wCtx(){
   if (wAudioCtx.state === "suspended") wAudioCtx.resume();
   return wAudioCtx;
 }
+/* ---- Real-song tunes: Pixabay tracks hosted in the paktoolkit repo's
+   tunes-v1 release; streamed when a guest opens the invitation. Same
+   handle shape as the synth tunes: {playing, stop(), resume()}. ---- */
+var W_TUNE_BASE = "https://github.com/sufii429/paktoolkit/releases/download/tunes-v1/";
+var W_MP3_TUNES = {
+  celebration: "tune-celebration.mp3",
+  mumbai: "tune-mumbai-lights.mp3",
+  mehndi: "tune-mehndi-whisper.mp3",
+  bhangra: "tune-bhangra-beat.mp3",
+  punjabi: "tune-punjabi-energy.mp3"
+};
+function wMp3TuneStart(kind){
+  var au = new Audio();
+  au.src = W_TUNE_BASE + W_MP3_TUNES[kind];
+  au.loop = true; au.preload = "auto"; au.volume = 0;
+  var fade = null;
+  function fadeTo(target, done){
+    if (fade) clearInterval(fade);
+    var from = au.volume, n = 0;
+    fade = setInterval(function(){
+      n++; au.volume = Math.max(0, Math.min(1, from + (target - from) * n / 12));
+      if (n >= 12){ clearInterval(fade); fade = null; au.volume = target; if (done) done(); }
+    }, 50);
+  }
+  var pr = au.play(); if (pr && pr.catch) pr.catch(function(){});
+  fadeTo(0.85);
+  var handle = {
+    playing: true,
+    stop: function(){ handle.playing = false; fadeTo(0, function(){ try { au.pause(); } catch (e) {} }); },
+    resume: function(){ var p2 = au.play(); if (p2 && p2.catch) p2.catch(function(){}); fadeTo(0.85); handle.playing = true; }
+  };
+  return handle;
+}
 function wTuneStart(kind, extraDest){
   if (!kind || kind === "none") return null;
+  if (W_MP3_TUNES[kind]) return wMp3TuneStart(kind);
   var ctx = wCtx();
   var master = ctx.createGain(); master.gain.value = 0.0;
   master.connect(ctx.destination);
