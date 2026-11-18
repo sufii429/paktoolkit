@@ -31,7 +31,7 @@ CATEGORIES = {
         "name": "Cards & Invitations",
         "icon": "💌",
         "intro": "Beautiful digital cards and invitations that you make in your browser and share on WhatsApp — a full wedding invitation maker with opening curtains, music, a live countdown and RSVP, and a Ramadan calendar maker in the local printing-press style with your own name band. Free, no sign-up, and everything is created on your own device.",
-        "tools": ["ramadan-calendar-maker", "wedding-invitation-maker"],
+        "tools": ["ramadan-calendar-maker", "wedding-invitation-maker", "eid-card-maker"],
     },
 }
 
@@ -572,6 +572,58 @@ TOOLS["ramadan-calendar-maker"] = _tool(
      ("I follow Fiqh Jafria. Are these times for me?", "The printed times follow the Hanafi (Karachi) method. For Fiqh Jafria, Sehri ends about 10 minutes earlier and Iftar is about 10 minutes after the shown Maghrib time — the calendar's footer notes this too."),
      ("Can I put my shop's name and phone number on the calendar?", "That is exactly what the patti (band) is for — your name in big Nastaleeq letters, your work line, two phone numbers and your area, just like the calendars printing presses make. Type them in and the preview updates as you type."),
      ("Is my information uploaded anywhere?", "No. The maker runs entirely in your browser; your name, numbers and address never leave your device.")],
+    False)
+
+TOOLS["eid-card-maker"] = _tool(
+    "eid-card-maker", "cards-invitations", "Eid Card Maker", "💌",
+    "Make a free retro 90s-style Eid card with funny and emotional Urdu shayari and your name on it — download and share on WhatsApp.",
+    "Remember the Eid cards of the 90s — the crescent moon, the glitter, the mosque silhouette and a sher that said exactly what you felt? This Eid card maker brings that card back. Pick one of five free retro designs, choose a ready-made Urdu sher — funny ones about Eidi and sewaiyan, emotional ones for friends, family and anyone far away in pardes — or write your own message, put your name on the card, and download it as a picture ready to share on WhatsApp. It works for both Eid-ul-Fitr and Eid-ul-Adha, and everything happens on your own device.",
+    """
+<label>Design chunein — paanchon FREE hain</label>
+<div id="e-designs" class="eid-designs"></div>
+<label for="e-type">Eid ki qisam</label>
+<select id="e-type">
+<option value="fitr" selected>Eid-ul-Fitr</option>
+<option value="adha">Eid-ul-Adha</option>
+</select>
+<label for="e-shayari">Shayari / paigham chunein</label>
+<select id="e-shayari">
+<option value="0" selected>💛 Dost ke liye — jazbati</option>
+<option value="1">✈️ Pardes walon ke liye — jazbati</option>
+<option value="2">🤲 Ammi ke liye — jazbati</option>
+<option value="3">🌙 Aam mohabbat — jazbati</option>
+<option value="4">💸 Eidi ki line — mazahiya</option>
+<option value="5">🍮 Sewaiyan wali — mazahiya</option>
+<option value="6">👕 Naye kapray — mazahiya</option>
+<option value="7">🧧 Eidi mili — mazahiya</option>
+<option value="custom">✍️ Apna paigham likhein</option>
+</select>
+<div id="e-msg-wrap" style="display:none">
+<label for="e-msg">Apna paigham — har line alag likhein</label>
+<textarea id="e-msg" rows="3" placeholder="Apna paigham yahan likhein…"></textarea>
+</div>
+<div class="row2">
+<div><label for="e-to">Kis ke liye (optional)</label><input id="e-to" type="text" placeholder="masalan: Pyari Ammi"></div>
+<div><label for="e-from">Aap ka naam (bhejne wala)</label><input id="e-from" type="text" value="Ahmed Khan"></div>
+</div>
+<canvas id="e-canvas" width="1080" height="1350" style="width:100%;max-width:430px;height:auto;display:block;margin:14px auto;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.25)"></canvas>
+<div class="row2">
+<div><button class="btn" id="e-download" type="button">⬇️ Card download karein</button></div>
+<div><button class="btn" id="e-share" type="button">💬 WhatsApp par share karein</button></div>
+</div>
+<p class="small" id="e-status"></p>
+""",
+    ["Choose your design — five retro designs, all completely free: Chaand Raat Classic, Gulab Wala, Rangeen 90s, Masjid-e-Noor and Vintage Cream.",
+     "Pick Eid-ul-Fitr or Eid-ul-Adha, then choose a ready-made sher (funny or emotional) or write your own message.",
+     "Write your name as the sender, and if you like, the name of the person the card is for.",
+     "The card redraws itself as you type — download it as a picture and share it on WhatsApp, or use the share button."],
+    "The card is drawn on a canvas inside your browser — the crescent, stars, mosque, roses and lettering are all drawn by code on your own device, in the style of the printed Eid cards of the 90s. Your names and message never leave your device; there is no upload and no account. The download is a full-size PNG picture (1080 × 1350), the size that looks best on WhatsApp and Facebook.",
+    "Example: Ahmed, working in Dubai, picks the Masjid-e-Noor design, chooses the pardes sher, writes his name at the bottom — and sends the card to his family group in Faisalabad on Chand Raat, exactly like the cards that once travelled by post.",
+    [("Is the Eid card maker really free?", "Yes — all five designs, all the shayari and the full-size download are completely free, with no sign-up and no watermark."),
+     ("What shayari is included?", "Eight ready-made Urdu ash'ar: emotional ones for friends, for Ammi, for anyone in pardes and for general Eid love, and funny ones about Eidi, sewaiyan and new clothes. You can also write your own message in any language."),
+     ("Does it work for both Eids?", "Yes. Choose Eid-ul-Fitr or Eid-ul-Adha at the top and the greeting line on the card changes to match."),
+     ("How do I share the card on WhatsApp?", "Download the card, then attach the picture in WhatsApp — or tap the share button, which sends the card directly on phones that support it."),
+     ("Is my name kept private?", "Yes. The card is made entirely inside your browser; your name and message are never uploaded or stored anywhere.")],
     False)
 
 HOME_FAQS = [

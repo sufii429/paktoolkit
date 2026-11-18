@@ -111,3 +111,10 @@ canvas.preview, img.preview{max-width:100%;border:1px solid var(--line);border-r
 }
 
 .star-section .card{border:2px solid #c9a227;background:linear-gradient(180deg,#fffdf4,#fdf3cd)}
+
+/* Eid Card Maker — design swatches */
+.eid-designs{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 14px}
+.eid-swatch{display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--card,#fff);border:2px solid var(--line,#d9e2d9);border-radius:14px;padding:10px 12px;cursor:pointer;font:inherit;min-width:104px}
+.eid-swatch.on{border-color:var(--green);box-shadow:0 4px 14px rgba(10,122,66,.22)}
+.eid-sw{display:block;width:64px;height:44px;border-radius:9px}
+.eid-nm{font-size:.82rem;font-weight:600;color:var(--ink)}

@@ -934,4 +934,5 @@ document.addEventListener("DOMContentLoaded", function(){
   initMerge(); initSplit(); initJpgPdf(); initAge();
   if (window.initWedding) initWedding();
   if (window.initRamadan) initRamadan();
+  if (window.initEid) initEid();
 });
