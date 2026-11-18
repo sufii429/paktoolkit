@@ -577,7 +577,7 @@ TOOLS["ramadan-calendar-maker"] = _tool(
 TOOLS["eid-card-maker"] = _tool(
     "eid-card-maker", "cards-invitations", "Eid Card Maker", "💌",
     "Make a free retro 90s-style Eid card with funny and emotional Urdu shayari and your name on it — download and share on WhatsApp.",
-    "Remember the Eid cards of the 90s — the crescent moon, the glitter, the mosque silhouette and a sher that said exactly what you felt? This Eid card maker brings that card back. Pick one of five free retro designs, choose a ready-made Urdu sher — funny ones about Eidi and sewaiyan, emotional ones for friends, family and anyone far away in pardes — or write your own message, put your name on the card, and download it as a picture ready to share on WhatsApp. It works for both Eid-ul-Fitr and Eid-ul-Adha, and everything happens on your own device.",
+    "Remember the Eid cards of the 90s — the crescent moon, the glitter, the mosque silhouette and a sher that said exactly what you felt? This Eid card maker brings that card back. Pick one of five free retro designs, choose a ready-made Urdu sher — the genuine card verses of the era, from 'Dabbay mein dabba, dabbay mein cake' to the funny ones and the emotional ones for family and anyone far away in pardes — or write your own message, put your name on the card, and download it as a picture ready to share on WhatsApp. It works for both Eid-ul-Fitr and Eid-ul-Adha, and everything happens on your own device.",
     """
 <label>Design chunein — paanchon FREE hain</label>
 <div id="e-designs" class="eid-designs"></div>
@@ -588,14 +588,14 @@ TOOLS["eid-card-maker"] = _tool(
 </select>
 <label for="e-shayari">Shayari / paigham chunein</label>
 <select id="e-shayari">
-<option value="0" selected>💛 Dost ke liye — jazbati</option>
-<option value="1">✈️ Pardes walon ke liye — jazbati</option>
-<option value="2">🤲 Ammi ke liye — jazbati</option>
-<option value="3">🌙 Aam mohabbat — jazbati</option>
-<option value="4">💸 Eidi ki line — mazahiya</option>
-<option value="5">🍮 Sewaiyan wali — mazahiya</option>
-<option value="6">👕 Naye kapray — mazahiya</option>
-<option value="7">🧧 Eidi mili — mazahiya</option>
+<option value="0" selected>⭐ ڈبے میں ڈبہ — asli 90s (dosti)</option>
+<option value="1">⭐ گرم گرم روٹی — asli 90s (bachpan ki dosti)</option>
+<option value="2">⭐ چھوٹی سی چڑیا — asli 90s (ghar ki dawat)</option>
+<option value="3">⭐ دوست غسل خانے میں — asli 90s (mazahiya)</option>
+<option value="4">⭐ کنجوس والا — asli 90s (mazahiya)</option>
+<option value="5">⭐ تیس روزے رکھو — asli 90s (mazahiya)</option>
+<option value="6">✈️ Pardes walon ke liye — jazbati</option>
+<option value="7">🤲 Ammi ke liye — jazbati</option>
 <option value="custom">✍️ Apna paigham likhein</option>
 </select>
 <div id="e-msg-wrap" style="display:none">
@@ -620,7 +620,7 @@ TOOLS["eid-card-maker"] = _tool(
     "The card is drawn on a canvas inside your browser — the crescent, stars, mosque, roses and lettering are all drawn by code on your own device, in the style of the printed Eid cards of the 90s. Your names and message never leave your device; there is no upload and no account. The download is a full-size PNG picture (1080 × 1350), the size that looks best on WhatsApp and Facebook.",
     "Example: Ahmed, working in Dubai, picks the Masjid-e-Noor design, chooses the pardes sher, writes his name at the bottom — and sends the card to his family group in Faisalabad on Chand Raat, exactly like the cards that once travelled by post.",
     [("Is the Eid card maker really free?", "Yes — all five designs, all the shayari and the full-size download are completely free, with no sign-up and no watermark."),
-     ("What shayari is included?", "Eight ready-made Urdu ash'ar: emotional ones for friends, for Ammi, for anyone in pardes and for general Eid love, and funny ones about Eidi, sewaiyan and new clothes. You can also write your own message in any language."),
+     ("What shayari is included?", "The genuine verses from the Eid cards of the 90s — 'Dabbay mein dabba, dabbay mein cake', 'Garam garam roti tori nahi jaati' and the rest of the classics friends once wrote on cards by hand — plus emotional ones for Ammi and for anyone far away in pardes. You can also write your own message in any language."),
      ("Does it work for both Eids?", "Yes. Choose Eid-ul-Fitr or Eid-ul-Adha at the top and the greeting line on the card changes to match."),
      ("How do I share the card on WhatsApp?", "Download the card, then attach the picture in WhatsApp — or tap the share button, which sends the card directly on phones that support it."),
      ("Is my name kept private?", "Yes. The card is made entirely inside your browser; your name and message are never uploaded or stored anywhere.")],
