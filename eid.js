@@ -64,24 +64,25 @@ function initEid(){
     ctx.fillStyle = color; ctx.beginPath();
     ctx.ellipse(x, y, r, r * 0.42, -0.6, 0, 7); ctx.fill();
   }
-  function mosque(baseY, color, win){
+  function mosque(baseY, color, win, s){
+    s = s || 1;
     ctx.fillStyle = color;
     ctx.fillRect(0, baseY, W, H - baseY);
     /* side domes */
     [-40, W - 190].forEach(function(x){
-      ctx.beginPath(); ctx.arc(x + 115, baseY, 115, Math.PI, 0); ctx.fill();
-      ctx.fillRect(x + 103, baseY - 52, 24, 52);
-      star4(x + 115, baseY - 66, 13, win);
+      ctx.beginPath(); ctx.arc(x + 115, baseY, 115 * s, Math.PI, 0); ctx.fill();
+      ctx.fillRect(x + 103, baseY - 52 * s, 24, 52 * s);
+      star4(x + 115, baseY - 66 * s, 13, win);
     });
     /* main dome */
-    ctx.beginPath(); ctx.arc(W / 2, baseY, 185, Math.PI, 0); ctx.fill();
-    ctx.fillRect(W / 2 - 14, baseY - 245, 28, 62);
-    star4(W / 2, baseY - 268, 20, win);
+    ctx.beginPath(); ctx.arc(W / 2, baseY, 185 * s, Math.PI, 0); ctx.fill();
+    ctx.fillRect(W / 2 - 14, baseY - 245 * s, 28, 62 * s);
+    star4(W / 2, baseY - 268 * s, 20, win);
     /* minarets */
     [92, W - 128].forEach(function(x){
-      ctx.fillRect(x, baseY - 330, 36, 330);
-      ctx.fillRect(x - 12, baseY - 268, 60, 16);
-      ctx.beginPath(); ctx.moveTo(x - 8, baseY - 330); ctx.lineTo(x + 18, baseY - 408); ctx.lineTo(x + 44, baseY - 330); ctx.fill();
+      ctx.fillRect(x, baseY - 330 * s, 36, 330 * s);
+      ctx.fillRect(x - 12, baseY - 268 * s, 60, 16);
+      ctx.beginPath(); ctx.moveTo(x - 8, baseY - 330 * s); ctx.lineTo(x + 18, baseY - 408 * s); ctx.lineTo(x + 44, baseY - 330 * s); ctx.fill();
     });
     /* lit windows */
     ctx.fillStyle = win;
@@ -170,7 +171,7 @@ function initEid(){
         starField(60, "#ffffff", 760);
         crescent(168, 168, 56, this.main, "#0d1b3e");
         star4(212, 128, 16, this.main);
-        mosque(H - 218, "#081230", "#ffd94d");
+        mosque(H - 190, "#081230", "#ffd94d", 0.82);
       } },
     { id: "vintage", name: "Vintage Cream", sw: "linear-gradient(135deg,#f6ecd7,#e8d9b0)",
       bg: "#f6ecd7", main: "#0b5a3c", soft: "#8a6d1f", body: "#274435", accent: "#b8912f",
@@ -213,39 +214,40 @@ function initEid(){
   function draw(){
     var d = DESIGNS[state.design];
     var type = TYPES[$("e-type").value] || TYPES.fitr;
+    var isMasjid = d.id === "masjid";
     ctx.save();
     d.draw();
     /* greeting */
     spacing("10px");
-    txt("EID MUBARAK", W / 2, 428, "700 96px Georgia,'Times New Roman',serif", d.main);
+    txt("EID MUBARAK", W / 2, 415, "700 96px Georgia,'Times New Roman',serif", d.main);
     spacing("0px");
-    var us = fitUrdu(["عید مبارک"], 88);
-    txt("عید مبارک", W / 2, 545, "700 " + us + "px 'Noto Nastaliq Urdu','Jameel Noori Nastaleeq',serif", d.soft);
+    var us = fitUrdu(["عید مبارک"], 80);
+    txt("عید مبارک", W / 2, 578, "700 " + us + "px 'Noto Nastaliq Urdu','Jameel Noori Nastaleeq',serif", d.soft);
     spacing("6px");
-    txt(type.latin, W / 2, 636, "600 33px Georgia,serif", d.accent);
+    txt(type.latin, W / 2, 668, "600 33px Georgia,serif", d.accent);
     spacing("0px");
-    divider(W / 2, 692, d.accent);
+    divider(W / 2, 716, d.accent);
     /* shayari / message */
     var lines = currentLines();
     var ss = fitUrdu(lines, 54);
     ctx.font = "600 " + ss + "px 'Noto Nastaliq Urdu','Jameel Noori Nastaleeq',serif";
     ctx.fillStyle = d.body; ctx.textAlign = "center"; ctx.textBaseline = "middle";
-    var y0 = lines.length > 1 ? 800 : 838;
+    var y0 = lines.length > 1 ? 828 : 862;
     lines.forEach(function(ln, i){ ctx.fillText(ln, W / 2, y0 + i * 96); });
     /* recipient */
     var to = $("e-to").value.trim();
     if (to){
       spacing("4px");
-      txt("WITH LOVE FOR", W / 2, 1006, "600 28px Georgia,serif", d.accent);
+      txt("WITH LOVE FOR", W / 2, isMasjid ? 985 : 1030, "600 28px Georgia,serif", d.accent);
       spacing("0px");
-      txt(to, W / 2, 1072, "700 58px Georgia,'Noto Nastaliq Urdu',serif", d.main);
+      txt(to, W / 2, isMasjid ? 1045 : 1092, "700 58px Georgia,'Noto Nastaliq Urdu',serif", d.main);
     }
-    /* sender */
+    /* sender — on Masjid-e-Noor it sits in gold on the dark mosque band */
     var from = $("e-from").value.trim();
-    if (from) txt("— " + from + " ki taraf se", W / 2, 1180, "italic 600 42px Georgia,serif", d.soft);
-    /* brand */
+    if (from) txt("— " + from + " ki taraf se", W / 2, isMasjid ? 1288 : 1180, "italic 600 42px Georgia,serif", isMasjid ? "#ffd94d" : d.soft);
+    /* brand — inside the frame on framed designs */
     ctx.globalAlpha = 0.66;
-    txt("paktoolkit.top", W / 2, 1296, "600 25px Georgia,serif", d.accent);
+    txt("paktoolkit.top", W / 2, isMasjid ? 1330 : 1272, "600 25px Georgia,serif", d.accent);
     ctx.globalAlpha = 1;
     ctx.restore();
   }
