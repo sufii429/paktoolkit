@@ -68,18 +68,21 @@ function initEid(){
     s = s || 1;
     ctx.fillStyle = color;
     ctx.fillRect(0, baseY, W, H - baseY);
-    /* side domes */
+    /* side domes — fillStyle is re-set before every shape: star4() changes it */
     [-40, W - 190].forEach(function(x){
+      ctx.fillStyle = color;
       ctx.beginPath(); ctx.arc(x + 115, baseY, 115 * s, Math.PI, 0); ctx.fill();
       ctx.fillRect(x + 103, baseY - 52 * s, 24, 52 * s);
       star4(x + 115, baseY - 66 * s, 13, win);
     });
     /* main dome */
+    ctx.fillStyle = color;
     ctx.beginPath(); ctx.arc(W / 2, baseY, 185 * s, Math.PI, 0); ctx.fill();
     ctx.fillRect(W / 2 - 14, baseY - 245 * s, 28, 62 * s);
     star4(W / 2, baseY - 268 * s, 20, win);
     /* minarets */
     [92, W - 128].forEach(function(x){
+      ctx.fillStyle = color;
       ctx.fillRect(x, baseY - 330 * s, 36, 330 * s);
       ctx.fillRect(x - 12, baseY - 268 * s, 60, 16);
       ctx.beginPath(); ctx.moveTo(x - 8, baseY - 330 * s); ctx.lineTo(x + 18, baseY - 408 * s); ctx.lineTo(x + 44, baseY - 330 * s); ctx.fill();
@@ -139,8 +142,6 @@ function initEid(){
           rose(p[0], p[1], 44, "#d94f6a", "#8e1f3a");
           leaf(p[0] + (p[0] < W / 2 ? 52 : -52), p[1] + (p[1] < H / 2 ? 26 : -26), 26, "#2e7d4f");
         });
-        ctx.strokeStyle = this.accent; ctx.lineWidth = 4;
-        ctx.beginPath(); ctx.moveTo(190, 470); ctx.quadraticCurveTo(W / 2, 330, W - 190, 470); ctx.stroke();
         crescent(W / 2, 208, 60, this.main, this.bg);
         star4(W / 2 + 50, 158, 17, this.main);
       } },
