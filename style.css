@@ -112,6 +112,16 @@ canvas.preview, img.preview{max-width:100%;border:1px solid var(--line);border-r
 
 .star-section .card{border:2px solid #c9a227;background:linear-gradient(180deg,#fffdf4,#fdf3cd)}
 
+/* Wedding maker — 5-qadam saaf layout (cleanup, 2026-11-19) */
+.toolbox details.wstep{margin:12px 0;padding:14px 16px}
+.wstep>summary{font-size:1.06rem;color:var(--green-dark)}
+.wstep[hidden]{display:none}
+.wtoggle{display:flex!important;align-items:center;gap:9px;cursor:pointer}
+.toolbox .wtoggle input{width:auto;min-height:0;padding:0}
+details.wsub{margin-top:14px;background:#fbfdfb}
+details.wsub summary{font-size:.95rem}
+#w-addev{width:auto}
+
 /* Eid Card Maker — design swatches */
 .eid-designs{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 14px}
 .eid-swatch{display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--card,#fff);border:2px solid var(--line,#d9e2d9);border-radius:14px;padding:10px 12px;cursor:pointer;font:inherit;min-width:104px}

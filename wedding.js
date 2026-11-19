@@ -1256,6 +1256,50 @@ function initWedding(){
       }
     });
   })();
+  /* Cleanup layout (2026-11-19, Mazeen-approved plan): 5 collapsible qadam,
+     ikhtiyari hisse band. Sirf dikhawa badla hai — saare khane aur link ka
+     format bilkul waisa hi hai, purane links chalte rahenge. */
+  (function wSteps(){
+    var steps = Array.prototype.slice.call(document.querySelectorAll(".wstep"));
+    steps.forEach(function(st){
+      st.addEventListener("toggle", function(){
+        if (!st.open) return;
+        steps.forEach(function(o){ if (o !== st) o.open = false; });
+      });
+    });
+    function bindToggle(chkId, secId){
+      var c = $(chkId), s = $(secId); if (!c || !s) return;
+      c.addEventListener("change", function(){ s.hidden = !c.checked; });
+    }
+    bindToggle("w-t-urdu", "w-sec-urdu");
+    bindToggle("w-t-fam", "w-sec-fam");
+    var wraps = ["w-ev3wrap", "w-ev4wrap", "w-ev5wrap"].map(function(id){ return $(id); }).filter(Boolean);
+    var addBtn = $("w-addev");
+    if (addBtn) addBtn.addEventListener("click", function(){
+      for (var i = 0; i < wraps.length; i++){
+        if (wraps[i].hidden){
+          wraps[i].hidden = false;
+          if (i === wraps.length - 1) addBtn.style.display = "none";
+          break;
+        }
+      }
+    });
+    var lifafaStep = $("w-step-lifafa");
+    function wLifafaVis(){
+      if (!lifafaStep) return;
+      var on = $("w-style").value === "lifafa";
+      lifafaStep.hidden = !on;
+      if (on){
+        lifafaStep.open = true;
+        steps.forEach(function(o){ if (o !== lifafaStep) o.open = false; });
+      }
+    }
+    $("w-style").addEventListener("change", wLifafaVis);
+    wLifafaVis();
+    $("w-photo").addEventListener("change", function(){
+      if (this.files && this.files.length) $("w-sec-photobg").hidden = false;
+    });
+  })();
   /* v1 is link-only (Mazeen's call): the video/poster buttons are not in the
      maker UI; wMakeVideo / wMakePoster stay dormant in this file for later. */
 }

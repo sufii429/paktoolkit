@@ -372,22 +372,92 @@ TOOLS["wedding-invitation-maker"] = _tool(
     "Make a digital wedding invitation with opening curtains, music, countdown and WhatsApp RSVP.",
     "Create a beautiful digital wedding invitation — dawwat-nama — right on your phone. Fill in the names, dates and venue, choose a curtain, door or floral-arch opening, and share a link on WhatsApp: when your guest taps it, the doors open with music, a scratch card reveals the date, a live countdown runs, and they can RSVP back on WhatsApp. The cover carries one couple photo — your own (its background is removed by the same AI as our passport photo tool, then a small copy travels inside the link itself) or a built-in illustrated couple shot that matches your colour theme.",
     """
+<details class="wstep" open>
+<summary>Qadam 1 — Naam aur khandan</summary>
 <label for="w-groom">Dulha (groom) — name in English</label>
 <input id="w-groom" type="text" value="Muhammad Ahmed">
 <label for="w-bride">Dulhan (bride) — name in English</label>
 <input id="w-bride" type="text" value="Fatima Noor">
-<div class="row2">
-<div><label for="w-groom-u">Dulha ka naam Urdu mein (optional)</label><input id="w-groom-u" type="text" value="محمد احمد"></div>
-<div><label for="w-bride-u">Dulhan ka naam Urdu mein (optional)</label><input id="w-bride-u" type="text" value="فاطمہ نور"></div>
-</div>
-<label for="w-host">Dawwat dene wale (hosts)</label>
+<label for="w-host">Dawwat kis ki taraf se hai (hosts)</label>
 <input id="w-host" type="text" value="Mr. &amp; Mrs. Muhammad Siddique">
+<label class="wtoggle"><input type="checkbox" id="w-t-urdu"> ✍️ Urdu naam bhi jorein</label>
+<div id="w-sec-urdu" hidden>
 <div class="row2">
-<div><label for="w-groom-fam">Dulha ki family line</label><input id="w-groom-fam" type="text" value="son of Mr. &amp; Mrs. Muhammad Siddique"></div>
-<div><label for="w-bride-fam">Dulhan ki family line</label><input id="w-bride-fam" type="text" value="daughter of Mr. &amp; Mrs. Tariq Mehmood"></div>
+<div><label for="w-groom-u">Dulha ka naam Urdu mein</label><input id="w-groom-u" type="text" value="محمد احمد"></div>
+<div><label for="w-bride-u">Dulhan ka naam Urdu mein</label><input id="w-bride-u" type="text" value="فاطمہ نور"></div>
+</div>
+</div>
+<label class="wtoggle"><input type="checkbox" id="w-t-fam"> 👨‍👩‍👧 Khandan ki line jorein</label>
+<div id="w-sec-fam" hidden>
+<div class="row2">
+<div><label for="w-groom-fam">Dulha kis ka beta hai</label><input id="w-groom-fam" type="text" value="son of Mr. &amp; Mrs. Muhammad Siddique"></div>
+<div><label for="w-bride-fam">Dulhan kis ki beti hai</label><input id="w-bride-fam" type="text" value="daughter of Mr. &amp; Mrs. Tariq Mehmood"></div>
+</div>
+</div>
+</details>
+<details class="wstep">
+<summary>Qadam 2 — Program aur jagah</summary>
+<div class="row2">
+<div><label for="w-ev1-n">Event 1</label><input id="w-ev1-n" type="text" value="Mehndi"></div>
+<div><label for="w-ev1-d">Date</label><input id="w-ev1-d" type="date" value="2026-12-18"></div>
 </div>
 <div class="row2">
-<div><label for="w-style">Khulne wala andaaz (opening style)</label>
+<div><label for="w-ev1-t">Time</label><input id="w-ev1-t" type="text" value="7:00 PM"></div>
+<div><label for="w-ev1-v">Jagah (khali ho to main venue)</label><input id="w-ev1-v" type="text" value="Royal Palm Marquee, Faisalabad"></div>
+</div>
+<div class="row2">
+<div><label for="w-ev2-n">Event 2 (Barat — main event)</label><input id="w-ev2-n" type="text" value="Barat"></div>
+<div><label for="w-ev2-d">Date</label><input id="w-ev2-d" type="date" value="2026-12-19"></div>
+</div>
+<div class="row2">
+<div><label for="w-ev2-t">Time</label><input id="w-ev2-t" type="text" value="7:00 PM"></div>
+<div><label for="w-ev2-v">Jagah (khali ho to main venue)</label><input id="w-ev2-v" type="text" value="Royal Palm Marquee, Faisalabad"></div>
+</div>
+<div id="w-ev3wrap" hidden>
+<div class="row2">
+<div><label for="w-ev3-n">Event 3 (optional)</label><input id="w-ev3-n" type="text" value="Walima"></div>
+<div><label for="w-ev3-d">Date</label><input id="w-ev3-d" type="date" value="2026-12-20"></div>
+</div>
+<div class="row2">
+<div><label for="w-ev3-t">Time</label><input id="w-ev3-t" type="text" value="7:00 PM"></div>
+<div><label for="w-ev3-v">Jagah (khali ho to main venue)</label><input id="w-ev3-v" type="text" value="Royal Palm Marquee, Faisalabad"></div>
+</div>
+</div>
+<div id="w-ev4wrap" hidden>
+<div class="row2">
+<div><label for="w-ev4-n">Event 4 (optional)</label><input id="w-ev4-n" type="text" placeholder="e.g. Dholki"></div>
+<div><label for="w-ev4-d">Date</label><input id="w-ev4-d" type="date"></div>
+</div>
+<div class="row2">
+<div><label for="w-ev4-t">Time</label><input id="w-ev4-t" type="text" placeholder="7:00 PM"></div>
+<div><label for="w-ev4-v">Jagah (khali ho to main venue)</label><input id="w-ev4-v" type="text" placeholder="Jagah"></div>
+</div>
+</div>
+<div id="w-ev5wrap" hidden>
+<div class="row2">
+<div><label for="w-ev5-n">Event 5 (optional)</label><input id="w-ev5-n" type="text" placeholder="e.g. Nikah function"></div>
+<div><label for="w-ev5-d">Date</label><input id="w-ev5-d" type="date"></div>
+</div>
+<div class="row2">
+<div><label for="w-ev5-t">Time</label><input id="w-ev5-t" type="text" placeholder="5:00 PM"></div>
+<div><label for="w-ev5-v">Jagah (khali ho to main venue)</label><input id="w-ev5-v" type="text" placeholder="Jagah"></div>
+</div>
+</div>
+<button class="btn secondary" id="w-addev" type="button">➕ Aur event jorein</button>
+<p class="small">Barat (event 2) main event hai — scratch card, countdown aur calendar file usi ki date istemal karte hain. Events 3, 4 aur 5 ikhtiyari hain — naam khali chhorein to woh event nahi aayega. Events usi tartib mein aate hain jis mein bhare jayein, to tareekh ke hisaab se bharein.</p>
+<label for="w-venue">Venue (main jagah)</label>
+<input id="w-venue" type="text" value="The Royal Palm Marquee">
+<label for="w-addr">Venue ka pata (address)</label>
+<input id="w-addr" type="text" value="Main Boulevard, Faisalabad">
+<div class="row2">
+<div><label for="w-dress">Dress code (optional)</label><input id="w-dress" type="text" value="Formal"></div>
+<div><label for="w-rsvp">RSVP WhatsApp number</label><input id="w-rsvp" type="text" value="0300 1234567"></div>
+</div>
+</details>
+<details class="wstep">
+<summary>Qadam 3 — Andaaz</summary>
+<div class="row2">
+<div><label for="w-style">Card kaise khule (opening style)</label>
 <select id="w-style">
 <option value="ref" selected>⭐ Sabz Darwaza — PakToolkit Special</option>
 <option value="ref2">⭐ Mehroon Darwaza — PakToolkit Special</option>
@@ -404,7 +474,7 @@ TOOLS["wedding-invitation-maker"] = _tool(
 <option value="royal">Shahi Neela (royal blue) &amp; Gold</option>
 </select></div>
 </div>
-<label for="w-tune">Mehman ke liye dhun (music for guests)</label>
+<label for="w-tune">Mehman jab card kholein to kaun si dhun baje</label>
 <select id="w-tune">
 <option value="strings" selected>🎻 Taar wali dhun (plucked strings)</option>
 <option value="bells">🔔 Ghanti wali dhun (soft bells)</option>
@@ -417,57 +487,37 @@ TOOLS["wedding-invitation-maker"] = _tool(
 <option value="none">Koi dhun nahi (no music)</option>
 </select>
 <p style="font-size:.85em;opacity:.75;margin:.25em 0 0">Asli geet wali dhunein Pixabay Music ke artists ki hain (free license) aur PakToolkit par rakhi hui hain, taake mehman ka link khulte hi geet chal sake.</p>
-<h3>Program (events)</h3>
-<div class="row2">
-<div><label for="w-ev1-n">Event 1</label><input id="w-ev1-n" type="text" value="Mehndi"></div>
-<div><label for="w-ev1-d">Date</label><input id="w-ev1-d" type="date" value="2026-12-18"></div>
+<details class="wsub">
+<summary>🎵 Apni MP3 — sirf aap ke preview mein bajegi</summary>
+<p class="small">Mehman ke link mein built-in dhun chalegi — apni MP3 mehman ke link mein nahi ja sakti. Lekin jab aap "Preview — mehman ki nazar se" kholte hain to wahan apni MP3 sun sakte hain.</p>
+<button class="btn" id="w-mp3btn" type="button">🎵 Apni MP3 chunein</button>
+<input id="w-mp3file" type="file" accept="audio/*" style="display:none">
+<div id="w-mp3name" class="small"></div>
+</details>
+</details>
+<details class="wstep">
+<summary>Qadam 4 — Cover photo</summary>
+<p class="small">Har card mein couple ki Aik hi photo lagti hai — main cover par, jahan se invitation khulta hai. Apni photo ka background AI se remove hoga (wahi engine jo hamare Passport Photo tool mein hai — ~190 MB model pehli dafa download hota hai), phir photo ki chhoti compressed copy link ke andar mehman tak jati hai. Photo kisi server par upload nahi hoti.</p>
+<label for="w-photo">Couple ki photo chunein</label>
+<input id="w-photo" type="file" accept="image/*">
+<div id="w-sec-photobg" hidden>
+<label for="w-photobg">Photo ke peeche kya rang ho</label>
+<select id="w-photobg">
+<option value="gold" selected>Sunehra (golden glow)</option>
+<option value="maroon">Maroon sajawat</option>
+<option value="garden">Sabz bagh (garden green)</option>
+<option value="sky">Halka neela (soft sky)</option>
+</select>
+<button class="btn" id="w-photogo" type="button">✂️ Background remove karein</button>
+<div id="w-photostatus" class="small"></div>
+<div class="result" id="w-photoresult"></div>
 </div>
-<div class="row2">
-<div><label for="w-ev1-t">Time</label><input id="w-ev1-t" type="text" value="7:00 PM"></div>
-<div><label for="w-ev1-v">Jagah / note</label><input id="w-ev1-v" type="text" value="Royal Palm Marquee, Faisalabad"></div>
-</div>
-<div class="row2">
-<div><label for="w-ev2-n">Event 2 (main)</label><input id="w-ev2-n" type="text" value="Barat"></div>
-<div><label for="w-ev2-d">Date</label><input id="w-ev2-d" type="date" value="2026-12-19"></div>
-</div>
-<div class="row2">
-<div><label for="w-ev2-t">Time</label><input id="w-ev2-t" type="text" value="7:00 PM"></div>
-<div><label for="w-ev2-v">Jagah / note</label><input id="w-ev2-v" type="text" value="Royal Palm Marquee, Faisalabad"></div>
-</div>
-<div class="row2">
-<div><label for="w-ev3-n">Event 3 (optional)</label><input id="w-ev3-n" type="text" value="Walima"></div>
-<div><label for="w-ev3-d">Date</label><input id="w-ev3-d" type="date" value="2026-12-20"></div>
-</div>
-<div class="row2">
-<div><label for="w-ev3-t">Time</label><input id="w-ev3-t" type="text" value="7:00 PM"></div>
-<div><label for="w-ev3-v">Jagah / note</label><input id="w-ev3-v" type="text" value="Royal Palm Marquee, Faisalabad"></div>
-</div>
-<div class="row2">
-<div><label for="w-ev4-n">Event 4 (optional)</label><input id="w-ev4-n" type="text" placeholder="e.g. Dholki"></div>
-<div><label for="w-ev4-d">Date</label><input id="w-ev4-d" type="date"></div>
-</div>
-<div class="row2">
-<div><label for="w-ev4-t">Time</label><input id="w-ev4-t" type="text" placeholder="7:00 PM"></div>
-<div><label for="w-ev4-v">Jagah / note</label><input id="w-ev4-v" type="text" placeholder="Jagah"></div>
-</div>
-<div class="row2">
-<div><label for="w-ev5-n">Event 5 (optional)</label><input id="w-ev5-n" type="text" placeholder="e.g. Nikah function"></div>
-<div><label for="w-ev5-d">Date</label><input id="w-ev5-d" type="date"></div>
-</div>
-<div class="row2">
-<div><label for="w-ev5-t">Time</label><input id="w-ev5-t" type="text" placeholder="5:00 PM"></div>
-<div><label for="w-ev5-v">Jagah / note</label><input id="w-ev5-v" type="text" placeholder="Jagah"></div>
-</div>
-<p class="small">The Barat (event 2) is treated as the main event — the scratch card, countdown and calendar file use its date. Events 3, 4 and 5 are optional — leave the name empty to skip one. Events show in the order you fill them, so chronological order mein bharein.</p>
-<label for="w-venue">Venue (main jagah)</label>
-<input id="w-venue" type="text" value="The Royal Palm Marquee">
-<label for="w-addr">Venue ka pata (address)</label>
-<input id="w-addr" type="text" value="Main Boulevard, Faisalabad">
-<div class="row2">
-<div><label for="w-dress">Dress code (optional)</label><input id="w-dress" type="text" value="Formal"></div>
-<div><label for="w-rsvp">RSVP WhatsApp number</label><input id="w-rsvp" type="text" value="0300 1234567"></div>
-</div>
-<h3>Mehroon Lifafa ke khaas hisse (optional)</h3>
+<h3>Ya tayyar couple shot chunein</h3>
+<p class="small">Apni photo istemal nahi karna chahte to template se milta hua aik tayyar couple shot cover par laga dein — jo rang (palette) upar chuna hai, usi ka shot aam taur par sab se acha lagta hai. Agar apni photo tayyar ki hui hai aur yahan koi shot nahi chuna to cover par apni photo lagegi.</p>
+<div id="w-shots"></div>
+</details>
+<details class="wstep" id="w-step-lifafa" hidden>
+<summary>Qadam 5 — Lifafa khaas hisse</summary>
 <p class="small">Ye hisse sirf <b>Mehroon Lifafa</b> style mein nazar aate hain — families wala hissa aur mehmanon ke aam sawalat. Baqi styles mein ye istemal nahi hote.</p>
 <div class="row2">
 <div><label for="w-fam-gp">Dulha ke walidain (groom's parents)</label><input id="w-fam-gp" type="text" value="Mr. &amp; Mrs. Muhammad Siddique"></div>
@@ -487,31 +537,9 @@ TOOLS["wedding-invitation-maker"] = _tool(
 <input id="w-faq-2a" type="text" value="Of course — your family is our family. Children are warmly welcome at every gathering.">
 <label for="w-faq-3a">Sawal 3: Where do I park? — jawab</label>
 <input id="w-faq-3a" type="text" value="Free parking is available at the venue. Just mention the wedding at the gate.">
+</details>
 <button class="btn" id="w-makelink" type="button">💌 Invitation ka link banayein</button>
-<div class="result" id="w-linkresult"></div>
-<h3>Apni dhun (sirf apne preview ke liye)</h3>
-<p class="small">Mehman ke link mein built-in dhun chalegi — apni MP3 mehman ke link mein nahi ja sakti. Lekin jab aap "Preview — mehman ki nazar se" kholte hain to wahan apni MP3 sun sakte hain.</p>
-<button class="btn" id="w-mp3btn" type="button">🎵 Apni MP3 chunein</button>
-<input id="w-mp3file" type="file" accept="audio/*" style="display:none">
-<div id="w-mp3name" class="small"></div>
-<h3>Cover photo — dulha-dulhan ki Aik photo</h3>
-<p class="small">Har card mein couple ki Aik hi photo lagti hai — main cover par, jahan se invitation khulta hai. Apni photo ka background AI se remove hoga (wahi engine jo hamare Passport Photo tool mein hai — ~190 MB model pehli dafa download hota hai), phir photo ki chhoti compressed copy link ke andar mehman tak jati hai. Photo kisi server par upload nahi hoti.</p>
-<label for="w-photo">Couple ki photo chunein</label>
-<input id="w-photo" type="file" accept="image/*">
-<label for="w-photobg">Photo ka naya background</label>
-<select id="w-photobg">
-<option value="gold" selected>Sunehra (golden glow)</option>
-<option value="maroon">Maroon sajawat</option>
-<option value="garden">Sabz bagh (garden green)</option>
-<option value="sky">Halka neela (soft sky)</option>
-</select>
-<button class="btn" id="w-photogo" type="button">✂️ Background remove karein</button>
-<div id="w-photostatus" class="small"></div>
-<div class="result" id="w-photoresult"></div>
-<h3>Ya tayyar couple shot chunein</h3>
-<p class="small">Apni photo istemal nahi karna chahte to template se milta hua aik tayyar couple shot cover par laga dein — jo rang (palette) upar chuna hai, usi ka shot aam taur par sab se acha lagta hai. Agar apni photo tayyar ki hui hai aur yahan koi shot nahi chuna to cover par apni photo lagegi.</p>
-<div id="w-shots"></div>
-""",
+<div class="result" id="w-linkresult"></div>""",
     ["Fill in the couple's names, the hosts, the event dates and the venue — the sample names show you exactly what to type.",
      "Choose an opening style (curtains, golden doors or a floral arch), a colour theme and a built-in tune, then press the link button.",
      "Share the link on WhatsApp. Guests tap to open: the doors open with music, they scratch to reveal the date, watch the live countdown and RSVP back to your WhatsApp number.",
