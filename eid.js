@@ -108,11 +108,11 @@ function initEid(){
     ctx.font = font; ctx.fillStyle = color; ctx.textAlign = align || "center"; ctx.textBaseline = "middle";
     ctx.fillText(str, x, y);
   }
-  function fitUrdu(lines, base){
+  function fitUrdu(lines, base, fontFn){
     var size = base;
     ctx.textAlign = "center";
     while (size > 30){
-      ctx.font = "600 " + size + "px 'Noto Nastaliq Urdu','Jameel Noori Nastaleeq',serif";
+      ctx.font = fontFn(size);
       var ok = true;
       for (var i = 0; i < lines.length; i++) if (ctx.measureText(lines[i]).width > W - 190) { ok = false; break; }
       if (ok) break;
@@ -120,6 +120,27 @@ function initEid(){
     }
     return size;
   }
+  function printedUrduFont(size){ return "700 " + size + "px 'Noto Nastaliq Urdu','Jameel Noori Nastaleeq',serif"; }
+  /* Handwriting style: Gulzar for Urdu, Caveat for Latin — loaded lazily
+     from Google Fonts, only on this page, only when the style is picked. */
+  var handLoaded = false;
+  function ensureHandFonts(cb){
+    if (!handLoaded){
+      handLoaded = true;
+      var l = document.createElement("link");
+      l.rel = "stylesheet";
+      l.href = "https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Gulzar&display=swap";
+      document.head.appendChild(l);
+    }
+    if (document.fonts && document.fonts.load){
+      Promise.all([
+        document.fonts.load("54px Gulzar", "عید مبارک"),
+        document.fonts.load("700 42px Caveat", "Ahmed Khan")
+      ]).then(function(){ if (cb) cb(); }, function(){ if (cb) cb(); });
+    } else if (cb) cb();
+  }
+  function isUrdu(s){ return /[\u0600-\u06FF]/.test(s || ""); }
+  function handMode(){ var n = document.getElementById("e-script"); return !!(n && n.value === "hand"); }
   function spacing(v){ try { ctx.letterSpacing = v; } catch (e) {} }
 
   /* ---------- designs ---------- */
@@ -222,16 +243,21 @@ function initEid(){
     spacing("10px");
     txt("EID MUBARAK", W / 2, 415, "700 96px Georgia,'Times New Roman',serif", d.main);
     spacing("0px");
-    var us = fitUrdu(["عید مبارک"], 80);
-    txt("عید مبارک", W / 2, 578, "700 " + us + "px 'Noto Nastaliq Urdu','Jameel Noori Nastaleeq',serif", d.soft);
+    var us = fitUrdu(["عید مبارک"], 80, printedUrduFont);
+    txt("عید مبارک", W / 2, 578, printedUrduFont(us), d.soft);
     spacing("6px");
     txt(type.latin, W / 2, 668, "600 33px Georgia,serif", d.accent);
     spacing("0px");
     divider(W / 2, 716, d.accent);
     /* shayari / message */
     var lines = currentLines();
-    var ss = fitUrdu(lines, 54);
-    ctx.font = "600 " + ss + "px 'Noto Nastaliq Urdu','Jameel Noori Nastaleeq',serif";
+    var urdu = isUrdu(lines[0] || "");
+    var fontFn = function(size){
+      if (urdu) return handMode() ? "400 " + size + "px 'Gulzar','Noto Nastaliq Urdu',serif" : "600 " + size + "px 'Noto Nastaliq Urdu','Jameel Noori Nastaleeq',serif";
+      return handMode() ? "700 " + size + "px 'Caveat',cursive" : "italic 600 " + size + "px Georgia,serif";
+    };
+    var ss = fitUrdu(lines, urdu && handMode() ? 60 : 54, fontFn);
+    ctx.font = fontFn(ss);
     ctx.fillStyle = d.body; ctx.textAlign = "center"; ctx.textBaseline = "middle";
     var y0 = lines.length > 1 ? 828 : 862;
     lines.forEach(function(ln, i){ ctx.fillText(ln, W / 2, y0 + i * 96); });
@@ -241,11 +267,11 @@ function initEid(){
       spacing("4px");
       txt("WITH LOVE FOR", W / 2, isMasjid ? 985 : 1030, "600 28px Georgia,serif", d.accent);
       spacing("0px");
-      txt(to, W / 2, isMasjid ? 1045 : 1092, "700 58px Georgia,'Noto Nastaliq Urdu',serif", d.main);
+      txt(to, W / 2, isMasjid ? 1045 : 1092, handMode() ? (isUrdu(to) ? "400 62px 'Gulzar','Noto Nastaliq Urdu',serif" : "700 62px 'Caveat','Gulzar',cursive") : "700 58px Georgia,'Noto Nastaliq Urdu',serif", d.main);
     }
     /* sender — on Masjid-e-Noor it sits in gold on the dark mosque band */
     var from = $("e-from").value.trim();
-    if (from) txt("— " + from + " ki taraf se", W / 2, isMasjid ? 1288 : 1180, "italic 600 42px Georgia,serif", isMasjid ? "#ffd94d" : d.soft);
+    if (from) txt("— " + from + " ki taraf se", W / 2, isMasjid ? 1288 : 1180, handMode() ? "700 47px 'Caveat','Gulzar',cursive" : "italic 600 42px Georgia,serif", isMasjid ? "#ffd94d" : d.soft);
     /* brand — inside the frame on framed designs */
     ctx.globalAlpha = 0.66;
     txt("paktoolkit.top", W / 2, isMasjid ? 1330 : 1272, "600 25px Georgia,serif", d.accent);
@@ -253,10 +279,11 @@ function initEid(){
     ctx.restore();
   }
 
-  ["e-type", "e-shayari", "e-to", "e-from", "e-msg"].forEach(function(id){
+  ["e-type", "e-shayari", "e-to", "e-from", "e-msg", "e-script"].forEach(function(id){
     var n = $(id); if (!n) return;
     n.addEventListener("input", function(){
       if (id === "e-shayari") $("e-msg-wrap").style.display = (n.value === "custom") ? "" : "none";
+      if (id === "e-script" && n.value === "hand") ensureHandFonts(draw);
       draw();
     });
     n.addEventListener("change", draw);

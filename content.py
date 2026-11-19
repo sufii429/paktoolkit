@@ -586,6 +586,11 @@ TOOLS["eid-card-maker"] = _tool(
 <option value="fitr" selected>Eid-ul-Fitr</option>
 <option value="adha">Eid-ul-Adha</option>
 </select>
+<label for="e-script">Likhaawat (writing style)</label>
+<select id="e-script">
+<option value="printed" selected>🖨️ Chhapi hui (printed)</option>
+<option value="hand">✍️ Haath ki likhai — Gulzar (shayari aur naam ke liye)</option>
+</select>
 <label for="e-shayari">Shayari / paigham chunein</label>
 <select id="e-shayari">
 <option value="0" selected>⭐ ڈبے میں ڈبہ — asli 90s (dosti)</option>
