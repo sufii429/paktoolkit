@@ -195,7 +195,7 @@ def tool_page(path, row):
 <div class="grid">{rel_cards}</div>
 {disclaimer}
 </main>
-{footer(TAB_FOR_CAT[t['cat']], '<script src="/assets/shotdata-maroon.js" defer></script><script src="/assets/shotdata-green.js" defer></script><script src="/assets/shotdata-royal.js" defer></script><script src="/assets/fabricdata.js" defer></script><script src="/assets/floraldata.js" defer></script><script src="/assets/floralalphadata.js" defer></script><script src="/assets/lifafadata.js" defer></script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script><script src="/assets/wedding.js?v=20" defer></script><script src="/assets/lifafa.js?v=2" defer></script>' if slug == "wedding-invitation-maker" else ('<script src="/assets/ramadan.js?v=7" defer></script>' if slug == "ramadan-calendar-maker" else ('<script src="/assets/eid.js?v=5" defer></script>' if slug == "eid-card-maker" else "")))}"""
+{footer(TAB_FOR_CAT[t['cat']], '<script src="/assets/shotdata-maroon.js" defer></script><script src="/assets/shotdata-green.js" defer></script><script src="/assets/shotdata-royal.js" defer></script><script src="/assets/fabricdata.js" defer></script><script src="/assets/floraldata.js" defer></script><script src="/assets/floralalphadata.js" defer></script><script src="/assets/lifafadata.js" defer></script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script><script src="/assets/wedding.js?v=20" defer></script><script src="/assets/lifafa.js?v=2" defer></script>' if slug == "wedding-invitation-maker" else ('<script src="/assets/ramadan.js?v=7" defer></script>' if slug == "ramadan-calendar-maker" else ('<script src="/assets/eid.js?v=6" defer></script>' if slug == "eid-card-maker" else "")))}"""
     return body
 
 def category_page(path, row):
@@ -312,12 +312,14 @@ def main():
                  "apple-touch-icon.png": os.path.join(DIST, "apple-touch-icon.png"),
                  "icon-192.png": os.path.join(DIST, "assets", "icon-192.png"),
                  "logo-mark.png": os.path.join(DIST, "assets", "logo-mark.png"),
-                 "og-image.jpg": os.path.join(DIST, "assets", "og-image.jpg")}
+                 "og-image.jpg": os.path.join(DIST, "assets", "og-image.jpg"),
+                 "tehreeri.woff2": os.path.join(DIST, "assets", "fonts", "tehreeri.woff2")}
     _b64dir = os.path.join(HERE, "assets-src", "brand-b64")
     for _jf in sorted(os.listdir(_b64dir)):
         if _jf.endswith(".json"):
             with open(os.path.join(_b64dir, _jf), encoding="utf-8") as _fh:
                 for _name, _data in json.load(_fh).items():
+                    os.makedirs(os.path.dirname(_brandmap[_name]), exist_ok=True)
                     with open(_brandmap[_name], "wb") as _out:
                         _out.write(_b64.b64decode(_data))
     shutil.copy(os.path.join(HERE, "robots.txt"), os.path.join(DIST, "robots.txt"))

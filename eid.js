@@ -121,20 +121,26 @@ function initEid(){
     return size;
   }
   function printedUrduFont(size){ return "700 " + size + "px 'Noto Nastaliq Urdu','Jameel Noori Nastaleeq',serif"; }
-  /* Handwriting style: Gulzar for Urdu, Caveat for Latin — loaded lazily
-     from Google Fonts, only on this page, only when the style is picked. */
+  /* Handwriting style: AlQalam Tehreeri for Urdu (self-hosted woff2 —
+     Mazeen's pick, 2026-11-19: thin pencil-like hand, full Urdu letters),
+     Caveat for Latin. Loaded lazily, only when the style is picked. */
   var handLoaded = false;
   function ensureHandFonts(cb){
     if (!handLoaded){
       handLoaded = true;
       var l = document.createElement("link");
       l.rel = "stylesheet";
-      l.href = "https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Gulzar&display=swap";
+      l.href = "https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap";
+      try {
+        var ff = new FontFace("AlQalam Tehreeri", "url(/assets/fonts/tehreeri.woff2)", { weight: "400", style: "normal" });
+        document.fonts.add(ff);
+        ff.load();
+      } catch (e) {}
       document.head.appendChild(l);
     }
     if (document.fonts && document.fonts.load){
       Promise.all([
-        document.fonts.load("54px Gulzar", "عید مبارک"),
+        document.fonts.load("54px 'AlQalam Tehreeri'", "عید مبارک"),
         document.fonts.load("700 42px Caveat", "Ahmed Khan")
       ]).then(function(){ if (cb) cb(); }, function(){ if (cb) cb(); });
     } else if (cb) cb();
@@ -253,7 +259,7 @@ function initEid(){
     var lines = currentLines();
     var urdu = isUrdu(lines[0] || "");
     var fontFn = function(size){
-      if (urdu) return handMode() ? "400 " + size + "px 'Gulzar','Noto Nastaliq Urdu',serif" : "600 " + size + "px 'Noto Nastaliq Urdu','Jameel Noori Nastaleeq',serif";
+      if (urdu) return handMode() ? "400 " + size + "px 'AlQalam Tehreeri','Noto Nastaliq Urdu',serif" : "600 " + size + "px 'Noto Nastaliq Urdu','Jameel Noori Nastaleeq',serif";
       return handMode() ? "700 " + size + "px 'Caveat',cursive" : "italic 600 " + size + "px Georgia,serif";
     };
     var ss = fitUrdu(lines, urdu && handMode() ? 60 : 54, fontFn);
@@ -267,11 +273,11 @@ function initEid(){
       spacing("4px");
       txt("WITH LOVE FOR", W / 2, isMasjid ? 985 : 1030, "600 28px Georgia,serif", d.accent);
       spacing("0px");
-      txt(to, W / 2, isMasjid ? 1045 : 1092, handMode() ? (isUrdu(to) ? "400 62px 'Gulzar','Noto Nastaliq Urdu',serif" : "700 62px 'Caveat','Gulzar',cursive") : "700 58px Georgia,'Noto Nastaliq Urdu',serif", d.main);
+      txt(to, W / 2, isMasjid ? 1045 : 1092, handMode() ? (isUrdu(to) ? "400 62px 'AlQalam Tehreeri','Noto Nastaliq Urdu',serif" : "700 62px 'Caveat','AlQalam Tehreeri',cursive") : "700 58px Georgia,'Noto Nastaliq Urdu',serif", d.main);
     }
     /* sender — on Masjid-e-Noor it sits in gold on the dark mosque band */
     var from = $("e-from").value.trim();
-    if (from) txt("— " + from + " ki taraf se", W / 2, isMasjid ? 1288 : 1180, handMode() ? "700 47px 'Caveat','Gulzar',cursive" : "italic 600 42px Georgia,serif", isMasjid ? "#ffd94d" : d.soft);
+    if (from) txt("— " + from + " ki taraf se", W / 2, isMasjid ? 1288 : 1180, handMode() ? "700 47px 'Caveat','AlQalam Tehreeri',cursive" : "italic 600 42px Georgia,serif", isMasjid ? "#ffd94d" : d.soft);
     /* brand — inside the frame on framed designs */
     ctx.globalAlpha = 0.66;
     txt("paktoolkit.top", W / 2, isMasjid ? 1330 : 1272, "600 25px Georgia,serif", d.accent);

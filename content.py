@@ -617,7 +617,7 @@ TOOLS["eid-card-maker"] = _tool(
 <label for="e-script">Likhaawat (writing style)</label>
 <select id="e-script">
 <option value="printed" selected>🖨️ Chhapi hui (printed)</option>
-<option value="hand">✍️ Haath ki likhai — Gulzar (shayari aur naam ke liye)</option>
+<option value="hand">✍️ Haath ki likhai — Tehreeri (shayari aur naam ke liye)</option>
 </select>
 <label for="e-shayari">Shayari / paigham chunein</label>
 <select id="e-shayari">
