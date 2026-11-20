@@ -24,8 +24,8 @@ CATEGORIES = {
     "everyday-calculators": {
         "name": "Everyday Calculators",
         "icon": "🔢",
-        "intro": "Small calculators for everyday questions — starting with an exact age and date difference calculator that gives your age in years, months and days, plus totals in days and weeks.",
-        "tools": ["age-calculator"],
+        "intro": "Small tools for everyday questions — an exact age and date difference calculator, a WhatsApp click-to-chat link maker with a QR code, and a simple invoice maker in PKR, USD, GBP and AED. Everything runs in your browser; nothing is sent anywhere.",
+        "tools": ["age-calculator", "whatsapp-link-maker", "invoice-maker"],
     },
     "cards-invitations": {
         "name": "Cards & Invitations",
@@ -365,6 +365,109 @@ TOOLS["age-calculator"] = _tool(
      ("Does the calculator count leap years correctly?", "Yes — total days are counted from the actual calendar, so 29 February leap days are included."),
      ("Can I check my age on a future date?", "Yes. Set 'Age at date' to any future date, such as an application closing date."),
      ("What is the date difference mode for?", "It finds the exact gap between any two dates — useful for service duration, tenancy periods or counting days between events.")],
+    False)
+
+TOOLS["whatsapp-link-maker"] = _tool(
+    "whatsapp-link-maker", "everyday-calculators", "WhatsApp Link Maker", "💬",
+    "Create a wa.me click-to-chat link and QR code for any number — with a pre-filled message.",
+    "This WhatsApp link maker turns any phone number into a click-to-chat link: customers tap it and land straight in a WhatsApp chat with you — no saving your number first. Add a pre-filled message, copy the link for your social profiles and website, or print the QR code for your shop counter.",
+    """
+<label for="wa-cc">Country</label>
+<select id="wa-cc"></select>
+<label for="wa-num">WhatsApp number</label>
+<input id="wa-num" type="tel" inputmode="tel" enterkeyhint="done" placeholder="e.g. 0300 1234567" autocomplete="off">
+<label for="wa-msg">Pre-filled message (optional)</label>
+<textarea id="wa-msg" rows="3" placeholder="e.g. Assalam-o-Alaikum! I want to ask about…"></textarea>
+<p class="small" id="wa-hint" role="status" aria-live="polite">Pick your country and type the number — your link and QR code appear here instantly. Spaces, dashes and a starting 0 are cleaned automatically.</p>
+<div class="result" id="wa-result" role="status" aria-live="polite">
+<p class="small">Your WhatsApp link — tap it to test, share it anywhere:</p>
+<p class="wa-link"><a id="wa-link" href="#" target="_blank" rel="noopener"></a></p>
+<canvas id="wa-qr-canvas" width="200" height="200" aria-hidden="true"></canvas>
+<p class="small" id="wa-qr-note">Let customers scan this QR code to open the chat on their phone.</p>
+<button class="btn" id="wa-copy" type="button">Copy link</button>
+<button class="btn secondary" id="wa-open" type="button">Open in WhatsApp</button>
+<p class="small" id="wa-note"></p>
+</div>
+""",
+    ["Pick your country — Pakistan (+92) is selected by default.",
+     "Type the WhatsApp number. Spaces, dashes and a starting 0 are cleaned automatically.",
+     "Optionally type a pre-filled message, then copy the link, tap Open in WhatsApp to test it, or let customers scan the QR code."],
+    "WhatsApp's click-to-chat feature opens a chat from a simple web address: wa.me followed by the full international number, with no plus sign, spaces or brackets. This maker cleans the number you type (removing spaces, dashes and the local trunk 0), adds the country code, and encodes your optional message so English or Urdu text survives the link intact. The QR code is drawn on your own device from the same link.",
+    "Example: country Pakistan (+92), number 0300 1234567 and the message 'Assalam-o-Alaikum, is this item available?' gives https://wa.me/923001234567?text=Assalam-o-Alaikum%2C%20is%20this%20item%20available%3F — tapping it opens a chat with the message already typed, ready to send.",
+    [("Do I need to save the number before chatting?", "No. A wa.me link opens a chat with any WhatsApp number directly — that is the whole point of click-to-chat. The person never has to be in your contacts, and your customers never have to save your number either."),
+     ("Why does the link use the country code without a + sign?", "WhatsApp links must use the full international number with no +, spaces or brackets — for Pakistan that means 92 followed by the number without its starting 0. This tool cleans and formats the number for you."),
+     ("Can I add a pre-filled message?", "Yes. Type it in the message box and it is added to the link, properly encoded. When someone taps the link, WhatsApp opens with your message already typed, ready for them to send."),
+     ("Where can I use this link and QR code?", "Anywhere: your Instagram or Facebook bio, a Google Business profile, a website button, or the QR code printed on a flyer, shop counter or product label."),
+     ("Is my phone number uploaded anywhere?", "No. The link and QR code are created inside your browser; your number is never sent to a server.")],
+    False)
+
+TOOLS["invoice-maker"] = _tool(
+    "invoice-maker", "everyday-calculators", "Invoice Maker", "🧾",
+    "Make a clean invoice in PKR, USD, GBP or AED — print it or save it as a PDF.",
+    "This invoice maker builds a clean, professional invoice right in your browser: your name, your client, itemised rows, tax and a discount if you need them, and the total in figures and in words. Press print and only the invoice comes out — ready to save as a PDF and send to your client.",
+    """
+<div class="row2">
+<div><label for="inv-from">Your business / your name (From)</label><input id="inv-from" type="text" placeholder="e.g. Ahmed Design Studio"></div>
+<div><label for="inv-to">Bill to (client name)</label><input id="inv-to" type="text" placeholder="e.g. XYZ Traders, Lahore"></div>
+</div>
+<div class="row2">
+<div><label for="inv-no">Invoice number</label><input id="inv-no" type="text" placeholder="INV-001"></div>
+<div><label for="inv-cur">Currency</label><select id="inv-cur">
+<option value="PKR" selected>PKR — Pakistani Rupee (Rs)</option>
+<option value="USD">USD — US Dollar ($)</option>
+<option value="GBP">GBP — British Pound (£)</option>
+<option value="AED">AED — UAE Dirham (AED)</option>
+</select></div>
+</div>
+<div class="row2">
+<div><label for="inv-issue">Issue date</label><input id="inv-issue" type="date"></div>
+<div><label for="inv-due">Due date</label><input id="inv-due" type="date"></div>
+</div>
+<h3>Items</h3>
+<div id="inv-items"></div>
+<button class="btn secondary" id="inv-add" type="button">+ Add item</button>
+<div class="row2">
+<div><label for="inv-disc">Discount % (optional)</label><input id="inv-disc" type="number" inputmode="decimal" enterkeyhint="done" min="0" step="0.1" placeholder="0"></div>
+<div><label for="inv-tax">Tax % (optional)</label><input id="inv-tax" type="number" inputmode="decimal" enterkeyhint="done" min="0" step="0.1" placeholder="0"></div>
+</div>
+<label for="inv-notes">Notes (optional)</label>
+<textarea id="inv-notes" rows="3" placeholder="Bank details, payment terms, a thank-you line…"></textarea>
+<h3>Your invoice</h3>
+<div class="inv-sheet" id="inv-sheet">
+<div class="inv-top">
+<div class="inv-biz" id="inv-p-from">Your Business Name</div>
+<div class="inv-title">INVOICE</div>
+</div>
+<div class="inv-meta">
+<div><span>Invoice no.</span><strong id="inv-p-no">—</strong></div>
+<div><span>Issue date</span><strong id="inv-p-issue">—</strong></div>
+<div><span>Due date</span><strong id="inv-p-due">—</strong></div>
+</div>
+<div class="inv-billto"><span>Bill to</span><strong id="inv-p-to">Client Name</strong></div>
+<table class="inv-table"><thead><tr><th>Description</th><th class="num">Qty</th><th class="num">Rate</th><th class="num">Amount</th></tr></thead><tbody id="inv-p-items"></tbody></table>
+<div class="inv-totals">
+<div><span>Subtotal</span><strong id="inv-p-sub">Rs 0.00</strong></div>
+<div id="inv-p-disc-row" style="display:none"><span id="inv-p-disc-label">Discount</span><strong id="inv-p-disc">− Rs 0.00</strong></div>
+<div id="inv-p-tax-row" style="display:none"><span id="inv-p-tax-label">Tax</span><strong id="inv-p-tax">Rs 0.00</strong></div>
+<div class="inv-grand"><span>Grand total</span><strong id="inv-p-total">Rs 0.00</strong></div>
+</div>
+<p class="inv-words">Amount in words: <span id="inv-p-words"></span></p>
+<div id="inv-p-notes-wrap" style="display:none"><h4>Notes</h4><p id="inv-p-notes"></p></div>
+<p class="inv-foot small">Made with the free PakToolkit Invoice Maker — paktoolkit.top</p>
+</div>
+<button class="btn" id="inv-print" type="button">Print / Save as PDF</button>
+<p class="small">Printing shows only the invoice above — the form and the rest of this page stay off the paper.</p>
+""",
+    ["Fill in your business name and your client's name, pick the currency, and check the invoice number and dates.",
+     "Add your items with quantities and rates — amounts and totals update as you type.",
+     "Add a discount or tax percentage if they apply, then press Print / Save as PDF for a clean copy."],
+    "Every line item multiplies quantity by rate, and the amounts add up to the subtotal. If you enter a discount percentage it comes off the subtotal first, and tax is then charged on the reduced amount — the same order most accountants use. Totals are formatted for the currency you pick, and the grand total is also written out in words, as on a formal invoice.",
+    "Example: 2 × 'Logo design' at Rs 15,000 plus 1 × 'Business cards printing' at Rs 4,500 gives a subtotal of Rs 34,500. With 5% tax and no discount, the grand total is Rs 36,225 — written out as 'Thirty-Six Thousand Two Hundred Twenty-Five Pakistani Rupees Only'.",
+    [("How do I save the invoice as a PDF?", "Press Print / Save as PDF and choose 'Save as PDF' in your browser's print window. Only the invoice prints — the form and the rest of the page are left out."),
+     ("Which currencies are supported?", "Pakistani Rupees (PKR), US Dollars (USD), British Pounds (GBP) and UAE Dirhams (AED), each with its own symbol and number format — useful when billing clients abroad."),
+     ("How are discount and tax calculated?", "The discount comes off the subtotal first, then tax is charged on the discounted amount. Both are optional — leave them empty and the grand total is simply the subtotal."),
+     ("Is my invoice data stored anywhere?", "No. The invoice is built entirely in your browser. Nothing is uploaded or saved — when you close the page the details are gone, so print or save your PDF before leaving."),
+     ("Can I add my logo?", "Not in this version — the invoice stays clean and text-based, with your business name at the top in place of a logo.")],
     False)
 
 TOOLS["wedding-invitation-maker"] = _tool(
