@@ -12,6 +12,32 @@ import sys
 sys.path.insert(0, HERE)
 from content import CATEGORIES, TOOLS, HOME_FAQS, TRUST
 
+# --- CSS/JS minification (audit fix 4, 2026-11-20) -------------------------
+# Vendored single-file minifiers (rjsmin / rcssmin, pure Python) live in
+# vendor/ so the Netlify build needs no pip installs. Any failure falls
+# back to copying the file unminified — minification must never break
+# the build or the site.
+sys.path.insert(0, os.path.join(HERE, "vendor"))
+try:
+    import rjsmin as _rjsmin, rcssmin as _rcssmin
+    def _min_js(text): return _rjsmin.jsmin(text)
+    def _min_css(text): return _rcssmin.cssmin(text)
+except Exception:
+    def _min_js(text): return text
+    def _min_css(text): return text
+
+def copy_asset(src, dst):
+    """Copy a CSS/JS asset into dist, minified; raw copy on any error."""
+    try:
+        with open(src, encoding="utf-8") as f:
+            text = f.read()
+        out = _min_css(text) if src.endswith(".css") else _min_js(text)
+    except Exception:
+        shutil.copy(src, dst)
+        return
+    with open(dst, "w", encoding="utf-8") as f:
+        f.write(out)
+
 PRIORITY = {"/": "1.0"}
 
 def load_meta():
@@ -292,20 +318,20 @@ def main():
         with open(out, "w", encoding="utf-8") as f:
             f.write(content)
         built.append(row["url"])
-    shutil.copy(os.path.join(HERE, "style.css"), os.path.join(DIST, "assets", "style.css"))
-    shutil.copy(os.path.join(HERE, "tools.js"), os.path.join(DIST, "assets", "tools.js"))
-    shutil.copy(os.path.join(HERE, "wedding.js"), os.path.join(DIST, "assets", "wedding.js"))
-    shutil.copy(os.path.join(HERE, "lifafa.js"), os.path.join(DIST, "assets", "lifafa.js"))
-    shutil.copy(os.path.join(HERE, "ramadan.js"), os.path.join(DIST, "assets", "ramadan.js"))
-    shutil.copy(os.path.join(HERE, "eid.js"), os.path.join(DIST, "assets", "eid.js"))
+    copy_asset(os.path.join(HERE, "style.css"), os.path.join(DIST, "assets", "style.css"))
+    copy_asset(os.path.join(HERE, "tools.js"), os.path.join(DIST, "assets", "tools.js"))
+    copy_asset(os.path.join(HERE, "wedding.js"), os.path.join(DIST, "assets", "wedding.js"))
+    copy_asset(os.path.join(HERE, "lifafa.js"), os.path.join(DIST, "assets", "lifafa.js"))
+    copy_asset(os.path.join(HERE, "ramadan.js"), os.path.join(DIST, "assets", "ramadan.js"))
+    copy_asset(os.path.join(HERE, "eid.js"), os.path.join(DIST, "assets", "eid.js"))
     for _sn in ("maroon", "green", "royal"):
         _sp = os.path.join(HERE, "shotdata-" + _sn + ".js")
         if os.path.exists(_sp):
-            shutil.copy(_sp, os.path.join(DIST, "assets", "shotdata-" + _sn + ".js"))
+            copy_asset(_sp, os.path.join(DIST, "assets", "shotdata-" + _sn + ".js"))
     for _an in ("fabricdata", "floraldata", "floralalphadata", "lifafadata"):
         _ap = os.path.join(HERE, _an + ".js")
         if os.path.exists(_ap):
-            shutil.copy(_ap, os.path.join(DIST, "assets", _an + ".js"))
+            copy_asset(_ap, os.path.join(DIST, "assets", _an + ".js"))
     # Brand binaries live in the repo as base64 JSON (text-pushable); decode them into dist.
     import base64 as _b64
     _brandmap = {"favicon.ico": os.path.join(DIST, "favicon.ico"),
