@@ -122,6 +122,38 @@ details.wsub{margin-top:14px;background:#fbfdfb}
 details.wsub summary{font-size:.95rem}
 #w-addev{width:auto}
 
+/* WhatsApp Link Maker + Invoice Maker (2026-11-20) */
+.toolbox textarea{width:100%;padding:12px;font-size:1rem;border:1px solid #b9ccc0;border-radius:10px;background:#fff;font-family:inherit;line-height:1.5}
+.wa-link{word-break:break-all;font-weight:700;font-size:1.05rem}
+.wa-link a{color:var(--green-dark)}
+#wa-qr-canvas{display:block;margin:12px auto;max-width:220px;width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:10px}
+.inv-item{border:1px solid var(--line);border-radius:12px;padding:10px;margin:10px 0;background:#fbfdfb}
+.inv-item input{width:100%}
+.inv-nums{display:grid;grid-template-columns:76px 1fr auto 42px;gap:8px;align-items:center;margin-top:8px}
+.inv-nums input{min-height:44px!important}
+.inv-amt{font-weight:700;white-space:nowrap}
+.inv-del{background:#fde8e8;border:1px solid #e5b4b4;color:#a11;border-radius:9px;min-height:44px;cursor:pointer;font-size:1rem;padding:0}
+.inv-sheet{background:#fff;border:1px solid var(--line);border-radius:12px;padding:20px;margin-top:10px;color:var(--ink)}
+.inv-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;border-bottom:3px solid var(--green);padding-bottom:10px}
+.inv-biz{font-size:1.25rem;font-weight:800;color:var(--green-dark)}
+.inv-title{font-size:1.35rem;font-weight:800;letter-spacing:2px}
+.inv-meta{display:flex;gap:20px;flex-wrap:wrap;margin:12px 0 4px}
+.inv-meta span,.inv-billto span{display:block;font-size:.76rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.inv-billto{margin:8px 0}
+.inv-table th.num,.inv-table td.num{text-align:right}
+.inv-totals{margin-left:auto;max-width:330px}
+.inv-totals>div{display:flex;justify-content:space-between;gap:14px;padding:5px 0;border-bottom:1px solid var(--line)}
+.inv-totals .inv-grand{font-size:1.12rem;border-bottom:0;border-top:2px solid var(--green);margin-top:4px;padding-top:8px}
+.inv-words{font-style:italic;margin:14px 0 4px}
+.inv-sheet h4{margin:12px 0 4px}
+.inv-foot{margin-top:16px;text-align:center}
+@page{margin:14mm}
+@media print{
+  body.inv-print *{visibility:hidden}
+  body.inv-print #inv-sheet,body.inv-print #inv-sheet *{visibility:visible}
+  body.inv-print #inv-sheet{position:absolute;left:0;top:0;width:100%;margin:0;border:0;border-radius:0;padding:0}
+}
+
 /* Eid Card Maker — design swatches */
 .eid-designs{display:flex;flex-wrap:wrap;gap:10px;margin:6px 0 14px}
 .eid-swatch{display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--card,#fff);border:2px solid var(--line,#d9e2d9);border-radius:14px;padding:10px 12px;cursor:pointer;font:inherit;min-width:104px}
