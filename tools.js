@@ -51,6 +51,18 @@ function makeTable(container, headers, rows){
   rows.forEach(function(r){ var row = el("tr"); r.forEach(function(c){ row.appendChild(el("td", String(c))); }); tb.appendChild(row); });
   t.appendChild(tb); container.appendChild(t);
 }
+/* ============ screen-reader announcements (audit fix, 2026-11-20) ============
+   Result and status regions are persistent live regions: when a tool writes
+   its answer, progress or an error into one, screen readers announce it
+   politely. The markup carries role="status" already; this net covers any
+   region a page builds later. (Modern Web Guidance: one polite live region
+   whose content changes — a region that is merely shown is not announced.) */
+document.addEventListener("DOMContentLoaded", function(){
+  document.querySelectorAll(".result, [id$='-status']").forEach(function(n){
+    if (!n.hasAttribute("role")) n.setAttribute("role", "status");
+    if (!n.hasAttribute("aria-live")) n.setAttribute("aria-live", "polite");
+  });
+});
 function loadScript(src){
   return new Promise(function(res, rej){
     var s = document.createElement("script"); s.src = src;

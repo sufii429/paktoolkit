@@ -63,7 +63,7 @@ TOOLS["bijli-bill-calculator"] = _tool(
 <p class="small">Base tariff per S.R.O. 279(I)/2026. Rates are editable because upper-slab figures can vary slightly between DISCO publications.</p>
 <div id="b-rates"></div>
 <button class="btn" id="b-calc" type="button">Calculate my bill</button>
-<div class="result" id="b-result"></div>
+<div class="result" id="b-result" role="status" aria-live="polite"></div>
 """,
     ["Read the units consumed from your meter or last bill and type them in.",
      "Select your consumer category — Non-protected, Protected or Lifeline — and adjust GST or FPA only if you know your latest figures.",
@@ -91,7 +91,7 @@ TOOLS["marla-kanal-converter"] = _tool(
   <option value="sqm">Square Metre</option><option value="acre">Acre</option>
 </select>
 <button class="btn" id="a-calc" type="button">Convert</button>
-<div class="result" id="a-result"></div>
+<div class="result" id="a-result" role="status" aria-live="polite"></div>
 """,
     ["Type the area you know, for example 10 in Marla.",
      "Choose the unit of that value from the list.",
@@ -122,7 +122,7 @@ TOOLS["salary-tax-calculator-pakistan"] = _tool(
 <label for="t-annual">OR annual salary (Rs) — leave monthly if you prefer</label>
 <input id="t-annual" type="number" min="0" placeholder="Optional — overrides monthly × 12">
 <button class="btn" id="t-calc" type="button">Calculate tax</button>
-<div class="result" id="t-result"></div>
+<div class="result" id="t-result" role="status" aria-live="polite"></div>
 """,
     ["Enter your gross monthly salary — or your annual salary in the second box.",
      "Press Calculate tax.",
@@ -148,7 +148,7 @@ TOOLS["mdcat-aggregate-calculator"] = _tool(
 <div class="row2"><div><label for="m-md-o">MDCAT — obtained marks</label><input id="m-md-o" type="number" min="0" value="170"></div>
 <div><label for="m-md-t">MDCAT — total marks</label><input id="m-md-t" type="number" min="1" value="200"></div></div>
 <button class="btn" id="m-calc" type="button">Calculate aggregate</button>
-<div class="result" id="m-result"></div>
+<div class="result" id="m-result" role="status" aria-live="polite"></div>
 """,
     ["Enter your Matric obtained and total marks.",
      "Enter your FSc obtained and total marks, then your MDCAT marks.",
@@ -175,7 +175,7 @@ TOOLS["zakat-calculator"] = _tool(
 <label for="z-nisab">Nisab (Rs — editable)</label><input id="z-nisab" type="number" min="0">
 <p class="small">Government-notified nisab for 1447 AH (Ramadan 2026): Rs 503,529 — based on 52.5 tola silver; editable.</p>
 <button class="btn" id="z-calc" type="button">Calculate Zakat</button>
-<div class="result" id="z-result"></div>
+<div class="result" id="z-result" role="status" aria-live="polite"></div>
 """,
     ["Add up your cash, bank balances, and the current value of gold and silver you own.",
      "Add other zakatable assets, subtract debts you must repay, and check the nisab figure.",
@@ -197,8 +197,8 @@ TOOLS["image-compressor-to-kb"] = _tool(
 <label for="c-file">Choose an image (JPG / PNG)</label><input id="c-file" type="file" accept="image/*">
 <label for="c-target">Target size (KB)</label><input id="c-target" type="number" min="10" value="200">
 <button class="btn" id="c-go" type="button">Compress image</button>
-<p id="c-status"></p>
-<div class="result" id="c-result"></div>
+<p id="c-status" role="status" aria-live="polite"></p>
+<div class="result" id="c-result" role="status" aria-live="polite"></div>
 """,
     ["Choose the image from your phone or computer.",
      "Type the target size in KB — for example 200, the limit on many Pakistani online forms.",
@@ -229,7 +229,7 @@ TOOLS["passport-size-photo-maker"] = _tool(
 <p id="p-preload" class="note" style="display:none"></p>
 <button class="btn" id="p-go" type="button">Make passport photo</button>
 <button class="btn secondary" id="p-sheet" type="button">Make print sheet (4 copies, 4 × 6 inch)</button>
-<p id="p-status"></p>
+<p id="p-status" role="status" aria-live="polite"></p>
 <div id="p-result"></div>
 """,
     ["Choose a clear front-facing photo — a plain wall behind you gives the cleanest background removal.",
@@ -252,8 +252,8 @@ TOOLS["image-converter"] = _tool(
 <label for="v-format">Convert to</label>
 <select id="v-format"><option value="image/jpeg">JPG</option><option value="image/png">PNG</option><option value="image/webp">WebP</option></select>
 <button class="btn" id="v-go" type="button">Convert image</button>
-<p id="v-status"></p>
-<div class="result" id="v-result"></div>
+<p id="v-status" role="status" aria-live="polite"></p>
+<div class="result" id="v-result" role="status" aria-live="polite"></div>
 """,
     ["Choose the image you want to convert.",
      "Select the output format — JPG, PNG or WebP.",
@@ -320,7 +320,7 @@ TOOLS["jpg-to-pdf"] = _tool(
 <label for="j-files">Choose images (JPG / PNG)</label>
 <input id="j-files" type="file" accept="image/jpeg,image/png" multiple>
 <button class="btn" id="j-go" type="button">Convert images to PDF</button>
-<p id="j-status"></p>
+<p id="j-status" role="status" aria-live="polite"></p>
 <div id="j-result"></div>
 <h3>Mode 2 — PDF to JPG</h3>
 <label for="pj-file">Choose a PDF file</label>
@@ -349,12 +349,12 @@ TOOLS["age-calculator"] = _tool(
 <label for="dob">Date of birth</label><input id="dob" type="date" value="2000-01-01">
 <label for="age-at">Age at date</label><input id="age-at" type="date">
 <button class="btn" id="age-go" type="button">Calculate age</button>
-<div class="result" id="age-result"></div>
+<div class="result" id="age-result" role="status" aria-live="polite"></div>
 <h3>Difference between two dates</h3>
 <label for="d1">First date</label><input id="d1" type="date" value="2024-01-01">
 <label for="d2">Second date</label><input id="d2" type="date">
 <button class="btn secondary" id="dd-go" type="button">Calculate difference</button>
-<div class="result" id="dd-result"></div>
+<div class="result" id="dd-result" role="status" aria-live="polite"></div>
 """,
     ["Enter your date of birth.",
      "Leave 'Age at date' as today, or pick any date — a job application deadline, for example.",
@@ -510,7 +510,7 @@ TOOLS["wedding-invitation-maker"] = _tool(
 </select>
 <button class="btn" id="w-photogo" type="button">✂️ Background remove karein</button>
 <div id="w-photostatus" class="small"></div>
-<div class="result" id="w-photoresult"></div>
+<div class="result" id="w-photoresult" role="status" aria-live="polite"></div>
 </div>
 <h3>Ya tayyar couple shot chunein</h3>
 <p class="small">Apni photo istemal nahi karna chahte to template se milta hua aik tayyar couple shot cover par laga dein — jo rang (palette) upar chuna hai, usi ka shot aam taur par sab se acha lagta hai. Agar apni photo tayyar ki hui hai aur yahan koi shot nahi chuna to cover par apni photo lagegi.</p>
@@ -539,7 +539,7 @@ TOOLS["wedding-invitation-maker"] = _tool(
 <input id="w-faq-3a" type="text" value="Free parking is available at the venue. Just mention the wedding at the gate.">
 </details>
 <button class="btn" id="w-makelink" type="button">💌 Invitation ka link banayein</button>
-<div class="result" id="w-linkresult"></div>""",
+<div class="result" id="w-linkresult" role="status" aria-live="polite"></div>""",
     ["Fill in the couple's names, the hosts, the event dates and the venue — the sample names show you exactly what to type.",
      "Choose an opening style (curtains, golden doors or a floral arch), a colour theme and a built-in tune, then press the link button.",
      "Share the link on WhatsApp. Guests tap to open: the doors open with music, they scratch to reveal the date, watch the live countdown and RSVP back to your WhatsApp number.",
@@ -584,7 +584,7 @@ TOOLS["ramadan-calendar-maker"] = _tool(
 <button id="r-png" class="btn" type="button">🖼️ Tasveer (PNG) download</button>
 <button id="r-print" class="btn" type="button">🖨️ Print / PDF</button>
 </div>
-<div id="r-status" class="result" role="status"></div>
+<div id="r-status" class="result" role="status" aria-live="polite"></div>
 <h3>Calendar — live preview</h3>
 <div id="r-sheet"></div>
 """,
@@ -644,7 +644,7 @@ TOOLS["eid-card-maker"] = _tool(
 <div><button class="btn" id="e-download" type="button">⬇️ Card download karein</button></div>
 <div><button class="btn" id="e-share" type="button">💬 WhatsApp par share karein</button></div>
 </div>
-<p class="small" id="e-status"></p>
+<p class="small" id="e-status" role="status" aria-live="polite"></p>
 """,
     ["Choose your design — five retro designs, all completely free: Chaand Raat Classic, Gulab Wala, Rangeen 90s, Masjid-e-Noor and Vintage Cream.",
      "Pick Eid-ul-Fitr or Eid-ul-Adha, then choose a ready-made sher (funny or emotional) or write your own message.",

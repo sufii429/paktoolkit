@@ -185,6 +185,11 @@ function initRamadan(){
   var sheetBox = document.getElementById("r-sheet");
   var designsBox = document.getElementById("r-designs");
   var status = document.getElementById("r-status");
+  /* Screen-reader announcements (audit fix, 2026-11-20): the calendar's
+     progress, success and error text is written into this persistent live
+     region so it is announced politely. */
+  if (status && !status.hasAttribute("role")) status.setAttribute("role", "status");
+  if (status && !status.hasAttribute("aria-live")) status.setAttribute("aria-live", "polite");
   var PREMIUM_WA = "https://wa.me/923181746809?text=" + encodeURIComponent("Assalam-o-Alaikum! Mujhe PakToolkit Ramadan Calendar ka premium design chahiye.");
 
   /* Owner unlock: opening the tool once with ?unlock=premium unlocks the

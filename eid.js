@@ -215,6 +215,10 @@ function initEid(){
   /* ---------- state + render ---------- */
   function $(id){ return document.getElementById(id); }
   var state = { design: 0 };
+  /* Screen-reader announcements (audit fix, 2026-11-20): download/share
+     outcomes are written into this persistent live region. */
+  var esEl = $("e-status");
+  if (esEl){ if (!esEl.hasAttribute("role")) esEl.setAttribute("role", "status"); if (!esEl.hasAttribute("aria-live")) esEl.setAttribute("aria-live", "polite"); }
   var box = $("e-designs");
   DESIGNS.forEach(function(d, i){
     var b = document.createElement("button");
