@@ -47,7 +47,7 @@ TOOLS["bijli-bill-calculator"] = _tool(
     "Use this bijli bill calculator Pakistan households rely on to estimate a monthly electricity bill from the units on your meter. Pick your consumer category, enter the units, and see the full slab-wise breakdown before the real bill arrives.",
     """
 <label for="b-units">Units consumed (kWh)</label>
-<input id="b-units" type="number" min="0" value="350">
+<input id="b-units" type="number" inputmode="numeric" enterkeyhint="done" min="0" value="350">
 <label for="b-cat">Consumer category</label>
 <select id="b-cat">
   <option value="nonprotected" selected>Non-protected</option>
@@ -55,8 +55,8 @@ TOOLS["bijli-bill-calculator"] = _tool(
   <option value="lifeline">Lifeline (up to 100 units)</option>
 </select>
 <div class="row2">
-<div><label for="b-gst">GST % (editable)</label><input id="b-gst" type="number" step="0.1" value="18"></div>
-<div><label for="b-extra">FPA / extra charges per unit, Rs (editable)</label><input id="b-extra" type="number" step="0.01" value="0"></div>
+<div><label for="b-gst">GST % (editable)</label><input id="b-gst" type="number" inputmode="decimal" enterkeyhint="done" step="0.1" value="18"></div>
+<div><label for="b-extra">FPA / extra charges per unit, Rs (editable)</label><input id="b-extra" type="number" inputmode="decimal" enterkeyhint="done" step="0.01" value="0"></div>
 </div>
 <p class="small">FPA is charged <strong>per unit</strong> — copy the small per-unit FPA rate from your bill, not the total FPA amount printed on it.</p>
 <h3>Slab rates (Rs/unit — editable)</h3>
@@ -83,7 +83,7 @@ TOOLS["marla-kanal-converter"] = _tool(
     "This marla to kanal converter handles every land unit used in Pakistan property dealing. Enter any value, choose its unit, and get Marla, Kanal, square feet, square yards (gaj), square metres and acres in one table.",
     """
 <label for="a-value">Area value</label>
-<input id="a-value" type="number" min="0" value="1">
+<input id="a-value" type="number" inputmode="numeric" enterkeyhint="done" min="0" value="1">
 <label for="a-from">From unit</label>
 <select id="a-from">
   <option value="kanal" selected>Kanal</option><option value="marla">Marla</option>
@@ -118,9 +118,9 @@ TOOLS["salary-tax-calculator-pakistan"] = _tool(
     "This salary tax calculator Pakistan employees can trust uses the Finance Act 2025 slabs for tax year 2025-26. Enter your monthly or annual salary and see the tax, the Section 4AB surcharge where it applies, and your take-home pay.",
     """
 <label for="t-monthly">Monthly salary (Rs)</label>
-<input id="t-monthly" type="number" min="0" value="100000">
+<input id="t-monthly" type="number" inputmode="numeric" enterkeyhint="done" min="0" value="100000">
 <label for="t-annual">OR annual salary (Rs) — leave monthly if you prefer</label>
-<input id="t-annual" type="number" min="0" placeholder="Optional — overrides monthly × 12">
+<input id="t-annual" type="number" inputmode="numeric" enterkeyhint="done" min="0" placeholder="Optional — overrides monthly × 12">
 <button class="btn" id="t-calc" type="button">Calculate tax</button>
 <div class="result" id="t-result" role="status" aria-live="polite"></div>
 """,
@@ -141,12 +141,12 @@ TOOLS["mdcat-aggregate-calculator"] = _tool(
     "Your MDCAT aggregate from Matric, FSc and MDCAT marks — 10/40/50 formula.",
     "This MDCAT aggregate calculator works out your merit aggregate exactly the way admissions do: 10% Matric, 40% FSc and 50% MDCAT. Enter obtained and total marks for each and see your aggregate percentage instantly.",
     """
-<div class="row2"><div><label for="m-mat-o">Matric — obtained marks</label><input id="m-mat-o" type="number" min="0" value="900"></div>
-<div><label for="m-mat-t">Matric — total marks</label><input id="m-mat-t" type="number" min="1" value="1100"></div></div>
-<div class="row2"><div><label for="m-fsc-o">FSc — obtained marks</label><input id="m-fsc-o" type="number" min="0" value="950"></div>
-<div><label for="m-fsc-t">FSc — total marks</label><input id="m-fsc-t" type="number" min="1" value="1100"></div></div>
-<div class="row2"><div><label for="m-md-o">MDCAT — obtained marks</label><input id="m-md-o" type="number" min="0" value="170"></div>
-<div><label for="m-md-t">MDCAT — total marks</label><input id="m-md-t" type="number" min="1" value="200"></div></div>
+<div class="row2"><div><label for="m-mat-o">Matric — obtained marks</label><input id="m-mat-o" type="number" inputmode="numeric" enterkeyhint="done" min="0" value="900"></div>
+<div><label for="m-mat-t">Matric — total marks</label><input id="m-mat-t" type="number" inputmode="numeric" enterkeyhint="done" min="1" value="1100"></div></div>
+<div class="row2"><div><label for="m-fsc-o">FSc — obtained marks</label><input id="m-fsc-o" type="number" inputmode="numeric" enterkeyhint="done" min="0" value="950"></div>
+<div><label for="m-fsc-t">FSc — total marks</label><input id="m-fsc-t" type="number" inputmode="numeric" enterkeyhint="done" min="1" value="1100"></div></div>
+<div class="row2"><div><label for="m-md-o">MDCAT — obtained marks</label><input id="m-md-o" type="number" inputmode="numeric" enterkeyhint="done" min="0" value="170"></div>
+<div><label for="m-md-t">MDCAT — total marks</label><input id="m-md-t" type="number" inputmode="numeric" enterkeyhint="done" min="1" value="200"></div></div>
 <button class="btn" id="m-calc" type="button">Calculate aggregate</button>
 <div class="result" id="m-result" role="status" aria-live="polite"></div>
 """,
@@ -166,13 +166,13 @@ TOOLS["zakat-calculator"] = _tool(
     "Zakat at 2.5% on cash, gold, silver and savings, checked against the notified nisab.",
     "This zakat calculator Pakistan Muslims can use before Ramadan or at their yearly Zakat date adds up your cash, gold, silver and other assets, deducts liabilities, checks the total against the government-notified nisab, and calculates 2.5% Zakat if nisab is reached.",
     """
-<label for="z-cash">Cash in hand + bank balances (Rs)</label><input id="z-cash" type="number" min="0" value="0">
-<label for="z-gold">Value of gold owned (Rs)</label><input id="z-gold" type="number" min="0" value="0">
-<label for="z-silver">Value of silver owned (Rs)</label><input id="z-silver" type="number" min="0" value="0">
+<label for="z-cash">Cash in hand + bank balances (Rs)</label><input id="z-cash" type="number" inputmode="numeric" enterkeyhint="done" min="0" value="0">
+<label for="z-gold">Value of gold owned (Rs)</label><input id="z-gold" type="number" inputmode="numeric" enterkeyhint="done" min="0" value="0">
+<label for="z-silver">Value of silver owned (Rs)</label><input id="z-silver" type="number" inputmode="numeric" enterkeyhint="done" min="0" value="0">
 <p class="small">Gold and silver are entered as rupee values — if you know the weight instead, value = weight in tola × the current price per tola.</p>
-<label for="z-other">Other zakatable assets — savings, business stock, money owed to you (Rs)</label><input id="z-other" type="number" min="0" value="0">
-<label for="z-liab">Liabilities — debts you must repay (Rs)</label><input id="z-liab" type="number" min="0" value="0">
-<label for="z-nisab">Nisab (Rs — editable)</label><input id="z-nisab" type="number" min="0">
+<label for="z-other">Other zakatable assets — savings, business stock, money owed to you (Rs)</label><input id="z-other" type="number" inputmode="numeric" enterkeyhint="done" min="0" value="0">
+<label for="z-liab">Liabilities — debts you must repay (Rs)</label><input id="z-liab" type="number" inputmode="numeric" enterkeyhint="done" min="0" value="0">
+<label for="z-nisab">Nisab (Rs — editable)</label><input id="z-nisab" type="number" inputmode="numeric" enterkeyhint="done" min="0">
 <p class="small">Government-notified nisab for 1447 AH (Ramadan 2026): Rs 503,529 — based on 52.5 tola silver; editable.</p>
 <button class="btn" id="z-calc" type="button">Calculate Zakat</button>
 <div class="result" id="z-result" role="status" aria-live="polite"></div>
@@ -195,7 +195,7 @@ TOOLS["image-compressor-to-kb"] = _tool(
     "Need to compress image to KB size for a job application, admission form or portal that rejects big files? Choose your photo, set the target size in KB, and this tool recompresses it on your own device until it fits.",
     """
 <label for="c-file">Choose an image (JPG / PNG)</label><input id="c-file" type="file" accept="image/*">
-<label for="c-target">Target size (KB)</label><input id="c-target" type="number" min="10" value="200">
+<label for="c-target">Target size (KB)</label><input id="c-target" type="number" inputmode="numeric" enterkeyhint="done" min="10" value="200">
 <button class="btn" id="c-go" type="button">Compress image</button>
 <p id="c-status" role="status" aria-live="polite"></p>
 <div class="result" id="c-result" role="status" aria-live="polite"></div>

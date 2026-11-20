@@ -62,6 +62,14 @@ document.addEventListener("DOMContentLoaded", function(){
     if (!n.hasAttribute("role")) n.setAttribute("role", "status");
     if (!n.hasAttribute("aria-live")) n.setAttribute("aria-live", "polite");
   });
+  /* Numeric keyboards (audit fix 2, 2026-11-20): number fields without an
+     explicit inputmode get one — "decimal" when the step allows fractions,
+     otherwise "numeric" — plus an enterkeyhint. Markup carries these
+     already; this net covers fields built later by page scripts. */
+  document.querySelectorAll("input[type='number']").forEach(function(n){
+    if (!n.hasAttribute("inputmode")) n.setAttribute("inputmode", (n.step && n.step.indexOf(".") >= 0) ? "decimal" : "numeric");
+    if (!n.hasAttribute("enterkeyhint")) n.setAttribute("enterkeyhint", "done");
+  });
 });
 function loadScript(src){
   return new Promise(function(res, rej){
@@ -137,6 +145,7 @@ function renderBijliRates(){
     var tr = el("tr");
     tr.appendChild(el("td", (prev+1) + " – " + (s.upTo == null ? "above" : s.upTo)));
     var td = el("td"), inp = el("input"); inp.type = "number"; inp.step = "0.01"; inp.min = "0";
+    inp.inputMode = "decimal"; inp.enterKeyHint = "done"; /* numeric keyboard (audit fix 2, 2026-11-20) */
     inp.value = s.rate; inp.className = "rate-input"; inp.id = "b-rate-" + i;
     td.appendChild(inp); tr.appendChild(td); tb.appendChild(tr);
     prev = (s.upTo == null ? prev : s.upTo);
