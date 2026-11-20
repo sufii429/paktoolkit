@@ -77,7 +77,8 @@ document.addEventListener("DOMContentLoaded", function(){
    no-cors and cannot verify a cross-origin script, so it would block it. */
 var SRI = {
   pdfLib: "sha384-weMABwrltA6jWR8DDe9Jp5blk+tZQh7ugpCsF3JwSA53WZM9/14PjS5LAJNHNjAI",
-  pdfJs: "sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e"
+  pdfJs: "sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e",
+  qrGen: "sha384-lQXOAyZwHXE55JFyrOMB7nY2Wv+m5ZWNtJcHrd1rceRQXAYNLak8ukN5TjBTcIwz"
 };
 function loadScript(src, integrity){
   return new Promise(function(res, rej){
@@ -95,6 +96,11 @@ var PDFJS_WORKER = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.w
 function loadPdfLib(){
   if (window.PDFLib) return Promise.resolve(window.PDFLib);
   return loadScript(PDFLIB_URL, SRI.pdfLib).then(function(){ return window.PDFLib; });
+}
+var QRGEN_URL = "https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js";
+function loadQrGen(){
+  if (window.qrcode) return Promise.resolve(window.qrcode);
+  return loadScript(QRGEN_URL, SRI.qrGen).then(function(){ return window.qrcode; });
 }
 function download(url, name){ var a = el("a"); a.href = url; a.download = name; a.textContent = "Download: " + name; a.className = "dl"; return a; }
 function fileToImage(file){
@@ -960,10 +966,236 @@ function initAge(){
   });
 }
 
+/* ============ 13. WhatsApp Link Maker ============ */
+/* [name, dial code] — Pakistan first (the default), then alphabetical.
+   The select is filled from this list; the page itself carries no options. */
+var WA_COUNTRIES = [
+  ["Pakistan", "92"], ["Afghanistan", "93"], ["Albania", "355"], ["Algeria", "213"],
+  ["Argentina", "54"], ["Australia", "61"], ["Austria", "43"], ["Azerbaijan", "994"],
+  ["Bahrain", "973"], ["Bangladesh", "880"], ["Belarus", "375"], ["Belgium", "32"],
+  ["Brazil", "55"], ["Bulgaria", "359"], ["Cambodia", "855"], ["Canada", "1"],
+  ["Chile", "56"], ["China", "86"], ["Colombia", "57"], ["Croatia", "385"],
+  ["Cyprus", "357"], ["Czechia", "420"], ["Denmark", "45"], ["Egypt", "20"],
+  ["Estonia", "372"], ["Ethiopia", "251"], ["Finland", "358"], ["France", "33"],
+  ["Georgia", "995"], ["Germany", "49"], ["Ghana", "233"], ["Greece", "30"],
+  ["Hong Kong", "852"], ["Hungary", "36"], ["Iceland", "354"], ["India", "91"],
+  ["Indonesia", "62"], ["Iraq", "964"], ["Ireland", "353"], ["Israel", "972"],
+  ["Italy", "39"], ["Japan", "81"], ["Jordan", "962"], ["Kazakhstan", "7"],
+  ["Kenya", "254"], ["Kuwait", "965"], ["Latvia", "371"], ["Lebanon", "961"],
+  ["Libya", "218"], ["Lithuania", "370"], ["Malaysia", "60"], ["Maldives", "960"],
+  ["Mexico", "52"], ["Morocco", "212"], ["Myanmar", "95"], ["Nepal", "977"],
+  ["Netherlands", "31"], ["New Zealand", "64"], ["Nigeria", "234"], ["Norway", "47"],
+  ["Oman", "968"], ["Palestine", "970"], ["Philippines", "63"], ["Poland", "48"],
+  ["Portugal", "351"], ["Qatar", "974"], ["Romania", "40"], ["Russia", "7"],
+  ["Saudi Arabia", "966"], ["Serbia", "381"], ["Singapore", "65"], ["Slovakia", "421"],
+  ["South Africa", "27"], ["South Korea", "82"], ["Spain", "34"], ["Sri Lanka", "94"],
+  ["Sudan", "249"], ["Sweden", "46"], ["Switzerland", "41"], ["Syria", "963"],
+  ["Taiwan", "886"], ["Thailand", "66"], ["Turkey", "90"], ["Uganda", "256"],
+  ["Ukraine", "380"], ["United Arab Emirates", "971"], ["United Kingdom", "44"],
+  ["United States", "1"], ["Uzbekistan", "998"], ["Vietnam", "84"], ["Yemen", "967"],
+  ["Zimbabwe", "263"]
+];
+/* Clean a typed number into full international digits for wa.me:
+   digits only; a leading 00 is an international call prefix; if the digits
+   already start with the selected country code, keep them; otherwise treat
+   the input as a local number — drop its trunk 0(s) and prepend the code. */
+function waFullNumber(cc, raw){
+  var d = (raw || "").replace(/\D/g, "");
+  if (!d) return "";
+  if (d.indexOf("00") === 0) return d.slice(2);
+  if (d.indexOf(cc) === 0 && d.length > cc.length + 6) return d;
+  return cc + d.replace(/^0+/, "");
+}
+function initWhatsapp(){
+  var ccSel = $("wa-cc"); if (!ccSel) return;
+  WA_COUNTRIES.forEach(function(c){
+    var o = document.createElement("option");
+    o.value = c[1]; o.textContent = c[0] + " (+" + c[1] + ")";
+    if (c[0] === "Pakistan") o.selected = true;
+    ccSel.appendChild(o);
+  });
+  var paintedFor = "";
+  function paintQr(text){
+    try {
+      var qr = window.qrcode(0, "M"); qr.addData(text); qr.make();
+      var n = qr.getModuleCount(), cell = 8, quiet = cell * 4, size = n * cell + quiet * 2;
+      var cv = $("wa-qr-canvas"); cv.width = size; cv.height = size;
+      var ctx = cv.getContext("2d");
+      ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, size, size);
+      ctx.fillStyle = "#000000";
+      for (var r = 0; r < n; r++) for (var c = 0; c < n; c++)
+        if (qr.isDark(r, c)) ctx.fillRect(quiet + c * cell, quiet + r * cell, cell, cell);
+      paintedFor = text;
+    } catch (e) { /* link still works without the QR */ }
+  }
+  function drawQr(text){
+    if (!text || text === paintedFor) return;
+    loadQrGen().then(function(){ paintQr(text); }).catch(function(){
+      var note = $("wa-qr-note");
+      if (note) note.textContent = "The QR code could not be loaded (check your connection) — the link and buttons above work without it.";
+    });
+  }
+  function currentLink(){
+    var full = waFullNumber(ccSel.value, $("wa-num").value);
+    if (full.length < 7 || full.length > 15) return "";
+    var link = "https://wa.me/" + full, msg = $("wa-msg").value.trim();
+    if (msg) link += "?text=" + encodeURIComponent(msg);
+    return link;
+  }
+  function update(){
+    var link = currentLink(), out = $("wa-result"), hint = $("wa-hint");
+    if (!link) {
+      out.className = "result";
+      hint.textContent = $("wa-num").value.trim()
+        ? "That number looks too short or too long — check the country and the number."
+        : "Pick your country and type the number — your link and QR code appear here instantly. Spaces, dashes and a starting 0 are cleaned automatically.";
+      return;
+    }
+    hint.textContent = "";
+    out.className = "result show";
+    var a = $("wa-link"); a.href = link; a.textContent = link;
+    drawQr(link);
+  }
+  $("wa-num").addEventListener("input", update);
+  $("wa-msg").addEventListener("input", update);
+  ccSel.addEventListener("change", update);
+  $("wa-copy").addEventListener("click", function(){
+    var link = currentLink(); if (!link) return;
+    var note = $("wa-note");
+    function done(){ note.textContent = "Link copied — paste it in your Instagram bio, Facebook page, website or anywhere else."; }
+    function fallback(){
+      var t = document.createElement("textarea");
+      t.value = link; document.body.appendChild(t); t.select();
+      try { document.execCommand("copy"); done(); }
+      catch (e) { note.textContent = "Copy did not work here — long-press the link above to copy it."; }
+      document.body.removeChild(t);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(link).then(done, fallback);
+    else fallback();
+  });
+  $("wa-open").addEventListener("click", function(){
+    var link = currentLink(); if (link) window.open(link, "_blank", "noopener");
+  });
+  update();
+}
+
+/* ============ 14. Invoice Maker ============ */
+var INV_CUR = {
+  PKR: { sym: "Rs ", locale: "en-PK", name: "Pakistani Rupees", sub: "Paisa" },
+  USD: { sym: "$", locale: "en-US", name: "US Dollars", sub: "Cents" },
+  GBP: { sym: "£", locale: "en-GB", name: "British Pounds", sub: "Pence" },
+  AED: { sym: "AED ", locale: "en-AE", name: "UAE Dirhams", sub: "Fils" }
+};
+function invWords(n){
+  var ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+  var tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+  function below1000(x){
+    var s = "";
+    if (x >= 100) { s += ones[Math.floor(x / 100)] + " Hundred"; x %= 100; if (x) s += " "; }
+    if (x >= 20) { s += tens[Math.floor(x / 10)]; x %= 10; if (x) s += "-" + ones[x]; }
+    else if (x > 0) s += ones[x];
+    return s;
+  }
+  if (n === 0) return "Zero";
+  var parts = [], scales = [[1000000000, "Billion"], [1000000, "Million"], [1000, "Thousand"]];
+  for (var i = 0; i < scales.length; i++)
+    if (n >= scales[i][0]) { parts.push(below1000(Math.floor(n / scales[i][0])) + " " + scales[i][1]); n %= scales[i][0]; }
+  if (n > 0) parts.push(below1000(n));
+  return parts.join(" ");
+}
+function initInvoice(){
+  var itemsBox = $("inv-items"); if (!itemsBox) return;
+  document.body.classList.add("inv-print"); /* scopes the print CSS to this page */
+  function iso(d){ return d.toISOString().slice(0, 10); }
+  var now = new Date();
+  if (!$("inv-issue").value) $("inv-issue").value = iso(now);
+  if (!$("inv-due").value) $("inv-due").value = iso(new Date(now.getTime() + 7 * 86400000));
+  function cur(){ return INV_CUR[$("inv-cur").value] || INV_CUR.PKR; }
+  function money(v){ var c = cur(); return c.sym + v.toLocaleString(c.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function prettyDate(v){
+    if (!v) return "—";
+    var p = v.split("-"); if (p.length !== 3) return v;
+    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    return parseInt(p[2], 10) + " " + months[parseInt(p[1], 10) - 1] + " " + p[0];
+  }
+  function refreshDel(){
+    var rows = itemsBox.querySelectorAll(".inv-item");
+    rows.forEach(function(r){ var b = r.querySelector(".inv-del"); if (b) b.style.visibility = rows.length > 1 ? "visible" : "hidden"; });
+  }
+  function addItem(){
+    var row = el("div"); row.className = "inv-item";
+    var dIn = el("input"); dIn.type = "text"; dIn.className = "inv-desc";
+    dIn.placeholder = "Item description"; dIn.setAttribute("aria-label", "Item description");
+    var nums = el("div"); nums.className = "inv-nums";
+    var qIn = el("input"); qIn.type = "number"; qIn.className = "inv-qty";
+    qIn.min = "0"; qIn.step = "any"; qIn.value = "1";
+    qIn.setAttribute("aria-label", "Quantity"); qIn.setAttribute("inputmode", "decimal"); qIn.setAttribute("enterkeyhint", "done");
+    var rIn = el("input"); rIn.type = "number"; rIn.className = "inv-rate";
+    rIn.min = "0"; rIn.step = "any"; rIn.placeholder = "0";
+    rIn.setAttribute("aria-label", "Rate"); rIn.setAttribute("inputmode", "decimal"); rIn.setAttribute("enterkeyhint", "done");
+    var amt = el("span"); amt.className = "inv-amt";
+    var del = el("button", "✕"); del.type = "button"; del.className = "inv-del";
+    del.setAttribute("aria-label", "Remove this item");
+    del.addEventListener("click", function(){ row.remove(); refreshDel(); update(); });
+    [dIn, qIn, rIn].forEach(function(n){ n.addEventListener("input", update); });
+    nums.appendChild(qIn); nums.appendChild(rIn); nums.appendChild(amt); nums.appendChild(del);
+    row.appendChild(dIn); row.appendChild(nums);
+    itemsBox.appendChild(row);
+    refreshDel();
+  }
+  function update(){
+    var sub = 0, tbody = $("inv-p-items"); tbody.textContent = "";
+    itemsBox.querySelectorAll(".inv-item").forEach(function(row){
+      var desc = row.querySelector(".inv-desc").value.trim();
+      var qty = parseFloat(row.querySelector(".inv-qty").value) || 0;
+      var rate = parseFloat(row.querySelector(".inv-rate").value) || 0;
+      var amt = qty * rate; sub += amt;
+      row.querySelector(".inv-amt").textContent = money(amt);
+      var tr = el("tr");
+      tr.appendChild(el("td", desc || "—"));
+      var qTd = el("td", qty % 1 === 0 ? String(qty) : fmtN(qty, 2)); qTd.className = "num";
+      var rTd = el("td", money(rate)); rTd.className = "num";
+      var aTd = el("td", money(amt)); aTd.className = "num";
+      tr.appendChild(qTd); tr.appendChild(rTd); tr.appendChild(aTd);
+      tbody.appendChild(tr);
+    });
+    var discPct = parseFloat($("inv-disc").value) || 0;
+    var taxPct = parseFloat($("inv-tax").value) || 0;
+    var disc = sub * discPct / 100, tax = (sub - disc) * taxPct / 100, total = sub - disc + tax;
+    $("inv-p-sub").textContent = money(sub);
+    $("inv-p-disc-row").style.display = discPct ? "" : "none";
+    $("inv-p-disc-label").textContent = "Discount (" + discPct + "%)";
+    $("inv-p-disc").textContent = "− " + money(disc);
+    $("inv-p-tax-row").style.display = taxPct ? "" : "none";
+    $("inv-p-tax-label").textContent = "Tax (" + taxPct + "%)";
+    $("inv-p-tax").textContent = "+ " + money(tax);
+    $("inv-p-total").textContent = money(total);
+    var whole = Math.floor(total), frac = Math.round((total - whole) * 100);
+    if (frac === 100) { whole += 1; frac = 0; }
+    $("inv-p-words").textContent = invWords(whole) + " " + cur().name + (frac ? " and " + invWords(frac) + " " + cur().sub : "") + " Only";
+    $("inv-p-from").textContent = $("inv-from").value.trim() || "Your Business Name";
+    $("inv-p-to").textContent = $("inv-to").value.trim() || "Client Name";
+    $("inv-p-no").textContent = $("inv-no").value.trim() || "—";
+    $("inv-p-issue").textContent = prettyDate($("inv-issue").value);
+    $("inv-p-due").textContent = prettyDate($("inv-due").value);
+    var notes = $("inv-notes").value.trim();
+    $("inv-p-notes-wrap").style.display = notes ? "" : "none";
+    $("inv-p-notes").textContent = notes;
+  }
+  ["inv-from", "inv-to", "inv-no", "inv-cur", "inv-issue", "inv-due", "inv-disc", "inv-tax", "inv-notes"].forEach(function(id){
+    $(id).addEventListener("input", update); $(id).addEventListener("change", update);
+  });
+  $("inv-add").addEventListener("click", function(){ addItem(); update(); });
+  $("inv-print").addEventListener("click", function(){ window.print(); });
+  addItem();
+  update();
+}
+
 document.addEventListener("DOMContentLoaded", function(){
   initBijli(); initArea(); initTax(); initMdcat(); initZakat();
   initCompress(); initPassport(); initConvert();
   initMerge(); initSplit(); initJpgPdf(); initAge();
+  initWhatsapp(); initInvoice();
   if (window.initWedding) initWedding();
   if (window.initRamadan) initRamadan();
   if (window.initEid) initEid();
