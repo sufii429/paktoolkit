@@ -71,9 +71,18 @@ document.addEventListener("DOMContentLoaded", function(){
     if (!n.hasAttribute("enterkeyhint")) n.setAttribute("enterkeyhint", "done");
   });
 });
-function loadScript(src){
+/* Subresource Integrity for CDN libraries (audit fix 3, 2026-11-20):
+   sha384 hashes computed from the pinned release files themselves.
+   crossorigin="anonymous" is required — without it the browser fetches
+   no-cors and cannot verify a cross-origin script, so it would block it. */
+var SRI = {
+  pdfLib: "sha384-weMABwrltA6jWR8DDe9Jp5blk+tZQh7ugpCsF3JwSA53WZM9/14PjS5LAJNHNjAI",
+  pdfJs: "sha384-/1qUCSGwTur9vjf/z9lmu/eCUYbpOTgSjmpbMQZ1/CtX2v/WcAIKqRv+U1DUCG6e"
+};
+function loadScript(src, integrity){
   return new Promise(function(res, rej){
     var s = document.createElement("script"); s.src = src;
+    if (integrity){ s.integrity = integrity; s.crossOrigin = "anonymous"; s.referrerPolicy = "no-referrer"; }
     s.onload = res; s.onerror = function(){ rej(new Error("load failed")); };
     document.head.appendChild(s);
   });
@@ -81,9 +90,11 @@ function loadScript(src){
 var PDFLIB_URL = "https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js";
 var PDFJS_URL = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js";
 var PDFJS_WORKER = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+/* No SRI on the worker: browsers offer no integrity mechanism for a
+   workerSrc script, so it stays pinned by exact version only. */
 function loadPdfLib(){
   if (window.PDFLib) return Promise.resolve(window.PDFLib);
-  return loadScript(PDFLIB_URL).then(function(){ return window.PDFLib; });
+  return loadScript(PDFLIB_URL, SRI.pdfLib).then(function(){ return window.PDFLib; });
 }
 function download(url, name){ var a = el("a"); a.href = url; a.download = name; a.textContent = "Download: " + name; a.className = "dl"; return a; }
 function fileToImage(file){
@@ -901,7 +912,7 @@ function initJpgPdf(){
     if (!f) { status.textContent = "Please choose a PDF file first."; return; }
     status.textContent = "File: " + f.name + " — loading the PDF reader…";
     try {
-      await loadScript(PDFJS_URL);
+      await loadScript(PDFJS_URL, SRI.pdfJs);
       window.pdfjsLib.GlobalWorkerOptions.workerSrc = PDFJS_WORKER;
       var pdf = await window.pdfjsLib.getDocument({ data: await f.arrayBuffer() }).promise;
       status.textContent = "Rendering " + pdf.numPages + " page(s) to JPG…";

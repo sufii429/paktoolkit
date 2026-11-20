@@ -361,9 +361,12 @@ function initRamadan(){
   buildSheet();
 
   /* ---- downloads ---- */
-  function loadScript(src){
+  function loadScript(src, integrity){
     return new Promise(function(res, rej){
       var s = document.createElement("script"); s.src = src;
+      /* SRI (audit fix 3, 2026-11-20): hash from the pinned release file;
+         crossorigin="anonymous" is required for the browser to verify it. */
+      if (integrity){ s.integrity = integrity; s.crossOrigin = "anonymous"; s.referrerPolicy = "no-referrer"; }
       s.onload = res; s.onerror = rej; document.head.appendChild(s);
     });
   }
@@ -372,7 +375,7 @@ function initRamadan(){
     status.className = "result show"; status.textContent = "Tasveer tayyar ho rahi hai…";
     var holder = null;
     try {
-      if (!window.html2canvas) await loadScript("https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js");
+      if (!window.html2canvas) await loadScript("https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js", "sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H");
       /* Always export the DESKTOP sheet layout (840px, three ashra columns
          side by side) from an off-screen clone — even on a phone, where the
          live sheet stacks into a tall, unreadable ribbon. */
