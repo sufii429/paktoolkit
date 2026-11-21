@@ -156,7 +156,7 @@ def footer(active="", extra=""):
     return """<footer class="site"><div class="wrap">
 <p><strong>PakToolkit</strong> — free online tools for Pakistan. Every tool runs in your browser; your files never leave your device.</p>
 <p><a href="/about/">About</a> <a href="/contact/">Contact</a> <a href="/privacy-policy/">Privacy Policy</a> <a href="/terms/">Terms of Use</a> <a href="/disclaimer/">Disclaimer</a></p>
-<p>Our other projects: <a href="https://mrjobs.top/">MrJobs — Jobs in Pakistan</a> · <a href="https://kitaabcha.blogspot.com/">Kitaabcha — Urdu Film Reviews</a></p>
+<p>Our other projects: <a href="https://mrjobs.top/">MrJobs — Jobs in Pakistan</a> · <a href="https://kitaabcha.blogspot.com/">Kitaabcha — Urdu Film Reviews</a> · <a href="https://sufyanaura.netlify.app/">Sufyan Aura — Portfolio</a></p>
 <p><a href="/pakistan-calculators/">Pakistan Calculators</a> <a href="/image-tools/">Image Tools</a> <a href="/pdf-tools/">PDF Tools</a> <a href="/everyday-calculators/">Everyday Calculators</a> <a href="/cards-invitations/">Cards &amp; Invitations</a></p>
 </div></footer>
 """ + tabbar(active) + """
