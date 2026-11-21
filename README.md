@@ -1,5 +1,7 @@
 # PakToolkit — paktoolkit.top
 
+**Live site: [paktoolkit.top](https://paktoolkit.top)**
+
 Free online tools for Pakistan: Pakistan calculators (Bijli Bill, Salary Tax
 2025-26, MDCAT Aggregate, Zakat, Marla/Kanal), image tools and PDF tools.
 Every tool runs 100% in the visitor's browser — no uploads, no accounts.
