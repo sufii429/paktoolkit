@@ -47,6 +47,7 @@ async function wDecodePayload(s){
    share link stays as short as possible (long links scare guests off).
    v1 object payloads still decode — old links keep working. */
 var W_STYLES = ["curtain", "doors", "arch", "doors2", "tieback", "ref", "ref2", "ref3", "lifafa"];
+var W_DATEMODES = ["scratch", "tiles", "both"]; /* how the main-event date is shown */
 var W_PALS_LIST = ["maroon", "green", "royal"];
 var W_TUNES_LIST = ["strings", "bells", "drone", "none", "celebration", "mumbai", "mehndi", "bhangra", "punjabi"];
 var W_SHOTS_LIST = ["maroon", "green", "royal"];
@@ -69,6 +70,10 @@ function wToCompact(d){
      links and decoders keep reading the fields they know, untouched. */
   if (d.fam) a[18] = d.fam;
   if (d.faq) a[19] = d.faq;
+  /* Borrowed-ideas fields (2026-11-23): date presentation + Our Story,
+     also appended at the end — old links decode with defaults. */
+  if (d.datemode && W_DATEMODES.indexOf(d.datemode) > 0) a[20] = W_DATEMODES.indexOf(d.datemode);
+  if (d.story) a[21] = d.story;
   return a;
 }
 function wFromCompact(a){
@@ -76,7 +81,9 @@ function wFromCompact(a){
     style: W_STYLES[a[8]] || "doors2", pal: W_PALS_LIST[a[9]] || "maroon", tune: W_TUNES_LIST[a[10]] || "strings",
     ev: (a[11] || []).map(function(e){ return { n: e[0], d: wDayStr(e[1]), t: e[2], vn: e[3] }; }),
     main: a[12] || 0, venue: a[13], addr: a[14], dress: a[15], rsvp: a[16],
-    shot: a[17] ? W_SHOTS_LIST[a[17] - 1] : "", fam: a[18] || null, faq: a[19] || null };
+    shot: a[17] ? W_SHOTS_LIST[a[17] - 1] : "", fam: a[18] || null, faq: a[19] || null,
+    datemode: (a[20] != null && W_DATEMODES[a[20]]) ? W_DATEMODES[a[20]] : "scratch",
+    story: a[21] || "" };
 }
 function wEventDate(ev){
   var d = (ev.d || "").split("-"), y = +d[0] || 2026, mo = (+d[1] || 1) - 1, da = +d[2] || 1;
@@ -283,6 +290,11 @@ var W_CSS = `
 #wguest.sty-ref .garden .flimg.l{left:-8px}
 #wguest.sty-ref .garden .flimg.r{right:-8px;transform:scaleX(-1)}
 #wguest.sty-ref .garden svg{display:block;width:100%;height:auto}
+#wguest .wtiles{display:flex;gap:8px;justify-content:center;margin:2px 0 4px}
+#wguest .wtiles div{background:var(--deep);color:var(--cream);border-radius:14px;min-width:82px;padding:12px 4px;border:1px solid var(--gold)}
+#wguest .wtiles b{display:block;font-size:1.4rem;color:var(--gold2)}
+#wguest .wtiles span{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;font-family:system-ui,Arial,sans-serif}
+#wguest .wstory p{font-size:.98rem;line-height:1.75;color:#5a4632;text-align:left;max-width:340px;margin:6px auto 0;white-space:pre-line}
 @media (prefers-reduced-motion: reduce){#wguest .panel,#wguest .minicurtain .mp{transition-duration:.01s}#wguest .tap{animation:none}#wguest.sty-lifafa .lf-flap,#wguest.sty-lifafa .lf-seal,#wguest.sty-lifafa .lf-envcard,#wguest.sty-lifafa.nogsap .lf-rise{transition-duration:.01s}#wguest.sty-lifafa .lf-taphint{animation:none}}
 `;
 function wInjectCSS(){
@@ -434,6 +446,14 @@ function wRenderGuest(d, opts){
     frame.insertBefore(fimg, frame.children[1] || null);
   }
   var rule = el("div"); rule.className = "rule"; frame.appendChild(rule);
+  /* Our Story (borrowed idea, Reel 4) — only when the maker filled it in */
+  if (d.story){
+    var rs = el("div"); rs.className = "rise wstory";
+    var sh3 = el("h2", "Our Story"); sh3.className = "sec"; rs.appendChild(sh3);
+    var ss3 = el("div"); ss3.className = "secsub urdu"; ss3.textContent = "ہماری کہانی"; rs.appendChild(ss3);
+    var sp3 = el("p"); sp3.textContent = d.story; rs.appendChild(sp3);
+    frame.appendChild(rs);
+  }
   if (fam){ var gd = el("div"); gd.className = "garden"; gd.innerHTML = W_GARDEN_SVG;
     if (window.W_FLORAL){
       var fi1 = document.createElement("img"); fi1.className = "flimg l"; fi1.src = window.W_FLORAL; fi1.alt = "";
@@ -441,18 +461,24 @@ function wRenderGuest(d, opts){
       gd.appendChild(fi1); gd.appendChild(fi2);
     }
     frame.appendChild(gd); }
-  /* save the date */
+  /* save the date — scratch card is the primary; date tiles (Reel 2) are
+     an alternative or an addition, chosen in the maker */
   var r1 = el("div"); r1.className = "rise";
   var sh = el("h2", "Save the Date"); sh.className = "sec"; r1.appendChild(sh);
   var ss = el("div"); ss.className = "secsub urdu"; ss.textContent = "تاریخ محفوظ کر لیں"; r1.appendChild(ss);
-  var sbox = el("div"); sbox.className = "scratchbox";
-  var sdate = el("div"); sdate.className = "scratchdate";
-  var d1 = el("div"); d1.className = "d1"; d1.textContent = wDateLong(mev); sdate.appendChild(d1);
-  var d2 = el("div"); d2.className = "d2"; d2.textContent = mev.n + " · " + (mev.t || "") + " onwards"; sdate.appendChild(d2);
-  sbox.appendChild(sdate);
-  var sc = document.createElement("canvas"); sc.id = "wscratch"; sc.width = 290; sc.height = 96; sbox.appendChild(sc);
-  r1.appendChild(sbox);
-  var shint = el("div"); shint.className = "scratchhint"; shint.textContent = "👆 Sunehri hisse ko ungli se raghrein — tareekh zahir hogi"; r1.appendChild(shint);
+  var dmode = d.datemode || "scratch";
+  var sc = null;
+  if (dmode === "tiles" || dmode === "both") r1.appendChild(wDateTiles(mev));
+  if (dmode !== "tiles"){
+    var sbox = el("div"); sbox.className = "scratchbox";
+    var sdate = el("div"); sdate.className = "scratchdate";
+    var d1 = el("div"); d1.className = "d1"; d1.textContent = wDateLong(mev); sdate.appendChild(d1);
+    var d2 = el("div"); d2.className = "d2"; d2.textContent = mev.n + " · " + (mev.t || "") + " onwards"; sdate.appendChild(d2);
+    sbox.appendChild(sdate);
+    sc = document.createElement("canvas"); sc.id = "wscratch"; sc.width = 290; sc.height = 96; sbox.appendChild(sc);
+    r1.appendChild(sbox);
+    var shint = el("div"); shint.className = "scratchhint"; shint.textContent = "👆 Sunehri hisse ko ungli se raghrein — tareekh zahir hogi"; r1.appendChild(shint);
+  }
   var ics = el("button", "📅 Save the Date"); ics.className = "btn goldb"; r1.appendChild(ics);
   frame.appendChild(r1);
   /* countdown */
@@ -606,7 +632,7 @@ function wRenderGuest(d, opts){
     if (sndOn){ tune.stop(); sndOn = false; snd.textContent = "🔇"; }
     else { tune.resume(); sndOn = true; snd.textContent = "🔊"; }
   });
-  wInitScratch(sc, d);
+  if (sc) wInitScratch(sc, d); /* tiles-only mode has no scratch canvas */
   var target = wEventDate(mev).getTime();
   function tick(){
     var diff = Math.max(0, target - Date.now());
@@ -617,6 +643,18 @@ function wRenderGuest(d, opts){
   }
   tick(); setInterval(tick, 1000);
   ics.addEventListener("click", function(){ wDownloadICS(d, mev); });
+}
+/* Date as 3 tiles — day · month · year (Reel 2). Shared by the standard
+   renderer and the Lifafa renderer. */
+function wDateTiles(ev){
+  var dt = wEventDate(ev);
+  var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  var wrap = el("div"); wrap.className = "wtiles";
+  [[String(dt.getDate()), "Day"], [months[dt.getMonth()], "Month"], [String(dt.getFullYear()), "Year"]].forEach(function(pr){
+    var cell = el("div"); var bb = el("b", pr[0]); cell.appendChild(bb);
+    var sp = el("span", pr[1]); cell.appendChild(sp); wrap.appendChild(cell);
+  });
+  return wrap;
 }
 function wMiniCurtain(d, en, ur, behind){
   var mc = el("div"); mc.className = "minicurtain" + (d.style === "curtain" ? "" : " flat");
@@ -1127,6 +1165,8 @@ function wReadPayloadFromForm(){
     venue: $("w-venue").value.trim(), addr: $("w-addr").value.trim(),
     dress: $("w-dress").value.trim(),
     rsvp: wPhone($("w-rsvp").value),
+    datemode: $("w-datemode") ? $("w-datemode").value : "scratch",
+    story: wVal("w-story"),
     fam: famArr.some(function(x){ return !!x; }) ? famArr : null,
     faq: faqArr.length ? faqArr : null
   };
@@ -1273,6 +1313,7 @@ function initWedding(){
     }
     bindToggle("w-t-urdu", "w-sec-urdu");
     bindToggle("w-t-fam", "w-sec-fam");
+    bindToggle("w-t-story", "w-sec-story");
     var wraps = ["w-ev3wrap", "w-ev4wrap", "w-ev5wrap"].map(function(id){ return $(id); }).filter(Boolean);
     var addBtn = $("w-addev");
     if (addBtn) addBtn.addEventListener("click", function(){
