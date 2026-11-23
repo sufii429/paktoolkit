@@ -17,18 +17,20 @@ var BIJLI_CONFIG = {
       {upTo:50, rate:3.95},{upTo:100, rate:7.74} ]}
   }
 };
-/* Salary tax: Finance Act 2025 slabs for tax year 2025-26 (verified).
-   Section 4AB surcharge: +9% on the tax when annual income exceeds Rs 10,000,000. */
+/* Salary tax: Finance Act 2026 slabs for tax year 2026-27 (verified).
+   Section 4AB surcharge: abolished for salaried individuals from tax
+   year 2026-27 — no surcharge is added for any income. */
 var TAX_CONFIG = {
   slabs: [
-    {upTo:600000,    base:0,      rate:0,    over:0},
-    {upTo:1200000,   base:0,      rate:0.01, over:600000},
-    {upTo:2200000,   base:6000,   rate:0.11, over:1200000},
-    {upTo:3200000,   base:116000, rate:0.23, over:2200000},
-    {upTo:4100000,   base:346000, rate:0.30, over:3200000},
-    {upTo:null,      base:616000, rate:0.35, over:4100000}
-  ],
-  surchargeThreshold: 10000000, surchargeRate: 0.09
+    {upTo:600000,    base:0,       rate:0,    over:0},
+    {upTo:1200000,   base:0,       rate:0.01, over:600000},
+    {upTo:2200000,   base:6000,    rate:0.11, over:1200000},
+    {upTo:3200000,   base:116000,  rate:0.20, over:2200000},
+    {upTo:4100000,   base:316000,  rate:0.25, over:3200000},
+    {upTo:5600000,   base:541000,  rate:0.29, over:4100000},
+    {upTo:7000000,   base:976000,  rate:0.32, over:5600000},
+    {upTo:null,      base:1424000, rate:0.35, over:7000000}
+  ]
 };
 /* Zakat: Government-notified nisab for 1447 AH (Ramadan 2026): Rs 503,529,
    based on 52.5 tola silver (notified Feb 2026 to SBP). Editable on page. */
@@ -217,8 +219,9 @@ function computeTax(annual){
     if (TAX_CONFIG.slabs[i].upTo == null || annual <= TAX_CONFIG.slabs[i].upTo) { slab = TAX_CONFIG.slabs[i]; break; }
   }
   var base = slab.base + slab.rate * Math.max(0, annual - slab.over);
-  var surcharge = annual > TAX_CONFIG.surchargeThreshold ? base * TAX_CONFIG.surchargeRate : 0;
-  return { baseTax: base, surcharge: surcharge, totalTax: base + surcharge };
+  /* No surcharge: Section 4AB surcharge abolished for salaried
+     individuals from tax year 2026-27 (Finance Act 2026). */
+  return { baseTax: base, surcharge: 0, totalTax: base };
 }
 function initTax(){
   if (!$("t-calc")) return;
@@ -230,7 +233,7 @@ function initTax(){
     var big = el("div", "Tax per month: " + fmt(r.totalTax / 12)); big.className = "big"; out.appendChild(big);
     makeTable(out, ["Item","Amount"], [
       ["Annual salary", fmt(annual)],["Annual tax (base)", fmt(r.baseTax)],
-      ["Surcharge — Section 4AB (9% of the tax; applies when income exceeds Rs 10 million)", fmt(r.surcharge)],
+      ["Surcharge — Section 4AB (abolished for salaried individuals from tax year 2026-27)", fmt(0)],
       ["Total annual tax", fmt(r.totalTax)],["Take-home per year", fmt(takeAnnual)],
       ["Take-home per month", fmt(takeAnnual / 12)] ]);
   });
