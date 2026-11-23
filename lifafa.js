@@ -22,9 +22,13 @@ var W_LIFAFA_CSS = `
 #wguest.sty-lifafa .lf-envcard .lf-script{font-size:1.6rem;color:var(--lf-maroon)}
 #wguest.sty-lifafa .lf-envcard span{font-size:.62rem;letter-spacing:.24em;text-transform:uppercase;color:#8a6d3b}
 #wguest.sty-lifafa .lf-flap{position:absolute;left:0;right:0;top:0;height:118px;background:linear-gradient(180deg,#f6ecd7,#ecd9b8);clip-path:polygon(0 0,100% 0,50% 100%);transform-origin:top center;transition:transform .85s ease;z-index:3}
-#wguest.sty-lifafa .lf-seal{position:absolute;left:50%;top:104px;transform:translate(-50%,0);width:86px;height:86px;z-index:4;transition:transform .5s ease,opacity .5s ease}
+#wguest.sty-lifafa .lf-seal{position:absolute;left:50%;top:104px;transform:translate(-50%,0);width:86px;height:86px;z-index:4;transition:transform .5s ease,opacity .5s ease;cursor:pointer}
 #wguest.sty-lifafa .lf-seal .blob{position:absolute;inset:0;background:radial-gradient(circle at 35% 30%,#93354a,var(--lf-maroon) 62%,var(--lf-deep));border-radius:48% 52% 55% 45%/52% 46% 54% 48%;box-shadow:0 8px 18px rgba(0,0,0,.4),inset 0 2px 6px rgba(255,255,255,.25),inset 0 -4px 8px rgba(0,0,0,.35)}
-#wguest.sty-lifafa .lf-seal .ring{position:absolute;inset:11px;border:1.5px solid rgba(230,207,154,.85);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--lf-gold2);font-family:'Great Vibes',cursive;font-size:1.4rem;padding-top:4px}
+#wguest.sty-lifafa .lf-seal .ring{position:absolute;inset:11px;border:1.5px solid rgba(230,207,154,.85);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--lf-gold2);font-family:'Great Vibes',cursive;font-size:1.4rem;padding-top:4px;animation:lfSealPulse 1.8s ease-in-out infinite}
+@keyframes lfSealPulse{0%,100%{box-shadow:0 0 0 0 rgba(230,207,154,.55)}50%{box-shadow:0 0 0 10px rgba(230,207,154,0)}}
+#wguest.sty-lifafa .lf-glow{position:absolute;left:50%;top:46%;width:130px;height:130px;margin:-65px 0 0 -65px;border-radius:50%;background:radial-gradient(circle,rgba(255,244,200,.95) 0%,rgba(232,207,122,.55) 35%,rgba(232,207,122,0) 70%);pointer-events:none;opacity:0;z-index:5}
+#wguest.sty-lifafa .lf-glow.burst{animation:lfGlow 1.15s ease-out forwards}
+@keyframes lfGlow{0%{opacity:.95;transform:scale(.25)}100%{opacity:0;transform:scale(3.4)}}
 #wguest.sty-lifafa .lf-env.open .lf-seal{transform:translate(-50%,0) scale(1.25) rotate(-14deg);opacity:0}
 #wguest.sty-lifafa .lf-env.open .lf-flap{transform:rotateX(178deg);z-index:0}
 #wguest.sty-lifafa .lf-env.open .lf-envcard{transform:translateY(-96px)}
@@ -70,6 +74,11 @@ var W_LIFAFA_CSS = `
 #wguest.sty-lifafa .lf-btnmap{background:var(--lf-gold);color:#3d2404}
 #wguest.sty-lifafa .lf-btncal{border:1px solid var(--lf-gold2);color:var(--lf-gold2)}
 #wguest.sty-lifafa .lf-scratchlbl{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--lf-gold2);text-align:center;margin:16px 0 8px}
+#wguest.sty-lifafa .lf-tiles{display:flex;gap:8px;justify-content:center;margin:6px 0 4px}
+#wguest.sty-lifafa .lf-tiles div{background:#fffdf8;border:1px solid var(--lf-gold2);border-radius:10px;min-width:76px;padding:10px 4px;text-align:center}
+#wguest.sty-lifafa .lf-tiles b{display:block;font-size:1.45rem;color:var(--lf-maroon)}
+#wguest.sty-lifafa .lf-tiles span{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:#8a6d3b}
+#wguest.sty-lifafa .lf-storytxt{font-size:.95rem;line-height:1.75;color:#5c4a38;white-space:pre-line;text-align:left}
 #wguest.sty-lifafa .lf-fam{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 18px 0}
 #wguest.sty-lifafa .lf-side{background:#fffdf8;border:1px solid var(--lf-gold2);border-radius:12px;padding:16px 12px;text-align:center}
 #wguest.sty-lifafa .lf-side h4{font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:#8a6d3b}
@@ -136,11 +145,15 @@ function wRenderLifafa(d, opts){
   envBox.appendChild(envCard);
   var flap = el("div"); flap.className = "lf-flap"; envBox.appendChild(flap);
   var seal = el("div"); seal.className = "lf-seal";
+  seal.title = "Seal par tap karein — kholein";
   var blob = el("div"); blob.className = "blob"; seal.appendChild(blob);
   var ring = el("div", (d.g || "G").charAt(0).toUpperCase() + "✦" + (d.b || "B").charAt(0).toUpperCase()); ring.className = "ring"; seal.appendChild(ring);
   envBox.appendChild(seal);
+  /* Glow burst (Reel 2): a light burst from the centre when the envelope
+     opens — a plain div animated by CSS, triggered on open. */
+  var glow = el("div"); glow.className = "lf-glow"; envBox.appendChild(glow);
   env.appendChild(envBox);
-  var tapHint = el("div", "Tap to Open"); tapHint.className = "lf-taphint"; env.appendChild(tapHint);
+  var tapHint = el("div", "Seal par tap karein ✦"); tapHint.className = "lf-taphint"; env.appendChild(tapHint);
   root.appendChild(env);
   var snd = el("button", "🔊"); snd.className = "sndbtn"; snd.title = "Sound on/off"; root.appendChild(snd);
   /* ---------- invitation ---------- */
@@ -181,6 +194,14 @@ function wRenderLifafa(d, opts){
   bc.appendChild(bp);
   if (d.gu || d.bu){ var un = el("div"); un.className = "urdu"; un.style.cssText = "font-size:1.1rem;color:#5f1220;margin-top:8px"; un.textContent = (d.gu || d.g) + " ♥ " + (d.bu || d.b); bc.appendChild(un); }
   inv.appendChild(bc);
+  /* Our Story (borrowed idea, Reel 4) — only when the maker filled it in */
+  if (d.story){
+    var st = el("section"); st.className = "lf-card lf-rise";
+    var sth = el("h2", "Our Story"); sth.className = "lf-script"; st.appendChild(sth);
+    var stu = el("div", "ہماری کہانی"); stu.className = "urdu"; stu.style.cssText = "font-size:1rem;color:#8a6d3b"; st.appendChild(stu);
+    var stp = el("p"); stp.className = "lf-storytxt"; stp.textContent = d.story; st.appendChild(stp);
+    inv.appendChild(st);
+  }
   /* dear guests + chips */
   var dg = el("section"); dg.className = "lf-maroon lf-rise";
   var dgh = el("h2", "Dear Guests,"); dgh.className = "lf-script"; dg.appendChild(dgh);
@@ -233,15 +254,22 @@ function wRenderLifafa(d, opts){
     });
     card.appendChild(rows);
     if (i === main){
-      var sl = el("div", "Scratch to reveal the date"); sl.className = "lf-scratchlbl"; card.appendChild(sl);
-      var sbox = el("div"); sbox.className = "scratchbox";
-      var sdate = el("div"); sdate.className = "scratchdate";
-      var sd1 = el("div"); sd1.className = "d1"; sd1.textContent = wDateLong(ev); sdate.appendChild(sd1);
-      var sd2 = el("div"); sd2.className = "d2"; sd2.textContent = ev.n + " · " + (ev.t || "") + " onwards"; sdate.appendChild(sd2);
-      sbox.appendChild(sdate);
-      scratchCanvas = document.createElement("canvas"); scratchCanvas.id = "wscratch"; scratchCanvas.width = 290; scratchCanvas.height = 96;
-      sbox.appendChild(scratchCanvas); card.appendChild(sbox);
-      var sh = el("div", "👆 Ungli se raghrein — tareekh zahir hogi"); sh.className = "lf-scratchlbl"; card.appendChild(sh);
+      var dmode = d.datemode || "scratch";
+      if (dmode === "tiles" || dmode === "both"){
+        /* Date as 3 tiles (Reel 2) — same day/month/year as the scratch card */
+        var tiles = wDateTiles(ev); tiles.className = "lf-tiles"; card.appendChild(tiles);
+      }
+      if (dmode !== "tiles"){
+        var sl = el("div", "Scratch to reveal the date"); sl.className = "lf-scratchlbl"; card.appendChild(sl);
+        var sbox = el("div"); sbox.className = "scratchbox";
+        var sdate = el("div"); sdate.className = "scratchdate";
+        var sd1 = el("div"); sd1.className = "d1"; sd1.textContent = wDateLong(ev); sdate.appendChild(sd1);
+        var sd2 = el("div"); sd2.className = "d2"; sd2.textContent = ev.n + " · " + (ev.t || "") + " onwards"; sdate.appendChild(sd2);
+        sbox.appendChild(sdate);
+        scratchCanvas = document.createElement("canvas"); scratchCanvas.id = "wscratch"; scratchCanvas.width = 290; scratchCanvas.height = 96;
+        sbox.appendChild(scratchCanvas); card.appendChild(sbox);
+        var sh = el("div", "👆 Ungli se raghrein — tareekh zahir hogi"); sh.className = "lf-scratchlbl"; card.appendChild(sh);
+      }
     }
     var btns = el("div"); btns.className = "lf-btns";
     var mapA = el("a", "📍 View on Map"); mapA.className = "lf-btnmap";
@@ -355,8 +383,11 @@ function wRenderLifafa(d, opts){
     }
   }
   var opened = false;
-  env.addEventListener("click", function(){
+  /* The wax seal is the tap target (Reel 1: the guest taps/breaks the
+     seal to open) — the whole envelope stays clickable as a fallback. */
+  function openLifafa(){
     if (opened) return; opened = true;
+    glow.classList.add("burst");
     if (opts.preview && wMp3){
       pvAudio = new Audio(wMp3.url); pvAudio.loop = true;
       pvAudio.play().then(function(){ snd.style.display = "flex"; }).catch(function(){});
@@ -383,7 +414,9 @@ function wRenderLifafa(d, opts){
       setTimeout(function(){ env.classList.add("fading"); }, 1350);
       setTimeout(function(){ env.style.display = "none"; armReveals(); }, 2100);
     }
-  });
+  }
+  env.addEventListener("click", openLifafa);
+  seal.addEventListener("click", function(e){ e.stopPropagation(); openLifafa(); });
   var sndOn = true;
   snd.addEventListener("click", function(){
     if (pvAudio){
