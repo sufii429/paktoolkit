@@ -497,6 +497,12 @@ TOOLS["wedding-invitation-maker"] = _tool(
 <div><label for="w-bride-fam">Dulhan kis ki beti hai</label><input id="w-bride-fam" type="text" value="daughter of Mr. &amp; Mrs. Tariq Mehmood"></div>
 </div>
 </div>
+<label class="wtoggle"><input type="checkbox" id="w-t-story"> 📖 Hamari kahani bhi jorein (optional)</label>
+<div id="w-sec-story" hidden>
+<label for="w-story">Hamari kahani — chand lines mein likhein</label>
+<textarea id="w-story" rows="3" placeholder="masalan: Hum pehli dafa aik dost ki shaadi mein mile thay…"></textarea>
+<p class="small">Ye kahani invitation mein "Our Story" ke naam se aayegi. Khali chhorein to ye hissa nahi aayega.</p>
+</div>
 </details>
 <details class="wstep">
 <summary>Qadam 2 — Program aur jagah</summary>
@@ -548,6 +554,12 @@ TOOLS["wedding-invitation-maker"] = _tool(
 </div>
 <button class="btn secondary" id="w-addev" type="button">➕ Aur event jorein</button>
 <p class="small">Barat (event 2) main event hai — scratch card, countdown aur calendar file usi ki date istemal karte hain. Events 3, 4 aur 5 ikhtiyari hain — naam khali chhorein to woh event nahi aayega. Events usi tartib mein aate hain jis mein bhare jayein, to tareekh ke hisaab se bharein.</p>
+<label for="w-datemode">Tareekh kaise dikhayein (main event)</label>
+<select id="w-datemode">
+<option value="scratch" selected>✨ Scratch card — mehman khud raghar kar tareekh dekhe</option>
+<option value="tiles">🔢 Tiles — din · mahina · saal, teen khano mein</option>
+<option value="both">✨🔢 Dono — tiles bhi, scratch card bhi</option>
+</select>
 <label for="w-venue">Venue (main jagah)</label>
 <input id="w-venue" type="text" value="The Royal Palm Marquee">
 <label for="w-addr">Venue ka pata (address)</label>
