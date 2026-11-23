@@ -24,8 +24,8 @@ CATEGORIES = {
     "everyday-calculators": {
         "name": "Everyday Calculators",
         "icon": "🔢",
-        "intro": "Small tools for everyday questions — an exact age and date difference calculator, a WhatsApp click-to-chat link maker with a QR code, and a simple invoice maker in PKR, USD, GBP and AED. Everything runs in your browser; nothing is sent anywhere.",
-        "tools": ["age-calculator", "whatsapp-link-maker", "invoice-maker"],
+        "intro": "Small tools for everyday questions — an exact age and date difference calculator, a WhatsApp click-to-chat link maker with a QR code, a simple invoice maker in PKR, USD, GBP and AED, an email signature maker, a campaign link builder with UTM tags, and a meeting time overlap finder for Karachi, London, Dubai and more. Everything runs in your browser; nothing is sent anywhere.",
+        "tools": ["age-calculator", "whatsapp-link-maker", "invoice-maker", "email-signature-maker", "campaign-link-builder", "meeting-time-overlap"],
     },
     "cards-invitations": {
         "name": "Cards & Invitations",
@@ -468,6 +468,104 @@ TOOLS["invoice-maker"] = _tool(
      ("How are discount and tax calculated?", "The discount comes off the subtotal first, then tax is charged on the discounted amount. Both are optional — leave them empty and the grand total is simply the subtotal."),
      ("Is my invoice data stored anywhere?", "No. The invoice is built entirely in your browser. Nothing is uploaded or saved — when you close the page the details are gone, so print or save your PDF before leaving."),
      ("Can I add my logo?", "Not in this version — the invoice stays clean and text-based, with your business name at the top in place of a logo.")],
+    False)
+
+TOOLS["email-signature-maker"] = _tool(
+    "email-signature-maker", "everyday-calculators", "Email Signature Maker", "✉️",
+    "A professional email signature with your name, role and contact details — copy-ready HTML.",
+    "This email signature maker builds a clean, professional email footer from your details: your name, job title, company, phone, email and website, with an optional photo or logo. See the live preview as you type, then copy the ready HTML and paste it into Gmail, Outlook or any email app.",
+    """
+<label for="es-name">Your name</label>
+<input id="es-name" type="text" placeholder="e.g. Ahmed Khan" value="Ahmed Khan">
+<label for="es-role">Role / job title</label>
+<input id="es-role" type="text" placeholder="e.g. Sales Manager" value="Sales Manager">
+<label for="es-company">Company</label>
+<input id="es-company" type="text" placeholder="e.g. Ahmed Design Studio" value="Ahmed Design Studio">
+<div class="row2">
+<div><label for="es-phone">Phone</label><input id="es-phone" type="tel" placeholder="e.g. 0300 1234567" value="0300 1234567"></div>
+<div><label for="es-email">Email</label><input id="es-email" type="email" placeholder="e.g. ahmed@example.com" value="ahmed@example.com"></div>
+</div>
+<label for="es-web">Website (optional)</label>
+<input id="es-web" type="text" placeholder="e.g. www.ahmedstudio.com">
+<label for="es-photo">Photo / logo URL (optional)</label>
+<input id="es-photo" type="text" placeholder="e.g. https://example.com/logo.png">
+<p class="small">A photo or logo link must be a direct image address (ending in .png, .jpg or similar) that anyone can open — otherwise leave it empty.</p>
+<h3>Live preview</h3>
+<div class="result show" id="es-preview" style="text-align:left"></div>
+<h3>Signature HTML — copy this</h3>
+<textarea id="es-html" rows="8" readonly style="width:100%;font-family:monospace;font-size:.82rem"></textarea>
+<button class="btn" id="es-copy" type="button">📋 Copy signature HTML</button>
+<p class="small" id="es-note" role="status" aria-live="polite"></p>
+""",
+    ["Type your name, role and company — the preview below updates as you type.",
+     "Add your phone, email and website. A photo or logo link is optional.",
+     "Press Copy signature HTML, then paste it into your email app's signature settings (Gmail: Settings → See all settings → Signature; Outlook: Settings → Mail → Compose and reply)."],
+    "Email signatures are small tables with inline styling, because email apps strip most page CSS — that is why this tool builds a table and styles every part inline. The name is bold and dark green, the role and company sit underneath in grey, and phone, email and website appear as plain lines (email and website are links). If you add a photo or logo URL it appears as a small round picture on the left. The Copy button copies the HTML code, not just the visible text — paste it into the signature box of Gmail or Outlook and the formatting survives.",
+    "Example: Ahmed Khan, Sales Manager at Ahmed Design Studio, phone 0300 1234567, ahmed@example.com, www.ahmedstudio.com — the preview shows his name in bold with the details underneath, and the copied HTML pastes straight into Gmail's signature box.",
+    [("How do I add this signature to Gmail?", "Copy the signature HTML, open Gmail → Settings → See all settings → Signature → Create new, then paste into the signature box. Gmail renders the HTML formatting for you."),
+     ("Will the signature work in Outlook too?", "Yes. Outlook's signature editor accepts pasted HTML — paste into Settings → Mail → Compose and reply → Email signature."),
+     ("Why is my photo not showing in the preview?", "The photo field needs a direct, public image link (one that opens the image itself in a browser). A link to a web page, a Google Drive preview page or a private file will not load — leave it empty if you do not have a direct link."),
+     ("Is my information uploaded anywhere?", "No. The signature is built inside your browser from what you type; nothing is sent to a server.")],
+    False)
+
+TOOLS["campaign-link-builder"] = _tool(
+    "campaign-link-builder", "everyday-calculators", "Campaign Link Builder", "🔗",
+    "Add UTM tags to any link for your campaigns — copy the final tagged URL.",
+    "This campaign link builder adds UTM tracking tags to any web address: paste your link, add the campaign source, medium and campaign name, and copy the final tagged link for your Facebook post, WhatsApp broadcast, email or ad. Analytics tools like Google Analytics read the tags and show exactly which post or campaign brought each visit.",
+    """
+<label for="cb-base">Your link (base URL)</label>
+<input id="cb-base" type="url" placeholder="e.g. https://paktoolkit.top/wedding-invitation-maker/" value="https://paktoolkit.top/wedding-invitation-maker/">
+<label for="cb-source">utm_source — where the visit comes from (required)</label>
+<input id="cb-source" type="text" placeholder="e.g. facebook" value="facebook">
+<label for="cb-medium">utm_medium — the channel (required)</label>
+<input id="cb-medium" type="text" placeholder="e.g. social" value="social">
+<label for="cb-campaign">utm_campaign — the campaign name (required)</label>
+<input id="cb-campaign" type="text" placeholder="e.g. eid-offer" value="eid-offer">
+<div class="row2">
+<div><label for="cb-term">utm_term (optional — ad keyword)</label><input id="cb-term" type="text" placeholder="e.g. wedding-cards"></div>
+<div><label for="cb-content">utm_content (optional — which post/ad)</label><input id="cb-content" type="text" placeholder="e.g. reel-version-2"></div>
+</div>
+<button class="btn" id="cb-go" type="button">Build my tagged link</button>
+<div class="result" id="cb-result" role="status" aria-live="polite"></div>
+<button class="btn" id="cb-copy" type="button" style="display:none">📋 Copy tagged link</button>
+<p class="small" id="cb-note" role="status" aria-live="polite"></p>
+""",
+    ["Paste the page link you want people to land on.",
+     "Fill in utm_source (where it is shared), utm_medium (the channel) and utm_campaign (the campaign name) — the optional term and content fields are for keywords and telling two similar posts apart.",
+     "Press Build my tagged link, check the result, then copy it and use it wherever you share the link."],
+    "UTM tags are extra query parameters on a link: utm_source names the place (facebook, whatsapp, newsletter), utm_medium names the channel (social, email, cpc), utm_campaign names the campaign (eid-offer, ramadan-sale), and utm_term and utm_content are optional extras for a keyword or a specific post. The builder checks that your base link is a real http or https address, keeps any parameters the link already has, and adds the tags after them. Analytics tools then group your visits by these tags, so you can see which post actually brought people.",
+    "Example: base https://paktoolkit.top/wedding-invitation-maker/ with source facebook, medium social and campaign eid-offer becomes https://paktoolkit.top/wedding-invitation-maker/?utm_source=facebook&utm_medium=social&utm_campaign=eid-offer.",
+    [("What are UTM tags?", "Small labels added to a link (utm_source, utm_medium, utm_campaign) that tell analytics tools where a visitor came from — which platform, which channel and which campaign."),
+     ("What should I put in utm_source and utm_medium?", "Source is the place: facebook, instagram, whatsapp, newsletter. Medium is the channel type: social, email, cpc. Keep the same spellings across a campaign so the reports group together."),
+     ("Do I have to fill in utm_term and utm_content?", "No — both are optional. Use utm_term for a paid-search keyword and utm_content to tell two similar posts or ads apart, for example reel-version-2 vs story-version."),
+     ("What if my link already has a ? in it?", "The builder keeps the link's existing parameters and adds the UTM tags after them with an & — nothing already in the link is lost."),
+     ("Is my link uploaded anywhere?", "No. The tagged link is built inside your browser; your links never leave your device.")],
+    False)
+
+TOOLS["meeting-time-overlap"] = _tool(
+    "meeting-time-overlap", "everyday-calculators", "Meeting Time Overlap", "🕐",
+    "Find a meeting time that works across Karachi, London, Dubai and more.",
+    "This meeting time overlap finder is for anyone working with clients or a team abroad: pick a date, tick the cities involved, and see every zone's local time side by side for the whole day. The hours when everyone is inside normal work hours (9:00 AM – 6:00 PM) are highlighted, and the best meeting slots are named in plain words — in each city's own time.",
+    """
+<label for="mt-date">Date</label>
+<input id="mt-date" type="date">
+<p class="small">Pick the date of the meeting — London's clock changes with daylight saving, so the overlap is worked out for this exact date.</p>
+<h3>Cities / zones</h3>
+<div id="mt-zones"></div>
+<p class="small">Karachi, London and Dubai are ticked by default. Add more as needed — the overlap is worked out across every city you tick.</p>
+<button class="btn" id="mt-go" type="button">Find the overlap</button>
+<div class="result" id="mt-result" role="status" aria-live="polite"></div>
+""",
+    ["Pick the date of the meeting.",
+     "Tick the cities involved — Karachi, London and Dubai are ticked by default.",
+     "Press Find the overlap: the highlighted hours are inside everyone's 9:00 AM – 6:00 PM work day, and the best slots are named in plain words under the table."],
+    "Each city's work day is 9:00 AM to 6:00 PM in its own local time. The tool converts every city's work window into one common timeline for the date you picked — using each zone's real offset for that date, so London's daylight saving is handled — and keeps only the hours where all of them overlap. The 24-hour table is shown in Karachi time down the side, with each city's local time beside it, so you can read any hour in any city's clock at a glance. If no hour suits everyone, the tool says so plainly and shows each city's work window in Karachi time, so you can pick the least-bad hour yourself.",
+    "Example: on 1 December 2026, Karachi (UTC+5), London (UTC+0) and Dubai (UTC+4) share 9:00 AM – 1:00 PM in London's clock — which is 2:00 PM – 6:00 PM in Karachi and 1:00 PM – 5:00 PM in Dubai. The best slot is named exactly like that.",
+    [("Why does the date matter?", "Some zones move their clocks for daylight saving — London is one hour ahead in summer (BST) and on GMT in winter. The overlap is worked out for the exact date you pick, so a summer meeting and a winter meeting give different answers."),
+     ("What counts as the overlap?", "The hours when every ticked city is inside its normal work day, 9:00 AM to 6:00 PM local time. Those hours are highlighted in the table."),
+     ("What if there is no overlap at all?", "With far-apart zones (Karachi and Sydney, for example) there may be no shared work hour. The tool says so plainly and shows each city's work window in Karachi time, so you can choose the hour that is least inconvenient."),
+     ("Can I compare more than three cities?", "Yes — tick as many as you like. The more cities you add, the smaller the shared window gets, which is exactly the point of the tool."),
+     ("Is anything I enter sent anywhere?", "No. The times are worked out inside your browser; nothing leaves your device.")],
     False)
 
 TOOLS["wedding-invitation-maker"] = _tool(
