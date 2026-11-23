@@ -6,7 +6,7 @@ CATEGORIES = {
     "pakistan-calculators": {
         "name": "Pakistan Calculators",
         "icon": "🧮",
-        "intro": "These calculators are built only for Pakistan: the bijli bill calculator Pakistan users search for every month, salary tax for 2025-26, the MDCAT aggregate formula, zakat with the government-notified nisab, and the Marla/Kanal land converter. Every figure is calculated on your own phone or computer — nothing is sent anywhere.",
+        "intro": "These calculators are built only for Pakistan: the bijli bill calculator Pakistan users search for every month, salary tax for 2026-27, the MDCAT aggregate formula, zakat with the government-notified nisab, and the Marla/Kanal land converter. Every figure is calculated on your own phone or computer — nothing is sent anywhere.",
         "tools": ["bijli-bill-calculator", "marla-kanal-converter", "salary-tax-calculator-pakistan", "mdcat-aggregate-calculator", "zakat-calculator"],
     },
     "image-tools": {
@@ -113,9 +113,9 @@ TOOLS["marla-kanal-converter"] = _tool(
 <tr><td>1 Acre</td><td>160</td><td>43,560</td></tr></table>""")
 
 TOOLS["salary-tax-calculator-pakistan"] = _tool(
-    "salary-tax-calculator-pakistan", "pakistan-calculators", "Salary Tax Calculator 2025-26", "🧾",
-    "Income tax on your salary with the 2025-26 slabs, plus the Section 4AB surcharge.",
-    "This salary tax calculator Pakistan employees can trust uses the Finance Act 2025 slabs for tax year 2025-26. Enter your monthly or annual salary and see the tax, the Section 4AB surcharge where it applies, and your take-home pay.",
+    "salary-tax-calculator-pakistan", "pakistan-calculators", "Salary Tax Calculator 2026-27", "🧾",
+    "Income tax on your salary with the 2026-27 slabs (Finance Act 2026). No surcharge for salaried individuals.",
+    "This salary tax calculator Pakistan employees can trust uses the Finance Act 2026 slabs for tax year 2026-27. Enter your monthly or annual salary and see the tax and your take-home pay. The Section 4AB surcharge no longer applies to salaried individuals.",
     """
 <label for="t-monthly">Monthly salary (Rs)</label>
 <input id="t-monthly" type="number" inputmode="numeric" enterkeyhint="done" min="0" value="100000">
@@ -126,12 +126,12 @@ TOOLS["salary-tax-calculator-pakistan"] = _tool(
 """,
     ["Enter your gross monthly salary — or your annual salary in the second box.",
      "Press Calculate tax.",
-     "Read your annual and monthly tax, any surcharge, and your take-home salary."],
-    "Salaried tax for 2025-26 is slab-based: no tax up to Rs 600,000 a year; 1% on the part between Rs 600,000 and Rs 1,200,000; then fixed amounts plus 11%, 23%, 30% and 35% on the parts in the higher slabs. On top of this, Section 4AB adds a surcharge of 9% of the tax when annual taxable income exceeds Rs 10,000,000 — the calculator shows it as its own line. These are the 2025-26 slabs under the Finance Act 2025; tax is normally withheld monthly by your employer.",
+     "Read your annual and monthly tax and your take-home salary."],
+    "Salaried tax for 2026-27 is slab-based: no tax up to Rs 600,000 a year; 1% on the part between Rs 600,000 and Rs 1,200,000; then fixed amounts plus 11%, 20%, 25%, 29%, 32% and 35% on the parts in the higher slabs. The Section 4AB surcharge of 9% of the tax no longer applies to salaried individuals from tax year 2026-27 — the calculator adds no surcharge at any income. These are the 2026-27 slabs under the Finance Act 2026; tax is normally withheld monthly by your employer.",
     "Example: a monthly salary of Rs 100,000 is Rs 1,200,000 a year. Tax = 1% of the Rs 600,000 above the exempt slab = Rs 6,000 per year, just Rs 500 a month; take-home is Rs 99,500 a month.",
-    [("What is the tax-free salary limit in Pakistan for 2025-26?", "Salaried income up to Rs 600,000 per year (Rs 50,000 per month) is exempt from income tax in tax year 2025-26."),
+    [("What is the tax-free salary limit in Pakistan for 2026-27?", "Salaried income up to Rs 600,000 per year (Rs 50,000 per month) is exempt from income tax in tax year 2026-27."),
      ("How much tax is deducted on a Rs 100,000 monthly salary?", "Rs 100,000 a month is Rs 1,200,000 a year, which gives a tax of Rs 6,000 per year — Rs 500 per month."),
-     ("What is the Section 4AB surcharge?", "When annual taxable income exceeds Rs 10,000,000, an extra surcharge of 9% of the calculated income tax is charged under Section 4AB. This calculator shows it as a separate line."),
+     ("What is the Section 4AB surcharge?", "From tax year 2026-27 the Section 4AB surcharge of 9% no longer applies to salaried individuals — it was abolished for them under the Finance Act 2026. This calculator therefore adds no surcharge at any income level."),
      ("Are salaried and non-salaried tax slabs the same?", "No. Salaried individuals have their own slab table, which is more favourable at lower incomes. This calculator uses the salaried table only."),
      ("Is this the final tax I will pay?", "It is an accurate estimate on salary alone. Other income, tax credits, deductible allowances and adjustments by your employer or in your annual return can change the final figure.")],
     True)
@@ -765,13 +765,13 @@ TOOLS["eid-card-maker"] = _tool(
 HOME_FAQS = [
     ("Are PakToolkit tools really free?", "Yes. Every tool on PakToolkit is free to use, with no sign-up and no account. Open a tool and use it — that is all."),
     ("Are my files uploaded to your server?", "No. Every tool runs inside your browser on your own device. Your images, PDFs and numbers never leave your device, and we cannot see them."),
-    ("Why does PakToolkit focus on Pakistan?", "Global tool sites do not offer a bijli bill calculator with Pakistani tariff slabs, MDCAT aggregate, salary tax 2025-26 or a Marla/Kanal converter. PakToolkit starts with the tools Pakistan actually searches for, plus universal image and PDF tools."),
+    ("Why does PakToolkit focus on Pakistan?", "Global tool sites do not offer a bijli bill calculator with Pakistani tariff slabs, MDCAT aggregate, salary tax 2026-27 or a Marla/Kanal converter. PakToolkit starts with the tools Pakistan actually searches for, plus universal image and PDF tools."),
     ("Do the calculators give final official figures?", "They give accurate estimates from published rates. For money matters, the official figure — your DISCO bill, FBR assessment or the notified nisab — is always final. Each calculator page explains its basis."),
 ]
 
 TRUST = {
     "about": ("About PakToolkit", [
-        ("What PakToolkit is", "PakToolkit is a free online tools website made for Pakistan, live at paktoolkit.top. It brings together two kinds of tools: Pakistan-specific calculators that global websites simply do not offer — a bijli (electricity) bill calculator using the notified tariff, a salary tax calculator for 2025-26, an MDCAT aggregate calculator, a zakat calculator using the government-notified nisab, and a Marla/Kanal land converter — and universal image and PDF tools (compress to KB, passport-size photo maker, image converter, merge/split PDF, JPG to PDF) that everyone needs."),
+        ("What PakToolkit is", "PakToolkit is a free online tools website made for Pakistan, live at paktoolkit.top. It brings together two kinds of tools: Pakistan-specific calculators that global websites simply do not offer — a bijli (electricity) bill calculator using the notified tariff, a salary tax calculator for 2026-27, an MDCAT aggregate calculator, a zakat calculator using the government-notified nisab, and a Marla/Kanal land converter — and universal image and PDF tools (compress to KB, passport-size photo maker, image converter, merge/split PDF, JPG to PDF) that everyone needs."),
         ("How it works", "Every tool runs 100% inside your browser. There is no server processing your files, no upload, no account and no sign-up. When you compress a photo or merge a PDF on PakToolkit, the work happens on your own phone or computer and your file never travels anywhere."),
         ("Who runs it", "PakToolkit is an independent Pakistani project, run by the same maker behind mrjobs.top, a free job board for Pakistan. Tool ideas and corrections from visitors directly shape what gets built next — send yours through the Contact page."),
     ]),
