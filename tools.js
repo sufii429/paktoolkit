@@ -1194,11 +1194,255 @@ function initInvoice(){
   update();
 }
 
+/* ============ 15. Email Signature Maker ============ */
+function escHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function buildSignature(f){
+  /* Returns the table-based HTML string for the signature. */
+  var rows = "";
+  if (f.phone) rows += '<tr><td style="color:#5a4632;font-size:13px;padding:1px 0;">&#9742; ' + escHtml(f.phone) + '</td></tr>';
+  if (f.email) rows += '<tr><td style="font-size:13px;padding:1px 0;"><a href="mailto:' + escHtml(f.email) + '" style="color:#065e32;text-decoration:none;">' + escHtml(f.email) + '</a></td></tr>';
+  if (f.web) rows += '<tr><td style="font-size:13px;padding:1px 0;"><a href="' + escHtml(f.webUrl) + '" style="color:#065e32;text-decoration:none;">' + escHtml(f.web) + '</a></td></tr>';
+  var img = f.photo ? '<td style="padding-right:12px;vertical-align:middle;"><img src="' + escHtml(f.photo) + '" alt="" width="64" height="64" style="border-radius:50%;display:block;"></td>' : "";
+  var name = escHtml(f.name || "Your Name");
+  var role = escHtml([f.role, f.company].filter(Boolean).join(" · ") || "");
+  return '<table cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;"><tr>' + img +
+    '<td style="border-left:3px solid #065e32;padding-left:12px;vertical-align:middle;">' +
+    '<div style="font-size:16px;font-weight:bold;color:#1a1a1a;">' + name + '</div>' +
+    (role ? '<div style="font-size:13px;color:#666666;">' + role + '</div>' : "") +
+    '<table cellpadding="0" cellspacing="0" style="margin-top:6px;">' + rows + '</table>' +
+    '</td></tr></table>';
+}
+function initEmailSig(){
+  var nameEl = $("es-name"); if (!nameEl) return;
+  function read(){
+    var web = $("es-web").value.trim();
+    return { name: $("es-name").value.trim(), role: $("es-role").value.trim(),
+      company: $("es-company").value.trim(), phone: $("es-phone").value.trim(),
+      email: $("es-email").value.trim(), web: web,
+      webUrl: /^https?:\/\//i.test(web) ? web : (web ? "https://" + web : ""),
+      photo: $("es-photo").value.trim() };
+  }
+  function update(){
+    var html = buildSignature(read());
+    $("es-preview").innerHTML = html;
+    $("es-html").value = html;
+    $("es-note").textContent = "";
+  }
+  ["es-name","es-role","es-company","es-phone","es-email","es-web","es-photo"].forEach(function(id){
+    $(id).addEventListener("input", update);
+  });
+  $("es-copy").addEventListener("click", function(){
+    var html = $("es-html").value, note = $("es-note");
+    function done(){ note.textContent = "Signature HTML copied — paste it into your email app's signature settings."; }
+    function fallback(){
+      $("es-html").select();
+      try { document.execCommand("copy"); done(); }
+      catch (e) { note.textContent = "Copy did not work here — select the HTML box above and copy it by hand."; }
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(html).then(done, fallback);
+    else fallback();
+  });
+  update();
+}
+
+/* ============ 16. Campaign Link Builder ============ */
+function buildUtmLink(base, p){
+  /* Pure function (node-testable): returns {ok:true, url} or {ok:false, error}. */
+  var raw = (base || "").trim();
+  if (!raw) return { ok: false, error: "Pehle apna link likhein." };
+  var u;
+  try { u = new URL(raw); } catch (e) { return { ok: false, error: "Ye link theek nahi lagta — poora link likhein, masalan https://example.com/page" }; }
+  if (u.protocol !== "http:" && u.protocol !== "https:")
+    return { ok: false, error: "Sirf http ya https wala link chalta hai." };
+  if (!p.source) return { ok: false, error: "utm_source khali hai — batayein visit kahan se aayega (masalan facebook)." };
+  if (!p.medium) return { ok: false, error: "utm_medium khali hai — channel batayein (masalan social)." };
+  if (!p.campaign) return { ok: false, error: "utm_campaign khali hai — campaign ka naam likhein (masalan eid-offer)." };
+  u.searchParams.set("utm_source", p.source);
+  u.searchParams.set("utm_medium", p.medium);
+  u.searchParams.set("utm_campaign", p.campaign);
+  if (p.term) u.searchParams.set("utm_term", p.term);
+  if (p.content) u.searchParams.set("utm_content", p.content);
+  return { ok: true, url: u.toString() };
+}
+function initCampaignLink(){
+  var baseEl = $("cb-base"); if (!baseEl) return;
+  var lastUrl = "";
+  $("cb-go").addEventListener("click", function(){
+    var r = buildUtmLink(baseEl.value, {
+      source: $("cb-source").value.trim(), medium: $("cb-medium").value.trim(),
+      campaign: $("cb-campaign").value.trim(), term: $("cb-term").value.trim(),
+      content: $("cb-content").value.trim() });
+    var out = $("cb-result"), copyBtn = $("cb-copy"), note = $("cb-note");
+    note.textContent = "";
+    if (!r.ok){
+      out.className = "result"; out.textContent = "";
+      copyBtn.style.display = "none"; lastUrl = "";
+      note.textContent = r.error;
+      return;
+    }
+    lastUrl = r.url;
+    out.className = "result show";
+    out.textContent = "";
+    out.appendChild(el("p", "Aap ka tagged link:"));
+    var a = el("a", r.url); a.href = r.url; a.target = "_blank"; a.rel = "noopener";
+    a.style.wordBreak = "break-all";
+    out.appendChild(a);
+    copyBtn.style.display = "";
+  });
+  $("cb-copy").addEventListener("click", function(){
+    if (!lastUrl) return;
+    var note = $("cb-note");
+    function done(){ note.textContent = "Tagged link copied — share karein jahan chahen."; }
+    function fallback(){
+      var t = document.createElement("textarea");
+      t.value = lastUrl; document.body.appendChild(t); t.select();
+      try { document.execCommand("copy"); done(); }
+      catch (e) { note.textContent = "Copy nahi ho saka — upar wala link lambi press karke copy karein."; }
+      document.body.removeChild(t);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(lastUrl).then(done, fallback);
+    else fallback();
+  });
+}
+
+/* ============ 17. Meeting Time Overlap ============ */
+var MT_ZONES = [
+  { id: "karachi", label: "Karachi", tz: "Asia/Karachi", def: true },
+  { id: "london", label: "London", tz: "Europe/London", def: true },
+  { id: "dubai", label: "Dubai", tz: "Asia/Dubai", def: true },
+  { id: "riyadh", label: "Riyadh", tz: "Asia/Riyadh" },
+  { id: "mumbai", label: "Mumbai", tz: "Asia/Kolkata" },
+  { id: "singapore", label: "Singapore", tz: "Asia/Singapore" },
+  { id: "berlin", label: "Berlin", tz: "Europe/Berlin" },
+  { id: "newyork", label: "New York", tz: "America/New_York" },
+  { id: "toronto", label: "Toronto", tz: "America/Toronto" },
+  { id: "sydney", label: "Sydney", tz: "Australia/Sydney" }
+];
+function mtZoneOffsetMin(tz, utcMs){
+  /* Offset of zone `tz` at instant utcMs, in minutes (local minus UTC). */
+  var fmt = new Intl.DateTimeFormat("en-US", { timeZone: tz, hourCycle: "h23",
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  var p = {};
+  fmt.formatToParts(new Date(utcMs)).forEach(function(x){ p[x.type] = x.value; });
+  var asUtc = Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute, +p.second);
+  return Math.round((asUtc - utcMs) / 60000);
+}
+function mtLocalToUtc(tz, y, mo, d, h, mi){
+  /* UTC instant of local time h:mi on date y-mo-d in zone tz. One pass
+     removes the offset; the second pass only corrects by the CHANGE in
+     offset (DST boundaries), so a steady offset is subtracted once. */
+  var guess = Date.UTC(y, mo - 1, d, h, mi);
+  var o1 = mtZoneOffsetMin(tz, guess);
+  guess -= o1 * 60000;
+  var o2 = mtZoneOffsetMin(tz, guess);
+  guess -= (o2 - o1) * 60000;
+  return guess;
+}
+function mtFmtTime(utcMs, tz){
+  return new Intl.DateTimeFormat("en-GB", { timeZone: tz, hour: "numeric", minute: "2-digit", hour12: true }).format(new Date(utcMs));
+}
+function mtCompute(zones, dateStr){
+  /* Pure function (node-testable). zones: MT_ZONES subset. dateStr: YYYY-MM-DD.
+     Returns {rows, overlap, note}: rows = 24 Karachi-hour rows; overlap = the
+     shared 9:00-18:00 window in UTC ms, or null. */
+  var p = (dateStr || "").split("-");
+  var y = +p[0], mo = +p[1], d = +p[2];
+  if (!y || !mo || !d) return { rows: [], overlap: null, note: "Tareekh chunein." };
+  var starts = [], ends = [];
+  zones.forEach(function(z){
+    starts.push(mtLocalToUtc(z.tz, y, mo, d, 9, 0));
+    ends.push(mtLocalToUtc(z.tz, y, mo, d, 18, 0));
+  });
+  var oStart = Math.max.apply(null, starts), oEnd = Math.min.apply(null, ends);
+  var overlap = oEnd > oStart ? { start: oStart, end: oEnd } : null;
+  var rows = [];
+  for (var h = 0; h < 24; h++){
+    var utc = mtLocalToUtc("Asia/Karachi", y, mo, d, h, 0);
+    var cells = zones.map(function(z){
+      var off = mtZoneOffsetMin(z.tz, utc);
+      var local = new Date(utc + off * 60000);
+      var lh = local.getUTCHours() + local.getUTCMinutes() / 60;
+      return { label: z.label, time: mtFmtTime(utc, z.tz), inWork: lh >= 9 && lh < 18 };
+    });
+    var allWork = cells.every(function(c){ return c.inWork; });
+    rows.push({ pktHour: h, cells: cells, allWork: allWork });
+  }
+  return { rows: rows, overlap: overlap, note: "" };
+}
+function initMeetingOverlap(){
+  var dateEl = $("mt-date"); if (!dateEl) return;
+  var box = $("mt-zones");
+  MT_ZONES.forEach(function(z){
+    var lab = document.createElement("label");
+    lab.className = "wtoggle"; lab.style.display = "inline-block"; lab.style.marginRight = "14px";
+    var inp = document.createElement("input");
+    inp.type = "checkbox"; inp.className = "mt-zone"; inp.value = z.id;
+    if (z.def) inp.checked = true;
+    lab.appendChild(inp);
+    lab.appendChild(document.createTextNode(" " + z.label));
+    box.appendChild(lab);
+  });
+  if (!dateEl.value) dateEl.value = new Date().toISOString().slice(0, 10);
+  $("mt-go").addEventListener("click", function(){
+    var chosen = MT_ZONES.filter(function(z){
+      var c = box.querySelector('input[value="' + z.id + '"]');
+      return c && c.checked;
+    });
+    var out = $("mt-result");
+    out.textContent = "";
+    if (chosen.length < 2){
+      out.className = "result show";
+      out.appendChild(el("p", "Kam az kam do sheher chunein — overlap do ya zyada zones ke darmiyan nikalta hai."));
+      return;
+    }
+    var r = mtCompute(chosen, dateEl.value);
+    out.className = "result show";
+    if (r.note){ out.appendChild(el("p", r.note)); return; }
+    var head = el("h3", "Behtareen waqt");
+    out.appendChild(head);
+    if (r.overlap){
+      var parts = chosen.map(function(z){
+        return mtFmtTime(r.overlap.start, z.tz) + " – " + mtFmtTime(r.overlap.end, z.tz) + " (" + z.label + ")";
+      });
+      var s = el("p");
+      s.appendChild(document.createTextNode("Sab ke kaam ke auqaat mein mushtarik waqt: "));
+      s.appendChild(el("b", parts.join(" · ")));
+      out.appendChild(s);
+    } else {
+      var none = el("p", "Is tareekh ko in shehron ke kaam ke auqaat (subah 9 – shaam 6) mein koi mushtarik waqt nahi hai. Neeche table mein har sheher ka kaam ka waqt Karachi ke waqt mein dekh kar sab se kam takleef wala waqt chunein.");
+      out.appendChild(none);
+      chosen.forEach(function(z){
+        var ws = mtLocalToUtc(z.tz, +dateEl.value.split("-")[0], +dateEl.value.split("-")[1], +dateEl.value.split("-")[2], 9, 0);
+        var we = mtLocalToUtc(z.tz, +dateEl.value.split("-")[0], +dateEl.value.split("-")[1], +dateEl.value.split("-")[2], 18, 0);
+        var line = el("p", z.label + " ka kaam ka waqt: " + mtFmtTime(ws, "Asia/Karachi") + " – " + mtFmtTime(we, "Asia/Karachi") + " Karachi time");
+        out.appendChild(line);
+      });
+    }
+    var t = el("table"), tb = el("tbody");
+    var hr = el("tr");
+    hr.appendChild(el("th", "Karachi time"));
+    chosen.forEach(function(z){ hr.appendChild(el("th", z.label)); });
+    tb.appendChild(hr);
+    r.rows.forEach(function(row){
+      var tr = el("tr");
+      if (row.allWork){ tr.style.background = "#e6f4ea"; tr.style.fontWeight = "bold"; }
+      var h12 = row.pktHour % 12 === 0 ? 12 : row.pktHour % 12;
+      var ap = row.pktHour < 12 ? "AM" : "PM";
+      tr.appendChild(el("td", h12 + ":00 " + ap));
+      row.cells.forEach(function(c){ tr.appendChild(el("td", c.time)); });
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb); out.appendChild(t);
+    out.appendChild(el("p", "Sabz (highlighted) ghante woh hain jab chune hue tamam sheher subah 9 se shaam 6 ke darmiyan hain."));
+  });
+}
+
 document.addEventListener("DOMContentLoaded", function(){
   initBijli(); initArea(); initTax(); initMdcat(); initZakat();
   initCompress(); initPassport(); initConvert();
   initMerge(); initSplit(); initJpgPdf(); initAge();
-  initWhatsapp(); initInvoice();
+  initWhatsapp(); initInvoice(); initEmailSig(); initCampaignLink(); initMeetingOverlap();
   if (window.initWedding) initWedding();
   if (window.initRamadan) initRamadan();
   if (window.initEid) initEid();
