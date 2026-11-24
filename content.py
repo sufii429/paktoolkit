@@ -677,6 +677,7 @@ TOOLS["wedding-invitation-maker"] = _tool(
 <option value="ref2">⭐ Mehroon Darwaza — PakToolkit Special</option>
 <option value="ref3">⭐ Neela Darwaza — PakToolkit Special</option>
 <option value="lifafa">⭐ Mehroon Lifafa — PakToolkit Special</option>
+<option value="premium">⭐ Premium — Ivory &amp; Gold (viral style)</option>
 <option value="tieback">Bandha Parda</option>
 <option value="curtain">Surkh Parda</option>
 <option value="doors">Sunahre Darwaze</option>

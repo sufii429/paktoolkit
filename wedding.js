@@ -46,7 +46,7 @@ async function wDecodePayload(s){
 /* Compact v2 payload: positional array + coded enums + day-numbers, so the
    share link stays as short as possible (long links scare guests off).
    v1 object payloads still decode — old links keep working. */
-var W_STYLES = ["curtain", "doors", "arch", "doors2", "tieback", "ref", "ref2", "ref3", "lifafa"];
+var W_STYLES = ["curtain", "doors", "arch", "doors2", "tieback", "ref", "ref2", "ref3", "lifafa", "premium"];
 var W_DATEMODES = ["scratch", "tiles", "both"]; /* how the main-event date is shown */
 var W_PALS_LIST = ["maroon", "green", "royal"];
 var W_TUNES_LIST = ["strings", "bells", "drone", "none", "celebration", "mumbai", "mehndi", "bhangra", "punjabi"];
@@ -99,7 +99,7 @@ function wDateLong(ev){
 function wLoadFonts(){
   if (document.getElementById("w-fonts")) return;
   var l1 = document.createElement("link"); l1.rel = "stylesheet";
-  l1.href = "https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Great+Vibes&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap";
+  l1.href = "https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap";
   var l2 = document.createElement("link"); l2.rel = "stylesheet"; l2.id = "w-fonts";
   l2.href = "https://fonts.cdnfonts.com/css/jameel-noori-nastaleeq";
   document.head.appendChild(l1); document.head.appendChild(l2);
@@ -330,6 +330,7 @@ var W_GARDEN_SVG = "<svg viewBox='0 0 400 118' xmlns='http://www.w3.org/2000/svg
 var W_ORN_SVG = "<svg viewBox='0 0 54 54' xmlns='http://www.w3.org/2000/svg'><path d='M7 47 C7 22 22 7 47 7' fill='none' stroke='currentColor' stroke-width='2.2'/><circle cx='14.5' cy='14.5' r='3.6' fill='none' stroke='currentColor' stroke-width='1.8'/><path d='M24 8.5 q7 -3.5 10 1 q-6 3 -10 -1' fill='currentColor'/><path d='M8.5 24 q-3.5 7 1 10 q3 -6 -1 -10' fill='currentColor'/><circle cx='47' cy='7' r='2.2' fill='currentColor'/><circle cx='7' cy='47' r='2.2' fill='currentColor'/></svg>";
 function wRenderGuest(d, opts){
   if (d.style === "lifafa") return wRenderLifafa(d, opts);
+  if (d.style === "premium") return wRenderPremium(d, opts);
   var fam = d.style === "ref" || d.style === "ref2" || d.style === "ref3";
   opts = opts || {};
   wLoadFonts(); wInjectCSS();
