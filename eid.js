@@ -164,24 +164,46 @@ function initEid(){
   /* Handwriting style: AlQalam Tehreeri for Urdu (self-hosted woff2 —
      Mazeen's pick, 2026-11-19: thin pencil-like hand, full Urdu letters),
      Caveat for Latin. Loaded lazily, only when the style is picked. */
+  function loadGF(){
+    if (document.getElementById("e-gf")) return;
+    var l = document.createElement("link");
+    l.id = "e-gf"; l.rel = "stylesheet";
+    l.href = "https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap";
+    document.head.appendChild(l);
+  }
+  /* Noto Nastaliq Urdu is NOT a system font on Android and the site never
+     loaded it as a webfont — printed cards silently fell back to the
+     phone's default Urdu font (Mazeen's report, 2026-11-24). Load it as
+     a webfont and wait for it before drawing, like Tehreeri below. */
+  var printLoaded = false;
+  function ensurePrintFonts(cb){
+    if (!printLoaded){
+      printLoaded = true;
+      loadGF();
+    }
+    if (document.fonts && document.fonts.load){
+      Promise.all([
+        document.fonts.load('700 80px "Noto Nastaliq Urdu"', "عید مبارک"),
+        document.fonts.load('600 60px "Noto Nastaliq Urdu"', "ڈبے میں ڈبہ")
+      ]).then(function(){ if (cb) cb(); }, function(){ if (cb) cb(); });
+    } else if (cb) cb();
+  }
   var handLoaded = false;
   function ensureHandFonts(cb){
     if (!handLoaded){
       handLoaded = true;
-      var l = document.createElement("link");
-      l.rel = "stylesheet";
-      l.href = "https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&display=swap";
+      loadGF();
       try {
         var ff = new FontFace("AlQalam Tehreeri", "url(/assets/fonts/tehreeri.woff2)", { weight: "400", style: "normal" });
         document.fonts.add(ff);
         ff.load();
       } catch (e) {}
-      document.head.appendChild(l);
     }
     if (document.fonts && document.fonts.load){
       Promise.all([
         document.fonts.load("54px 'AlQalam Tehreeri'", "عید مبارک"),
-        document.fonts.load("700 42px Caveat", "Ahmed Khan")
+        document.fonts.load("700 42px Caveat", "Ahmed Khan"),
+        document.fonts.load('700 80px "Noto Nastaliq Urdu"', "عید مبارک")
       ]).then(function(){ if (cb) cb(); }, function(){ if (cb) cb(); });
     } else if (cb) cb();
   }
@@ -376,7 +398,7 @@ function initEid(){
     var n = $(id); if (!n) return;
     n.addEventListener("input", function(){
       if (id === "e-shayari") $("e-msg-wrap").style.display = (n.value === "custom") ? "" : "none";
-      if (id === "e-script" && n.value === "hand") ensureHandFonts(draw);
+      if (id === "e-script"){ if (n.value === "hand") ensureHandFonts(draw); else ensurePrintFonts(draw); }
       draw();
     });
     n.addEventListener("change", draw);
@@ -436,6 +458,7 @@ function initEid(){
   if (linkBtn) linkBtn.addEventListener("click", function(){
     var url = location.origin + location.pathname + "?d=" + encObj(buildPayload());
     var box2 = $("e-linkresult");
+    box2.classList.add("show"); /* .result stays display:none until .show — the site-wide convention */
     box2.style.display = "";
     box2.textContent = "";
     var head = document.createElement("p");
@@ -448,7 +471,8 @@ function initEid(){
     wa.href = "https://wa.me/?text=" + encodeURIComponent("Eid Mubarak! 🌙 Aap ke liye aik Eid card bheja hai — tap karke kholein: " + url);
     wa.textContent = "💬 Yeh link WhatsApp par bhejein";
     box2.appendChild(head); box2.appendChild(code); box2.appendChild(wa);
-    $("e-status").textContent = "Link tayyar hai ✓";
+    $("e-status").textContent = "Link tayyar hai ✓ — neeche wale box mein hai";
+    if (box2.scrollIntoView) box2.scrollIntoView({ behavior: "smooth", block: "center" });
   });
 
   function burst(){
@@ -532,10 +556,14 @@ function initEid(){
           $("e-cover").addEventListener("click", openIt);
           $("e-gdownload").addEventListener("click", function(){ $("e-download").click(); });
         }
-        if (p.m === "hand") ensureHandFonts(draw); else draw();
+        if (p.m === "hand") ensureHandFonts(draw); else ensurePrintFonts(draw);
       }
     } catch (e) { /* a broken link simply shows the normal maker */ }
   }
 
+  /* first paint now, then repaint once the Urdu webfont is really in —
+     a canvas keeps whatever font was available at draw time */
+  if (handMode()) ensureHandFonts(draw); else ensurePrintFonts(draw);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ draw(); });
   draw();
 }
