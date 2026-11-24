@@ -194,6 +194,11 @@ def tool_page(path, row):
     t = TOOLS[slug]
     cat = CATEGORIES[t["cat"]]
     steps = "\n".join(f"<li>{esc(s)}</li>" for s in t["steps"])
+    steps_ur_html = ""
+    if t.get("steps_ur"):
+        items_ur = "\n".join(f"<li>{esc(s)}</li>" for s in t["steps_ur"])
+        steps_ur_html = ("<h2 dir=\"rtl\" lang=\"ur\" style=\"font-family:'Noto Nastaliq Urdu','Jameel Noori Nastaleeq',serif;text-align:right\">استعمال کا طریقہ</h2>\n"
+                         f"<ol dir=\"rtl\" lang=\"ur\" style=\"font-family:'Noto Nastaliq Urdu','Jameel Noori Nastaleeq',serif;line-height:2.4;text-align:right\">{items_ur}</ol>")
     rel_cards = "\n".join(card(s) for s in related(slug))
     disclaimer = '<p class="note">Disclaimer: figures from this calculator are estimates based on published rates. The official figure — from your DISCO bill, FBR or the relevant authority — is always final. See our <a href="/disclaimer/">Disclaimer</a>.</p>' if t["disclaimer"] else ""
     privacy = '<p class="privacy">🔒 Your files never leave your device.</p>' if t["cat"] in ("image-tools", "pdf-tools") else '<p class="privacy">🔒 Your numbers never leave your device — everything is calculated in your browser.</p>'
@@ -210,6 +215,7 @@ def tool_page(path, row):
 </section>
 <h2>How to use</h2>
 <ol>{steps}</ol>
+{steps_ur_html}
 <h2>How it works</h2>
 <p>{esc(t['works'])}</p>
 <p><strong>Worked example:</strong> {esc(t['example'])}</p>

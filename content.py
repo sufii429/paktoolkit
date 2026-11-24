@@ -35,9 +35,10 @@ CATEGORIES = {
     },
 }
 
-def _tool(slug, cat, name, icon, blurb, intro, ui, steps, works, example, faqs, disclaimer, extra=""):
+def _tool(slug, cat, name, icon, blurb, intro, ui, steps, works, example, faqs, disclaimer, extra="", steps_ur=None):
     return dict(slug=slug, cat=cat, name=name, icon=icon, blurb=blurb, intro=intro, ui=ui,
-                steps=steps, works=works, example=example, faqs=faqs, disclaimer=disclaimer, extra=extra)
+                steps=steps, works=works, example=example, faqs=faqs, disclaimer=disclaimer, extra=extra,
+                steps_ur=steps_ur)
 
 TOOLS = {}
 
@@ -765,7 +766,11 @@ TOOLS["wedding-invitation-maker"] = _tool(
      ("How does the couple's photo reach my guests?", "Your photo sits on the invitation's cover. A small, cover-sized copy of it is encoded into the invitation link itself, so guests see it as soon as the invitation opens — nothing is uploaded to any server. If you prefer not to use a personal photo, pick one of the built-in illustrated couple shots instead."),
      ("Is my data uploaded anywhere?", "No. The maker runs entirely in your browser. Your details are compressed into the link itself, and your photo is processed on your device by the same on-device AI as our passport photo tool."),
      ("Can I change the dates or names later?", "Yes — just edit the form and make a new link. Old links keep showing the old details, so send the new link to your guests.")],
-    False)
+    False,
+    steps_ur=["دُلہا اور دُلہن کے نام، دعوت دینے والوں (میزبان) کے نام، تقریبات کی تاریخیں اور جگہ لکھیں — نمونے کے طور پر دیے گئے نام آپ کو بالکل بتا دیتے ہیں کہ کیا لکھنا ہے۔",
+     "کھلنے کا انداز چُنیں (پردے، سنہرے دروازے یا پھولوں کی محراب)، رنگوں کا تھیم اور کوئی سی بِلٹ اِن دھن منتخب کریں، پھر لنک والا بٹن دبائیں۔",
+     "لنک واٹس ایپ پر بھیجیں۔ مہمان ٹیپ کر کے کھولتے ہیں: موسیقی کے ساتھ دروازے کھلتے ہیں، وہ تاریخ ظاہر کرنے کے لیے اسکریچ کرتے ہیں — یا اگر آپ نے وہ انداز چُنا ہو تو تاریخ والی ٹائلوں پر ٹیپ کرتے ہیں — لائیو الٹی گنتی دیکھتے ہیں اور آپ کے واٹس ایپ نمبر پر RSVP بھیج دیتے ہیں۔",
+     "اگر چاہیں تو سرورق (کور) کے طور پر جوڑے کی تصویر لگائیں — AI اس کا پس منظر خود ہٹا دیتا ہے — یا اپنے رنگ تھیم سے ملتی ہوئی کوئی بِلٹ اِن جوڑے والی تصویر چُن لیں۔"])
 
 TOOLS["ramadan-calendar-maker"] = _tool(
     "ramadan-calendar-maker", "cards-invitations", "Ramadan Calendar Maker", "🌙",
