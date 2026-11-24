@@ -821,12 +821,46 @@ TOOLS["eid-card-maker"] = _tool(
     "Remember the Eid cards of the 90s — the crescent moon, the glitter, the mosque silhouette and a sher that said exactly what you felt? This Eid card maker brings that card back. Pick one of five free retro designs, choose a ready-made Urdu sher — the genuine card verses of the era, from 'Dabbay mein dabba, dabbay mein cake' to the funny ones and the emotional ones for family and anyone far away in pardes — or write your own message, put your name on the card, and download it as a picture ready to share on WhatsApp. It works for both Eid-ul-Fitr and Eid-ul-Adha, and everything happens on your own device.",
     """
 <div id="e-guest" style="display:none;text-align:center;padding:10px 0 4px">
-<div id="e-env" style="cursor:pointer;width:min(320px,86%);margin:6px auto 10px;background:linear-gradient(150deg,#0b3d2e,#14604a);border:3px solid #e8b64c;border-radius:12px;padding:26px 10px 20px;color:#ffe9a8;box-shadow:0 10px 28px rgba(0,0,0,.28)">
-<div style="font-size:52px;line-height:1">🌙</div>
-<div style="font-size:30px;margin-top:6px">عید مبارک</div>
-<div style="font-size:.85em;letter-spacing:2px;margin-top:4px">SEALED WITH LOVE</div>
+<div id="e-cover" style="cursor:pointer;width:min(340px,90%);margin:8px auto 12px;background:#fffdf5;border:2px solid #20242a;border-radius:4px;box-shadow:0 0 0 4px #f3c969,0 0 0 6px #20242a,0 16px 34px rgba(60,40,0,.30);padding:16px 12px 12px">
+<div style="border:1px solid #c9a227;padding:14px 8px 10px">
+<span style="display:inline-block;background:#0e6e8c;color:#fff;border-radius:999px;padding:0 26px 7px;border:2px solid #083f52;box-shadow:inset 0 0 0 2px rgba(255,255,255,.25);font-size:29px">عید مبارک</span>
+<svg viewBox="0 0 320 200" style="width:100%;max-width:300px;height:auto;display:block;margin:10px auto 2px" aria-hidden="true">
+<path d="M14 168 C 90 138, 210 128, 306 84" stroke="#8a5a24" stroke-width="6" fill="none" stroke-linecap="round"/>
+<path d="M120 140 C 150 128, 175 112, 196 92" stroke="#8a5a24" stroke-width="4" fill="none" stroke-linecap="round"/>
+<g fill="#3e8e4f">
+<path d="M60 128 q -18 -20 -4 -34 q 20 6 4 34z"/>
+<path d="M96 138 q -22 -12 -16 -30 q 20 0 16 30z"/>
+<path d="M238 108 q 4 -24 24 -24 q 2 20 -24 24z"/>
+<path d="M272 92 q 10 -20 28 -16 q -4 18 -28 16z"/>
+<path d="M196 96 q -2 -22 14 -28 q 8 16 -14 28z"/>
+</g>
+<g>
+<path d="M64 128 L 22 158 L 66 148 Z" fill="#2e7fc2"/>
+<ellipse cx="104" cy="112" rx="36" ry="27" fill="#f6c945" transform="rotate(-14 104 112)"/>
+<circle cx="134" cy="88" r="17" fill="#f6c945"/>
+<path d="M84 104 q 26 -14 44 2 q -18 20 -40 12 q -8 -6 -4 -14z" fill="#2e7fc2"/>
+<path d="M150 84 l 14 5 l -14 6 z" fill="#e07b2a"/>
+<circle cx="139" cy="85" r="2.6" fill="#20242a"/>
+<path d="M96 136 l 0 12 M112 138 l 0 12" stroke="#20242a" stroke-width="2.4"/>
+</g>
+<g>
+<path d="M238 108 L 276 128 L 234 126 Z" fill="#2e7fc2"/>
+<ellipse cx="212" cy="98" rx="29" ry="22" fill="#ffd94d" transform="rotate(12 212 98)"/>
+<circle cx="188" cy="78" r="14" fill="#ffd94d"/>
+<path d="M196 92 q 20 -12 36 0 q -14 16 -32 10 q -6 -5 -4 -10z" fill="#3a90d6"/>
+<path d="M175 74 l -12 5 l 12 6 z" fill="#e07b2a"/>
+<circle cx="184" cy="75" r="2.2" fill="#20242a"/>
+<path d="M204 118 l 0 10 M218 118 l 0 10" stroke="#20242a" stroke-width="2.2"/>
+</g>
+<g fill="#d9a441">
+<path d="M40 40 l 3 8 8 3 -8 3 -3 8 -3 -8 -8 -3 8 -3z"/>
+<path d="M282 30 l 2.4 6.4 6.4 2.4 -6.4 2.4 -2.4 6.4 -2.4 -6.4 -6.4 -2.4 6.4 -2.4z"/>
+</g>
+</svg>
+<p id="e-guest-from" style="font-weight:600;margin:8px 0 2px"></p>
+<div style="border-top:1px dotted #b9a05a;margin:8px 18px 2px;padding-top:5px;font-size:.78em;letter-spacing:2px;color:#8a6d1f">— TAP TO OPEN —</div>
 </div>
-<p id="e-guest-from" style="font-weight:600"></p>
+</div>
 <button class="btn" id="e-open" type="button">✨ Card kholein</button>
 <div id="e-guest-actions" style="display:none;margin-top:10px">
 <button class="btn" id="e-gdownload" type="button">⬇️ Card download karein</button>

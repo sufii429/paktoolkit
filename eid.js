@@ -517,7 +517,7 @@ function initEid(){
           var opened = false;
           var openIt = function(){
             if (opened) return; opened = true;
-            $("e-env").style.display = "none";
+            $("e-cover").style.display = "none";
             $("e-open").style.display = "none";
             wrap.style.display = "";
             wrap.style.opacity = "0"; wrap.style.transform = "scale(.94)";
@@ -529,7 +529,7 @@ function initEid(){
             burst();
           };
           $("e-open").addEventListener("click", openIt);
-          $("e-env").addEventListener("click", openIt);
+          $("e-cover").addEventListener("click", openIt);
           $("e-gdownload").addEventListener("click", function(){ $("e-download").click(); });
         }
         if (p.m === "hand") ensureHandFonts(draw); else draw();
