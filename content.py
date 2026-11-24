@@ -820,6 +820,19 @@ TOOLS["eid-card-maker"] = _tool(
     "Make a free retro 90s-style Eid card with funny and emotional Urdu shayari and your name on it — download and share on WhatsApp.",
     "Remember the Eid cards of the 90s — the crescent moon, the glitter, the mosque silhouette and a sher that said exactly what you felt? This Eid card maker brings that card back. Pick one of five free retro designs, choose a ready-made Urdu sher — the genuine card verses of the era, from 'Dabbay mein dabba, dabbay mein cake' to the funny ones and the emotional ones for family and anyone far away in pardes — or write your own message, put your name on the card, and download it as a picture ready to share on WhatsApp. It works for both Eid-ul-Fitr and Eid-ul-Adha, and everything happens on your own device.",
     """
+<div id="e-guest" style="display:none;text-align:center;padding:10px 0 4px">
+<div id="e-env" style="cursor:pointer;width:min(320px,86%);margin:6px auto 10px;background:linear-gradient(150deg,#0b3d2e,#14604a);border:3px solid #e8b64c;border-radius:12px;padding:26px 10px 20px;color:#ffe9a8;box-shadow:0 10px 28px rgba(0,0,0,.28)">
+<div style="font-size:52px;line-height:1">🌙</div>
+<div style="font-size:30px;margin-top:6px">عید مبارک</div>
+<div style="font-size:.85em;letter-spacing:2px;margin-top:4px">SEALED WITH LOVE</div>
+</div>
+<p id="e-guest-from" style="font-weight:600"></p>
+<button class="btn" id="e-open" type="button">✨ Card kholein</button>
+<div id="e-guest-actions" style="display:none;margin-top:10px">
+<button class="btn" id="e-gdownload" type="button">⬇️ Card download karein</button>
+<a class="btn" href="/eid-card-maker/" style="text-decoration:none">💌 Apna Eid card banayein</a>
+</div>
+</div>
 <label>Design chunein — paanchon FREE hain</label>
 <div id="e-designs" class="eid-designs"></div>
 <label for="e-type">Eid ki qisam</label>
@@ -848,27 +861,38 @@ TOOLS["eid-card-maker"] = _tool(
 <label for="e-msg">Apna paigham — har line alag likhein</label>
 <textarea id="e-msg" rows="3" placeholder="Apna paigham yahan likhein…"></textarea>
 </div>
+<label for="e-dost">Dost — sher kis ke liye hai?</label>
+<select id="e-dost">
+<option value="meri" selected>میری دوست — لڑکی کے لیے</option>
+<option value="mera">میرا دوست — لڑکے کے لیے</option>
+</select>
 <div class="row2">
 <div><label for="e-to">Kis ke liye (optional)</label><input id="e-to" type="text" placeholder="masalan: Pyari Ammi"></div>
 <div><label for="e-from">Aap ka naam (bhejne wala)</label><input id="e-from" type="text" value="Ahmed Khan"></div>
 </div>
-<canvas id="e-canvas" width="1080" height="1350" style="width:100%;max-width:430px;height:auto;display:block;margin:14px auto;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.25)"></canvas>
+<div id="e-cardwrap" style="position:relative;max-width:430px;margin:14px auto">
+<canvas id="e-canvas" width="1080" height="1350" style="width:100%;height:auto;display:block;border-radius:10px;box-shadow:0 6px 24px rgba(0,0,0,.25)"></canvas>
+<canvas id="e-fx" width="1080" height="1350" style="position:absolute;inset:0;width:100%;height:100%;display:none;pointer-events:none"></canvas>
+</div>
 <div class="row2">
 <div><button class="btn" id="e-download" type="button">⬇️ Card download karein</button></div>
 <div><button class="btn" id="e-share" type="button">💬 WhatsApp par share karein</button></div>
 </div>
+<div><button class="btn" id="e-link" type="button">🔗 Card ka link banayein — tap se wahi card khulega</button></div>
+<div class="result" id="e-linkresult" role="status" aria-live="polite" style="display:none"></div>
 <p class="small" id="e-status" role="status" aria-live="polite"></p>
 """,
     ["Choose your design — five retro designs, all completely free: Chaand Raat Classic, Gulab Wala, Rangeen 90s, Masjid-e-Noor and Vintage Cream.",
      "Pick Eid-ul-Fitr or Eid-ul-Adha, then choose a ready-made sher (funny or emotional) or write your own message.",
      "Write your name as the sender, and if you like, the name of the person the card is for.",
-     "The card redraws itself as you type — download it as a picture and share it on WhatsApp, or use the share button."],
+     "The card redraws itself as you type — download it as a picture, or tap 'Card ka link banayein': the link carries the card itself, and whoever taps it on WhatsApp finds a little sealed envelope that opens into your very card."],
     "The card is drawn on a canvas inside your browser — the crescent, stars, mosque, roses and lettering are all drawn by code on your own device, in the style of the printed Eid cards of the 90s. Your names and message never leave your device; there is no upload and no account. The download is a full-size PNG picture (1080 × 1350), the size that looks best on WhatsApp and Facebook.",
     "Example: Ahmed, working in Dubai, picks the Masjid-e-Noor design, chooses the pardes sher, writes his name at the bottom — and sends the card to his family group in Faisalabad on Chand Raat, exactly like the cards that once travelled by post.",
     [("Is the Eid card maker really free?", "Yes — all five designs, all the shayari and the full-size download are completely free, with no sign-up and no watermark."),
      ("What shayari is included?", "The genuine verses from the Eid cards of the 90s — 'Dabbay mein dabba, dabbay mein cake', 'Garam garam roti tori nahi jaati' and the rest of the classics friends once wrote on cards by hand — plus emotional ones for Ammi and for anyone far away in pardes. You can also write your own message in any language."),
      ("Does it work for both Eids?", "Yes. Choose Eid-ul-Fitr or Eid-ul-Adha at the top and the greeting line on the card changes to match."),
      ("How do I share the card on WhatsApp?", "Download the card, then attach the picture in WhatsApp — or tap the share button, which sends the card directly on phones that support it."),
+     ("Can I send the card as a link instead of a picture?", "Yes. Tap 'Card ka link banayein' and send the link — your friend taps it and the same card opens for them, sealed in a little envelope, with your name on it. The card's details travel inside the link itself; nothing is uploaded or stored."),
      ("Is my name kept private?", "Yes. The card is made entirely inside your browser; your name and message are never uploaded or stored anywhere.")],
     False)
 
