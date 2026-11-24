@@ -173,20 +173,41 @@ function initEid(){
   }
   /* Noto Nastaliq Urdu is NOT a system font on Android and the site never
      loaded it as a webfont — printed cards silently fell back to the
-     phone's default Urdu font (Mazeen's report, 2026-11-24). Load it as
-     a webfont and wait for it before drawing, like Tehreeri below. */
-  var printLoaded = false;
+     phone's default Urdu font (Mazeen's report, 2026-11-24).
+     THE RACE (found 2026-11-24, after two wrong cache theories): the
+     Google Fonts stylesheet is fetched async, and fonts.load() called
+     before it lands finds NO matching @font-face yet — its promise
+     resolves instantly with an empty list, the "wait" waits for nothing,
+     and the card paints in the fallback font for good. On a warm cache
+     the stylesheet is instant, which is why the maker (and any refresh)
+     looked fine while a fresh guest view never did.
+     waitFonts therefore retries until fonts.load() actually returns
+     faces — proof the stylesheet has landed and the font is in. */
+  function fontSample(){
+    return SHAYARI.map(function(s){ return s.join(" "); }).join(" ") + " عید مبارک کی طرف سے Ahmed Khan";
+  }
+  function waitFonts(specs, cb){
+    if (!document.fonts || !document.fonts.load){ if (cb) cb(); return; }
+    var tries = 0;
+    (function attempt(){
+      tries++;
+      Promise.all(specs.map(function(sp){ return document.fonts.load(sp, fontSample()); })).then(function(res){
+        /* success = the font is verifiably usable for our text. check()
+           is the ground truth — load()'s returned list can stay empty in
+           some browsers even after the font has landed. */
+        var ok = specs.every(function(sp){
+          try { return document.fonts.check(sp, fontSample()); } catch (e) { return false; }
+        }) || res.every(function(r){ return r && r.length; });
+        if (ok || tries >= 50){ if (cb) cb(); }
+        else setTimeout(attempt, 150);
+      }, function(){
+        if (tries >= 50){ if (cb) cb(); } else setTimeout(attempt, 150);
+      });
+    })();
+  }
   function ensurePrintFonts(cb){
-    if (!printLoaded){
-      printLoaded = true;
-      loadGF();
-    }
-    if (document.fonts && document.fonts.load){
-      Promise.all([
-        document.fonts.load('700 80px "Noto Nastaliq Urdu"', "عید مبارک"),
-        document.fonts.load('600 60px "Noto Nastaliq Urdu"', "ڈبے میں ڈبہ")
-      ]).then(function(){ if (cb) cb(); }, function(){ if (cb) cb(); });
-    } else if (cb) cb();
+    loadGF();
+    waitFonts(['700 80px "Noto Nastaliq Urdu"', '600 60px "Noto Nastaliq Urdu"'], cb);
   }
   var handLoaded = false;
   function ensureHandFonts(cb){
@@ -199,13 +220,7 @@ function initEid(){
         ff.load();
       } catch (e) {}
     }
-    if (document.fonts && document.fonts.load){
-      Promise.all([
-        document.fonts.load("54px 'AlQalam Tehreeri'", "عید مبارک"),
-        document.fonts.load("700 42px Caveat", "Ahmed Khan"),
-        document.fonts.load('700 80px "Noto Nastaliq Urdu"', "عید مبارک")
-      ]).then(function(){ if (cb) cb(); }, function(){ if (cb) cb(); });
-    } else if (cb) cb();
+    waitFonts(["54px 'AlQalam Tehreeri'", "700 42px Caveat", '700 80px "Noto Nastaliq Urdu"'], cb);
   }
   function isUrdu(s){ return /[\u0600-\u06FF]/.test(s || ""); }
   function handMode(){ var n = document.getElementById("e-script"); return !!(n && n.value === "hand"); }
@@ -541,6 +556,11 @@ function initEid(){
           var opened = false;
           var openIt = function(){
             if (opened) return; opened = true;
+            /* repaint the moment the card is revealed — the first paint
+               happens behind the cover, often before the Urdu webfont has
+               arrived, and a canvas never swaps fonts by itself. This
+               redraw (once the font lands) is what the guest actually sees. */
+            if (p.m === "hand") ensureHandFonts(draw); else ensurePrintFonts(draw);
             $("e-cover").style.display = "none";
             $("e-open").style.display = "none";
             wrap.style.display = "";
@@ -562,8 +582,12 @@ function initEid(){
   }
 
   /* first paint now, then repaint once the Urdu webfont is really in —
-     a canvas keeps whatever font was available at draw time */
+     a canvas keeps whatever font was available at draw time. Two extra
+     safety nets for slow networks and WebViews (Mazeen's YPN browser):
+     a repaint on window load, and one timed repaint. */
   if (handMode()) ensureHandFonts(draw); else ensurePrintFonts(draw);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ draw(); });
+  window.addEventListener("load", function(){ draw(); });
+  setTimeout(draw, 3000);
   draw();
 }
