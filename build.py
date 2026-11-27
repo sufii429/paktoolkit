@@ -155,13 +155,15 @@ def tabbar(active):
 def footer(active="", extra=""):
     return """<footer class="site"><div class="wrap">
 <p><strong>PakToolkit</strong> — free online tools for Pakistan. Every tool runs in your browser; your files never leave your device.</p>
-<p><a href="/about/">About</a> <a href="/contact/">Contact</a> <a href="/privacy-policy/">Privacy Policy</a> <a href="/terms/">Terms of Use</a> <a href="/disclaimer/">Disclaimer</a></p>
+<p><a href="/about/">About</a> <a href="/contact/">Contact</a> <a href="/privacy-policy/">Privacy Policy</a> <a href="/cookie-policy/">Cookie Policy</a> <a href="/terms/">Terms of Use</a> <a href="/disclaimer/">Disclaimer</a></p>
 <p>Our other projects: <a href="https://mrjobs.top/">MrJobs — Jobs in Pakistan</a> · <a href="https://kitaabcha.blogspot.com/">Kitaabcha — Urdu Film Reviews</a></p>
 <p><a href="/pakistan-calculators/">Pakistan Calculators</a> <a href="/image-tools/">Image Tools</a> <a href="/pdf-tools/">PDF Tools</a> <a href="/everyday-calculators/">Everyday Calculators</a> <a href="/cards-invitations/">Cards &amp; Invitations</a></p>
 </div></footer>
 """ + tabbar(active) + """
 <script src="/assets/tools.js" defer></script>
 """ + extra + """
+<div id="cookiebar" class="cookiebar" hidden><p>🍪 PakToolkit sets no tracking cookies. Two small choices are stored on your own device only — see our <a href="/cookie-policy/">Cookie Policy</a>.</p><button id="cookieok" type="button">Theek hai (OK)</button></div>
+<script>(function(){try{var k="pt-cookie-consent";if(!localStorage.getItem(k)){var b=document.getElementById("cookiebar");if(b){b.hidden=false;document.getElementById("cookieok").addEventListener("click",function(){try{localStorage.setItem(k,"1");}catch(e){}b.hidden=true;});}}}catch(e){}})();</script>
 </body></html>"""
 
 def card(slug):
@@ -282,6 +284,10 @@ def trust_page(path, row):
     for h, p in sections:
         parts.append(f"<h2>{esc(h)}</h2><p>{esc(p)}</p>")
     mail = '<p>Email: <a href="mailto:sufyanbarret@gmail.com">sufyanbarret@gmail.com</a></p>' if slug == "contact" else ""
+    if slug == "cookie-policy":
+        mail = '<p>See also: <a href="/privacy-policy/">Privacy Policy</a></p>'
+    elif slug == "privacy-policy":
+        mail = '<p>See also: <a href="/cookie-policy/">Cookie Policy</a></p>'
     return f"""{head(row, path)}
 <body>
 {HEADER}
@@ -296,7 +302,7 @@ def trust_page(path, row):
 def sitemap(urls):
     prio = {"/": "1.0", "/pakistan-calculators/": "0.9", "/image-tools/": "0.9", "/pdf-tools/": "0.9",
             "/everyday-calculators/": "0.8", "/about/": "0.5", "/contact/": "0.5",
-            "/privacy-policy/": "0.4", "/terms/": "0.4", "/disclaimer/": "0.4"}
+            "/privacy-policy/": "0.4", "/cookie-policy/": "0.4", "/terms/": "0.4", "/disclaimer/": "0.4"}
     lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">']
     for u in urls:
         p = u[len(BASE):] or "/"
