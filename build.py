@@ -229,7 +229,7 @@ def tool_page(path, row):
 <div class="grid">{rel_cards}</div>
 {disclaimer}
 </main>
-{footer(TAB_FOR_CAT[t['cat']], '<script src="/assets/shotdata-maroon.js" defer></script><script src="/assets/shotdata-green.js" defer></script><script src="/assets/shotdata-royal.js" defer></script><script src="/assets/fabricdata.js" defer></script><script src="/assets/floraldata.js" defer></script><script src="/assets/floralalphadata.js" defer></script><script src="/assets/lifafadata.js" defer></script><script src="/assets/premiumdata.js" defer></script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script><script src="/assets/wedding.js?v=23" defer></script><script src="/assets/lifafa.js?v=3" defer></script><script src="/assets/premium.js?v=1" defer></script>' if slug == "wedding-invitation-maker" else ('<script src="/assets/ramadan.js?v=7" defer></script>' if slug == "ramadan-calendar-maker" else ('<script src="/assets/eid.js?v=9" defer></script>' if slug == "eid-card-maker" else "")))}"""
+{footer(TAB_FOR_CAT[t['cat']], '<script src="/assets/shotdata-maroon.js" defer></script><script src="/assets/shotdata-green.js" defer></script><script src="/assets/shotdata-royal.js" defer></script><script src="/assets/fabricdata.js" defer></script><script src="/assets/floraldata.js" defer></script><script src="/assets/floralalphadata.js" defer></script><script src="/assets/lifafadata.js" defer></script><script src="/assets/premiumdata.js" defer></script><script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha384-g4NTh/Iv5PPU4xPyhEWqPcwtNXOvdaDI8LLnyYfyNZOjKJeYQyjzQ9X5275eBjpt" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script><script src="/assets/designcardsdata.js" defer></script><script src="/assets/wedding.js?v=24" defer></script><script src="/assets/lifafa.js?v=3" defer></script><script src="/assets/premium.js?v=1" defer></script>' if slug == "wedding-invitation-maker" else ('<script src="/assets/ramadan.js?v=7" defer></script>' if slug == "ramadan-calendar-maker" else ('<script src="/assets/eid.js?v=9" defer></script>' if slug == "eid-card-maker" else "")))}"""
     return body
 
 def category_page(path, row):
@@ -336,6 +336,7 @@ def main():
     copy_asset(os.path.join(HERE, "lifafa.js"), os.path.join(DIST, "assets", "lifafa.js"))
     copy_asset(os.path.join(HERE, "premium.js"), os.path.join(DIST, "assets", "premium.js"))
     copy_asset(os.path.join(HERE, "premiumdata.js"), os.path.join(DIST, "assets", "premiumdata.js"))
+    copy_asset(os.path.join(HERE, "designcardsdata.js"), os.path.join(DIST, "assets", "designcardsdata.js"))
     copy_asset(os.path.join(HERE, "ramadan.js"), os.path.join(DIST, "assets", "ramadan.js"))
     copy_asset(os.path.join(HERE, "eid.js"), os.path.join(DIST, "assets", "eid.js"))
     for _sn in ("maroon", "green", "royal"):

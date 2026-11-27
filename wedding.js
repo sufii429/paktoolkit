@@ -1199,6 +1199,7 @@ function initWedding(){
     function mk(tag, cls, text){ var n = el(tag, text); if (cls) n.className = cls; return n; }
     function sceneFor(v){
       var s = mk("div", "wc-scene wc-" + v);
+      if (window.W_CARDS && window.W_CARDS[v]) { s.style.backgroundImage = "url(" + window.W_CARDS[v] + ")"; s.classList.add("wc-img"); return s; }
       if (v === "ref" || v === "ref2" || v === "ref3" || v === "doors") s.appendChild(mk("i", "wc-arch"));
       if (v === "lifafa") s.appendChild(mk("i", "wc-seal"));
       if (v === "premium" && window.W_PREM_BG) s.style.backgroundImage = "url(" + window.W_PREM_BG + ")";
