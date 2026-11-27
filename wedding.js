@@ -1188,6 +1188,46 @@ function initWedding(){
   function wMatchPal(){ var p = wPalMatch[$("w-style").value]; if (p) $("w-pal").value = p; }
   $("w-style").addEventListener("change", wMatchPal);
   wMatchPal();
+  /* Design picker: visual cards instead of the name dropdown (Mazeen,
+     2026-11-27 — the card-style picker he saw in a competitor's reel).
+     The hidden select stays the single source of truth: a card tap sets
+     its value and fires "change", so palette matching, the Lifafa
+     fields and the payload all behave exactly as before. */
+  (function(){
+    var sel = $("w-style"), box = $("w-stylecards");
+    if (!sel || !box) return;
+    function mk(tag, cls, text){ var n = el(tag, text); if (cls) n.className = cls; return n; }
+    function sceneFor(v){
+      var s = mk("div", "wc-scene wc-" + v);
+      if (v === "ref" || v === "ref2" || v === "ref3" || v === "doors") s.appendChild(mk("i", "wc-arch"));
+      if (v === "lifafa") s.appendChild(mk("i", "wc-seal"));
+      if (v === "premium" && window.W_PREM_BG) s.style.backgroundImage = "url(" + window.W_PREM_BG + ")";
+      return s;
+    }
+    function sync(){
+      Array.prototype.forEach.call(box.children, function(c){
+        var on = c.dataset.v === sel.value;
+        c.classList.toggle("sel", on);
+        c.setAttribute("aria-pressed", on ? "true" : "false");
+      });
+    }
+    Array.prototype.forEach.call(sel.options, function(op){
+      var b = mk("button", "wcard"); b.type = "button"; b.dataset.v = op.value;
+      b.setAttribute("aria-pressed", "false");
+      b.appendChild(sceneFor(op.value));
+      b.appendChild(mk("span", "wc-name", op.textContent));
+      b.addEventListener("click", function(){
+        if (sel.value !== op.value){
+          sel.value = op.value;
+          sel.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+        sync();
+      });
+      box.appendChild(b);
+    });
+    sel.addEventListener("change", sync);
+    sync();
+  })();
   $("w-makelink").addEventListener("click", async function(){
     var out = $("w-linkresult"); out.className = "result show"; out.textContent = "";
     var status = el("p", "Link ban raha hai…"); out.appendChild(status);

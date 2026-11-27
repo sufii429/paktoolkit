@@ -160,3 +160,29 @@ details.wsub summary{font-size:.95rem}
 .eid-swatch.on{border-color:var(--green);box-shadow:0 4px 14px rgba(10,122,66,.22)}
 .eid-sw{display:block;width:64px;height:44px;border-radius:9px}
 .eid-nm{font-size:.82rem;font-weight:600;color:var(--ink)}
+
+/* Wedding maker — visual design cards (2026-11-27) */
+.wcards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:6px 0 12px}
+@media(max-width:560px){.wcards{grid-template-columns:repeat(2,1fr)}}
+.wcard{appearance:none;-webkit-appearance:none;background:#fff;border:2px solid #e3ddcf;border-radius:12px;padding:0;cursor:pointer;overflow:hidden;text-align:center;font:inherit;transition:border-color .15s,box-shadow .15s}
+.wcard:hover{border-color:#c9a959}
+.wcard:focus-visible{outline:3px solid rgba(184,145,47,.55);outline-offset:2px}
+.wcard.sel{border-color:#b8912f;box-shadow:0 0 0 2px rgba(184,145,47,.35),0 6px 14px rgba(140,110,40,.18)}
+.wc-scene{height:86px;position:relative;background:#f3ead3;overflow:hidden}
+.wc-name{display:block;padding:7px 6px 8px;font-size:.78rem;line-height:1.35;color:#4c4326}
+.wc-arch{position:absolute;left:50%;top:15%;transform:translateX(-50%);width:52%;height:85%;border:2px solid rgba(246,221,138,.95);border-bottom:none;border-radius:60px 60px 0 0;background:linear-gradient(90deg,rgba(255,255,255,.15) 49%,rgba(246,221,138,.9) 49%,rgba(246,221,138,.9) 51%,rgba(0,0,0,.14) 51%)}
+.wc-ref{background:linear-gradient(180deg,#175c36,#0d3d23)}
+.wc-ref2{background:linear-gradient(180deg,#7c2233,#4d1220)}
+.wc-ref3{background:linear-gradient(180deg,#274690,#16294f)}
+.wc-doors{background:linear-gradient(90deg,#a37f24 49%,#6d5410 49%,#6d5410 51%,#a37f24 51%)}
+.wc-doors .wc-arch{border-color:rgba(60,42,4,.5);background:linear-gradient(90deg,rgba(255,255,255,.16) 49%,rgba(60,42,4,.45) 49%,rgba(60,42,4,.45) 51%,rgba(0,0,0,.1) 51%)}
+.wc-curtain{background:repeating-linear-gradient(90deg,#8e2434 0 9px,#c0455a 9px 13px,#711b29 13px 22px)}
+.wc-tieback{background:radial-gradient(60% 90% at 50% 45%,#d98a97 0%,rgba(217,138,151,0) 62%),repeating-linear-gradient(90deg,#8e2434 0 9px,#c0455a 9px 13px,#711b29 13px 22px)}
+.wc-tieback:before,.wc-tieback:after{content:'';position:absolute;top:52%;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f6dd8a,#a37f24);box-shadow:0 1px 3px rgba(60,20,20,.5)}
+.wc-tieback:before{left:7%}
+.wc-tieback:after{right:7%}
+.wc-lifafa{background:#f6ecd4}
+.wc-lifafa:before{content:'';position:absolute;inset:0;background:linear-gradient(200deg,#7c2233,#5c1624);clip-path:polygon(0 0,100% 0,50% 62%)}
+.wc-lifafa:after{content:'';position:absolute;inset:0;background:linear-gradient(200deg,#8d2c40,#6d1a2b);clip-path:polygon(0 38%,50% 74%,100% 38%,100% 100%,0 100%)}
+.wc-seal{position:absolute;left:50%;top:56%;transform:translate(-50%,-50%);width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ecd27c,#c39a35 55%,#8a6a1d);box-shadow:0 2px 5px rgba(90,65,10,.4);z-index:2}
+.wc-premium{background-color:#efe6cf;background-size:cover;background-position:center 62%}

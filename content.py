@@ -670,9 +670,9 @@ TOOLS["wedding-invitation-maker"] = _tool(
 </details>
 <details class="wstep">
 <summary>Qadam 3 — Andaaz</summary>
-<div class="row2">
-<div><label for="w-style">Card kaise khule (opening style)</label>
-<select id="w-style">
+<label>Design chunein — card par tap karein</label>
+<div id="w-stylecards" class="wcards"></div>
+<select id="w-style" hidden>
 <option value="ref" selected>⭐ Sabz Darwaza — PakToolkit Special</option>
 <option value="ref2">⭐ Mehroon Darwaza — PakToolkit Special</option>
 <option value="ref3">⭐ Neela Darwaza — PakToolkit Special</option>
@@ -681,8 +681,9 @@ TOOLS["wedding-invitation-maker"] = _tool(
 <option value="tieback">Bandha Parda</option>
 <option value="curtain">Surkh Parda</option>
 <option value="doors">Sunahre Darwaze</option>
-</select></div>
-<div><label for="w-pal">Rang (colour theme)</label>
+</select>
+<div class="row2">
+<div style="grid-column:1/-1"><label for="w-pal">Rang (colour theme)</label>
 <select id="w-pal">
 <option value="maroon" selected>Maroon &amp; Gold</option>
 <option value="green">Sabz (emerald) &amp; Gold</option>
